@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia Jedi de Lengua — André Padawan</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  --gold: #ffe81f;
+  --gold-dim: #c9b800;
+  --blue: #00aaff;
+  --blue-dim: #0077cc;
+  --green: #39ff7a;
+  --red-sith: #ff2244;
+  --bg: #04060f;
+  --panel: #080c1a;
+  --panel2: #0c1224;
+  --border: #1a2244;
+  --text: #ccd6f6;
+  --dim: #556080;
+  --white: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* Stars background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 90%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 50%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 15%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 70%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42% 88%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 55%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(2px 2px at 5% 50%, rgba(255,255,200,0.6) 0%, transparent 100%),
+    radial-gradient(2px 2px at 95% 25%, rgba(200,220,255,0.6) 0%, transparent 100%),
+    radial-gradient(2px 2px at 60% 30%, rgba(255,255,255,0.5) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scanline overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 16px 16px 50px;
+  position: relative;
+  z-index: 1;
+}
+
+/* CRAWL intro */
+#crawl-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.crawl-perspective {
+  perspective: 300px;
+  width: 100%;
+  max-width: 500px;
+  height: 60vh;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.crawl-text {
+  transform-origin: 50% 100%;
+  animation: crawl 8s linear forwards;
+  padding: 0 20px;
+  text-align: center;
+}
+
+@keyframes crawl {
+  0% { transform: rotateX(20deg) translateY(100%); opacity: 1; }
+  100% { transform: rotateX(20deg) translateY(-300%); opacity: 0.3; }
+}
+
+.crawl-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-bottom: 20px;
+  letter-spacing: 4px;
+}
+
+.crawl-body {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--gold-dim);
+}
+
+.crawl-skip {
+  position: absolute;
+  bottom: 30px;
+  background: transparent;
+  border: 1px solid rgba(255,232,31,0.4);
+  color: var(--gold);
+  padding: 10px 24px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.crawl-skip:hover { background: rgba(255,232,31,0.1); }
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 24px 0 16px;
+}
+
+.logo-sw {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.1rem, 4vw, 1.6rem);
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(255,232,31,0.5), 0 0 40px rgba(255,232,31,0.2);
+  animation: gold-pulse 3s ease-in-out infinite;
+  line-height: 1.2;
+}
+
+@keyframes gold-pulse {
+  0%,100% { text-shadow: 0 0 20px rgba(255,232,31,0.5); }
+  50% { text-shadow: 0 0 30px rgba(255,232,31,0.9), 0 0 60px rgba(255,232,31,0.4); }
+}
+
+.logo-sub {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(0.55rem, 2vw, 0.75rem);
+  color: var(--blue);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-top: 6px;
+  opacity: 0.8;
+}
+
+.padawan-tag {
+  display: inline-block;
+  margin-top: 10px;
+  background: rgba(255,232,31,0.1);
+  border: 1px solid rgba(255,232,31,0.3);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: 0.78rem;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+/* Midi-chlorian / stats bar */
+.stats-bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 10px;
+  margin: 14px 0 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-bar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.stat { text-align: center; }
+.stat-lbl {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  color: var(--dim);
+  display: block;
+  margin-bottom: 2px;
+}
+.stat-val {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+.stat-val.mission { color: var(--blue); }
+.stat-val.lives { color: var(--red-sith); }
+.stat-val.score { color: var(--gold); }
+.stat-val.cat { color: var(--green); font-size: 0.85rem; }
+
+/* Force meter */
+.force-bar-wrap {
+  margin-bottom: 16px;
+}
+.force-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: var(--dim);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+.force-label span { color: var(--blue); }
+.force-track {
+  height: 5px;
+  background: var(--panel2);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.force-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-dim), var(--blue), var(--gold));
+  border-radius: 3px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 6px rgba(0,170,255,0.5);
+}
+
+/* Category tag */
+.cat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,170,255,0.08);
+  border: 1px solid rgba(0,170,255,0.25);
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  color: var(--blue);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+/* Question card */
+.q-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 20px 18px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.q-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue-dim), transparent);
+  opacity: 0.5;
+}
+
+.q-who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.q-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--panel2);
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.q-speaker {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+.q-role {
+  font-size: 0.68rem;
+  color: var(--dim);
+}
+
+.q-setup {
+  font-size: 0.82rem;
+  color: var(--dim);
+  font-style: italic;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  border-left: 2px solid var(--border);
+  padding-left: 10px;
+}
+
+.q-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--white);
+}
+
+/* Hint */
+.hint-panel {
+  background: rgba(57,255,122,0.06);
+  border: 1px solid rgba(57,255,122,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: var(--green);
+  margin-bottom: 12px;
+  display: none;
+  line-height: 1.5;
+}
+.hint-panel.on { display: block; }
+
+/* Answers */
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ans-btn {
+  background: var(--panel2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 10px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+  line-height: 1.3;
+  position: relative;
+}
+
+.ans-btn:hover:not(:disabled) {
+  border-color: var(--blue);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,170,255,0.2);
+  background: rgba(0,170,255,0.06);
+}
+
+.ans-btn.correct {
+  background: rgba(57,255,122,0.12);
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 18px rgba(57,255,122,0.35);
+  animation: pop 0.35s ease;
+}
+
+.ans-btn.wrong {
+  background: rgba(255,34,68,0.12);
+  border-color: var(--red-sith);
+  color: var(--red-sith);
+  box-shadow: 0 0 18px rgba(255,34,68,0.3);
+  animation: zap 0.4s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes zap {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-5px) rotate(-1deg); }
+  75% { transform: translateX(5px) rotate(1deg); }
+}
+
+.ans-btn:disabled { cursor: default; }
+
+/* Feedback */
+.sith-feedback {
+  text-align: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  min-height: 1.5rem;
+  margin-bottom: 8px;
+}
+.sith-feedback.jedi { color: var(--green); text-shadow: 0 0 12px rgba(57,255,122,0.5); }
+.sith-feedback.sith { color: var(--red-sith); text-shadow: 0 0 12px rgba(255,34,68,0.5); }
+
+/* Explanation */
+.explain {
+  background: var(--panel2);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 10px 10px 0;
+  padding: 12px 14px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--dim);
+  display: none;
+  margin-bottom: 12px;
+}
+.explain.on { display: block; }
+.explain strong { color: var(--gold); }
+.explain em { color: var(--text); font-style: normal; }
+
+/* Buttons row */
+.btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-force {
+  flex: 1;
+  background: transparent;
+  border: 1.5px solid rgba(57,255,122,0.35);
+  border-radius: 8px;
+  padding: 10px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--green);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-force:hover { background: rgba(57,255,122,0.08); border-color: var(--green); }
+.btn-force:disabled { opacity: 0.25; cursor: default; }
+
+.btn-hyperspace {
+  flex: 2;
+  background: linear-gradient(135deg, #002266, var(--blue-dim));
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: none;
+  box-shadow: 0 4px 14px rgba(0,170,255,0.25);
+}
+.btn-hyperspace.on { display: block; }
+.btn-hyperspace:hover { box-shadow: 0 6px 20px rgba(0,170,255,0.5); transform: translateY(-2px); }
+
+/* Lightsaber divider */
+.saber-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+  border-radius: 2px;
+  margin: 14px 0;
+  box-shadow: 0 0 8px rgba(0,170,255,0.4);
+  animation: saber-flicker 4s ease-in-out infinite;
+}
+@keyframes saber-flicker {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.6; }
+  70% { opacity: 1; }
+}
+
+/* START SCREEN */
+#start-screen {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 22px;
+  margin-top: 8px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+#start-screen::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.start-droid { font-size: 3.5rem; margin-bottom: 12px; display: block; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.start-intro {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--dim);
+  margin-bottom: 20px;
+}
+.start-intro strong { color: var(--text); }
+.start-intro .gold { color: var(--gold); font-weight: 700; }
+
+.topic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 22px;
+  text-align: left;
+}
+.topic-item {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+.topic-item strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.85rem;
+  margin-bottom: 2px;
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 1px;
+  font-size: 0.7rem;
+}
+
+.btn-engage {
+  background: linear-gradient(135deg, #8a6800, var(--gold-dim));
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 15px 44px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #000;
+  cursor: pointer;
+  box-shadow: 0 4px 22px rgba(255,232,31,0.35);
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.btn-engage:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(255,232,31,0.55); }
+
+/* END SCREEN */
+.end-screen {
+  display: none;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 22px;
+  text-align: center;
+}
+.end-screen.on { display: block; }
+
+.end-big {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.6rem, 6vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+.end-big.jedi { color: var(--gold); text-shadow: 0 0 30px rgba(255,232,31,0.6); }
+.end-big.sith { color: var(--red-sith); text-shadow: 0 0 30px rgba(255,34,68,0.6); }
+
+.end-msg { font-size: 0.9rem; line-height: 1.7; color: var(--dim); margin-bottom: 18px; }
+.end-pts {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem;
+  color: var(--gold);
+  margin-bottom: 22px;
+}
+
+.btn-again {
+  background: linear-gradient(135deg, #8a6800, var(--gold-dim));
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  padding: 13px 36px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #000;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(255,232,31,0.3);
+  transition: all 0.2s;
+}
+.btn-again:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255,232,31,0.5); }
+
+/* Hyperspace burst */
+.hyperspace {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #fff 0%, #aaddff 20%, #000 70%);
+  z-index: 200;
+  animation: hyper-flash 0.5s ease forwards;
+}
+@keyframes hyper-flash {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Sparkles */
+.sparkle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 150;
+  font-size: 1.2rem;
+  animation: sparkle-fly 1s ease forwards;
+}
+@keyframes sparkle-fly {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0.3); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="hyperspace" id="hyperspace"></div>
+
+<!-- CRAWL INTRO -->
+<div id="crawl-screen">
+  <div class="crawl-perspective">
+    <div class="crawl-text">
+      <div class="crawl-title">ACADEMIA JEDI<br>DE LENGUA</div>
+      <div class="crawl-body">
+        Una galaxia muy, muy lejana tiene un problema GRAVÍSIMO:<br><br>
+        El Imperio del Lado Oscuro ha prohibido las tildes, confundido los sinónimos, y el Señor Vader usa las comas fatal.<br><br>
+        Solo un joven Padawan con dominio total de la Lengua Castellana puede salvar la galaxia...<br><br>
+        ¡Ese Padawan eres TÚ, André!<br><br>
+        Que la Ortografía te acompañe. 🌟
+      </div>
+    </div>
+  </div>
+  <button class="crawl-skip" onclick="skipCrawl()">SALTAR INTRO ▶</button>
+</div>
+
+<div class="container" id="main-container" style="display:none;">
+
+  <div class="header">
+    <div class="logo-sw">ACADEMIA JEDI<br>DE LENGUA</div>
+    <div class="logo-sub">Orden Gramatical de la República</div>
+    <div class="padawan-tag">⚔️ PADAWAN ANDRÉ — NIVEL 5 PRIMARIA</div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+    <span class="start-droid">🤖</span>
+    <p class="start-intro">
+      <strong>Saludos, Padawan André.</strong> Soy C-3PO, experto en más de <span class="gold">6 millones de formas de comunicación</span>... y todas con buena ortografía.<br><br>
+      El Señor Vader acaba de mandar un email SIN tildes al Senado Galáctico. El caos es total. Solo superando estas misiones de Lengua podrás restaurar el orden.<br><br>
+      <strong>R2-D2 te recuerda:</strong> tienes 3 vidas. ¡No las desperdicies!
+    </p>
+    <div class="topic-grid">
+      <div class="topic-item"><strong>✍️ ORTOGRAFÍA</strong>tildes, reglas, mayúsculas</div>
+      <div class="topic-item"><strong>📖 VOCABULARIO</strong>sinónimos, antónimos</div>
+      <div class="topic-item"><strong>🔤 GRAMÁTICA</strong>tipos de palabras</div>
+      <div class="topic-item"><strong>📝 TEXTO</strong>tipos y estructura</div>
+      <div class="topic-item"><strong>🗣️ COMUNICACIÓN</strong>signos de puntuación</div>
+      <div class="topic-item"><strong>🌟 SEMÁNTICA</strong>polisemia, campo léxico</div>
+    </div>
+    <button class="btn-engage" onclick="startGame()">⚡ INICIAR MISIÓN JEDI</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" style="display:none;">
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-lbl">MISIÓN</span>
+        <span class="stat-val mission" id="q-count">1/10</span>
+      </div>
+      <div class="stat">
+        <span class="stat-lbl">VIDAS</span>
+        <span class="stat-val lives" id="lives-display">⚔️⚔️⚔️</span>
+      </div>
+      <div class="stat">
+        <span class="stat-lbl">MIDI-CHLORIANS</span>
+        <span class="stat-val score" id="score-val">0</span>
+      </div>
+    </div>
+
+    <div class="force-bar-wrap">
+      <div class="force-label">PODER DE LA FUERZA <span id="force-pct">0%</span></div>
+      <div class="force-track"><div class="force-fill" id="force-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="cat-tag" id="cat-tag">✍️ ORTOGRAFÍA</div>
+
+    <div class="q-card">
+      <div class="q-who">
+        <div class="q-avatar" id="q-avatar">🧙</div>
+        <div>
+          <div class="q-speaker" id="q-speaker">MAESTRO YODA</div>
+          <div class="q-role" id="q-role">Maestro Jedi · Especialista en Gramática</div>
+        </div>
+      </div>
+      <div class="q-setup" id="q-setup">Contexto de la misión...</div>
+      <div class="q-text" id="q-text">Pregunta aquí</div>
+    </div>
+
+    <div class="hint-panel" id="hint-panel">🌿 <span id="hint-txt"></span></div>
+
+    <div class="answers" id="ans-grid"></div>
+
+    <div class="sith-feedback" id="feedback"></div>
+    <div class="explain" id="explain"></div>
+
+    <div class="saber-line"></div>
+
+    <div class="btn-row">
+      <button class="btn-force" id="btn-force" onclick="useForce()">🌿 USAR LA FUERZA</button>
+      <button class="btn-hyperspace on" id="btn-hyper" onclick="nextQ()" style="display:none;">SALTO HIPERESPACIO →</button>
+    </div>
+  </div>
+
+  <!-- END SCREEN -->
+  <div class="end-screen" id="end-screen">
+    <div class="end-big" id="end-title">¡MISIÓN CUMPLIDA!</div>
+    <div class="end-msg" id="end-msg"></div>
+    <div class="end-pts" id="end-pts"></div>
+    <button class="btn-again" onclick="restartGame()">🔄 NUEVA MISIÓN</button>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// QUESTION BANK — Lengua Castellana 5º Primaria + Star Wars
+// ═══════════════════════════════════════════════════════════
+const BANK = [
+
+  // ─── ORTOGRAFÍA ───────────────────────────────────────────
+  {
+    cat: "✍️ ORTOGRAFÍA — TILDES",
+    avatar: "🤖", speaker: "C-3PO", role: "Protocolo y Gramática Galáctica",
+    setup: "C-3PO recibe un mensaje urgente de Vader: «Quiero el informe YA». Vader olvidó una cosa muy importante...",
+    q: "¿Cuál de estas palabras lleva tilde?",
+    opts: ["arbol","puente","cactus","camion"],
+    correct: 3,
+    hint: "Las palabras llanas que NO terminan en n, s o vocal llevan tilde. Las agudas que SÍ terminan en n, s o vocal también llevan tilde.",
+    explain: "<strong>Camión</strong> lleva tilde porque es una palabra <em>aguda</em> (la sílaba fuerte es la última: ca-MIÓN) y termina en N. Regla: las palabras agudas llevan tilde cuando terminan en vocal, N o S. ¡Árbol también lleva tilde pero no estaba en las opciones!"
+  },
+  {
+    cat: "✍️ ORTOGRAFÍA — TILDES",
+    avatar: "👴", speaker: "MAESTRO YODA", role: "900 años de tildes y aún las usa bien",
+    setup: "Yoda escribe su autobiografía: 'Jedi, yo soy. Tildes, yo uso.' Pero su ayudante confunde estas palabras...",
+    q: "¿Cuál de estas palabras lleva tilde diacrítica?",
+    opts: ["el (artículo)","mas (conjunción)","tu (posesivo)","si (condicional)"],
+    correct: 1,
+    hint: "La tilde diacrítica sirve para distinguir dos palabras que se escriben igual pero significan cosas distintas.",
+    explain: "<strong>Más</strong> (con tilde) es adverbio de cantidad: '¡Quiero más Eggos!'. Sin tilde, <em>mas</em> es una conjunción antigua que significa 'pero'. También: <strong>él</strong> (pronombre) vs <em>el</em> (artículo), <strong>tú</strong> (pronombre) vs <em>tu</em> (posesivo)."
+  },
+  {
+    cat: "✍️ ORTOGRAFÍA — B y V",
+    avatar: "🌑", speaker: "DARTH VADER", role: "Lord del Lado Oscuro y Pésimo Ortógrafo",
+    setup: "Vader le manda un mensaje a Luke: 'Luuuke... soy tu padre. Bengo a buscarte.' Luke responde: 'Papá, VENGO se escribe con V.' Vader: 'Eso es imposible.'",
+    q: "¿Cuál de estas palabras se escribe con V?",
+    opts: ["abeja","barco","vaca","bueno"],
+    correct: 2,
+    hint: "Los animales y sus derivados suelen escribirse con V: vaca, vivir, venado... Recuerda: BV no existe en español.",
+    explain: "<strong>Vaca</strong> se escribe con V. Una regla útil: las palabras que empiezan por <em>vice-, villa-, vida-</em> se escriben con V. Vader debería hacer un curso de ortografía en la Academia Imperial... o en la Academia Jedi."
+  },
+  {
+    cat: "✍️ ORTOGRAFÍA — G y J",
+    avatar: "👸", speaker: "PRINCESA LEIA", role: "Senadora y Campeona de las Reglas G/J",
+    setup: "La Princesa Leia redacta una ley galáctica: 'Todo ciudadano deberá usar correctamente las letras G y J, so pena de... escuchar a Jar Jar Binks cantar.'",
+    q: "¿Cuál de estas palabras se escribe con G?",
+    opts: ["jirafa","jengibre","gente","jefe"],
+    correct: 2,
+    hint: "La G suena suave antes de A, O, U. Antes de E e I suena fuerte (como en 'gente'). La J siempre suena fuerte.",
+    explain: "<strong>Gente</strong> se escribe con G. Las palabras con el prefijo <em>geo-</em> (geografía), o que terminan en <em>-ger, -gir</em> (coger, dirigir) van con G. 'Jirafa' y 'jefe' van con J. ¡Leia aprueba tu respuesta!"
+  },
+  {
+    cat: "✍️ MAYÚSCULAS",
+    avatar: "🤖", speaker: "R2-D2", role: "Bip boop — Experto en Mayúsculas",
+    setup: "R2-D2 traduce un texto del Lado Oscuro y hay un ERROR gravísimo de mayúsculas. Pita 47 veces de la indignación.",
+    q: "¿En cuál de estas frases se usan MAL las mayúsculas?",
+    opts: [
+      "Ayer fui a Madrid.",
+      "Hola, ¿cómo estás?",
+      "mi Perro se llama rex.",
+      "El río Ebro es largo."
+    ],
+    correct: 2,
+    hint: "Los nombres propios (personas, ciudades, nombres de animales) van con mayúscula. Los sustantivos comunes y adjetivos, NO.",
+    explain: "La frase incorrecta es <strong>'mi Perro se llama rex'</strong>: 'perro' es un sustantivo común → minúscula. 'Rex' es el nombre propio del perro → mayúscula. Lo correcto sería: <em>'Mi perro se llama Rex'</em>. ¡R2-D2 ya puede dejar de pitar!"
+  },
+
+  // ─── VOCABULARIO ──────────────────────────────────────────
+  {
+    cat: "📖 VOCABULARIO — SINÓNIMOS",
+    avatar: "🦾", speaker: "HAN SOLO", role: "Contrabandista y Buscador de Palabras",
+    setup: "Han Solo intenta impresionar a Leia con su vocabulario. Dice: 'Soy un piloto... um... ¿cómo se dice? ¡AUDAZ!' Leia: '¿Querrás decir temerario?' Han: '¡Eso, eso!'",
+    q: "¿Cuál es el sinónimo de AUDAZ?",
+    opts: ["cobarde","valiente","cansado","aburrido"],
+    correct: 1,
+    hint: "Los sinónimos son palabras que significan lo mismo o casi lo mismo. Audaz = que no tiene miedo.",
+    explain: "<strong>Valiente</strong> es sinónimo de audaz. Otros sinónimos: intrépido, valeroso, atrevido. Han Solo es todo eso... y también un poco bocazas, pero eso no tiene sinónimo tan bonito."
+  },
+  {
+    cat: "📖 VOCABULARIO — ANTÓNIMOS",
+    avatar: "🌑", speaker: "DARTH VADER", role: "Maestro de los Opuestos (Lado Oscuro = antónimo de Lado Claro)",
+    setup: "Vader le explica a su terapeuta: 'Yo soy el antónimo de mi hijo Luke. Él es bueno, yo soy... bueno, ya sabe.' La terapeuta: '¿Malo?' Vader: '¡Exactamente!'",
+    q: "¿Cuál es el antónimo de GENEROSO?",
+    opts: ["simpático","tacaño","inteligente","tranquilo"],
+    correct: 1,
+    hint: "Los antónimos son palabras con significado contrario. Generoso = que da mucho. Su contrario sería...",
+    explain: "<strong>Tacaño</strong> es el antónimo de generoso. Generoso = que comparte y da. Tacaño = que no quiere dar nada. El Imperio es bastante tacaño con los planetas que destruye, la verdad."
+  },
+  {
+    cat: "📖 VOCABULARIO — POLISEMIA",
+    avatar: "👸", speaker: "PRINCESA LEIA", role: "Lingüista Galáctica y Experta en Polisemia",
+    setup: "Leia le explica a los Ewoks: 'En español, una misma palabra puede tener varios significados. ¡Como yo, que soy princesa, senadora Y líder rebelde!' Ewok: '¡Yub nub!'",
+    q: "La palabra BANCO puede significar... ¿cuántas cosas distintas?",
+    opts: [
+      "Solo una: donde se guarda dinero",
+      "Dos: mueble para sentarse y entidad financiera",
+      "Tres: mueble, entidad financiera y banco de peces",
+      "Ninguna, banco es un nombre propio"
+    ],
+    correct: 2,
+    hint: "La polisemia es cuando una misma palabra tiene varios significados. ¿Cuántos usos conoces de 'banco'?",
+    explain: "<strong>Banco</strong> tiene varios significados: 1) mueble donde sentarse (el banco del parque), 2) entidad financiera (el banco me da dinero), 3) banco de peces (un banco de atunes en el océano). Eso es <em>polisemia</em>. ¡Una palabra, varios poderes! Casi como la Fuerza."
+  },
+  {
+    cat: "📖 VOCABULARIO — CAMPO LÉXICO",
+    avatar: "🤖", speaker: "C-3PO", role: "6 millones de idiomas, 1 campo léxico",
+    setup: "C-3PO organiza las palabras de la galaxia por categorías. 'Esto es FUNDAMENTAL para el orden galáctico', dice. R2-D2 le pita que está exagerando. C-3PO: 'Oh, cállate, R2.'",
+    q: "¿Cuál de estas palabras NO pertenece al campo léxico de 'escuela'?",
+    opts: ["profesor","pizarra","galaxia","recreo"],
+    correct: 2,
+    hint: "El campo léxico agrupa palabras relacionadas con un mismo tema. ¿Qué tiene que ver una galaxia con la escuela?",
+    explain: "<strong>Galaxia</strong> no pertenece al campo léxico de 'escuela'. Las demás (profesor, pizarra, recreo) sí son palabras del mundo escolar. A menos que estés en la Academia Jedi, claro, donde sí estudian galaxias. ¡Pero eso es otro campo léxico!"
+  },
+
+  // ─── GRAMÁTICA ────────────────────────────────────────────
+  {
+    cat: "🔤 GRAMÁTICA — TIPOS DE PALABRAS",
+    avatar: "👴", speaker: "MAESTRO YODA", role: "Yo el sustantivo soy. Tú el verbo serás.",
+    setup: "Yoda enseña gramática: 'Sustantivos, los nombres de las cosas son. Verbos, las acciones son. Adjetivos... ah, qué calificativos tan hermosos.' Un Padawan levanta la mano: '¿Y los artículos?' Yoda: 'Olvidados, los había.'",
+    q: "En la frase 'El veloz halcón vuela', ¿cuántas clases de palabras distintas hay?",
+    opts: ["2 (sustantivo y verbo)","3 (artículo, adjetivo, sustantivo)","4 (artículo, adjetivo, sustantivo, verbo)","1 (solo sustantivos)"],
+    correct: 2,
+    hint: "Analiza cada palabra: El = ?, veloz = ?, halcón = ?, vuela = ?",
+    explain: "Hay <strong>4 clases</strong>: <em>El</em> (artículo) + <em>veloz</em> (adjetivo calificativo) + <em>halcón</em> (sustantivo) + <em>vuela</em> (verbo). ¡El Halcón Milenario también es un sustantivo con adjetivo, pero ese ya pertenece a Han Solo!"
+  },
+  {
+    cat: "🔤 GRAMÁTICA — VERBOS",
+    avatar: "🦾", speaker: "HAN SOLO", role: "¡Yo primero disparo, luego conjugo!",
+    setup: "Han Solo suspendió Lengua en el colegio tres veces. 'Los verbos son mis enemigos', admite. Chewbacca gruñe compasivamente. 'Sí, ya sé Chewie. Pero yo mejor disparo que conjugo.'",
+    q: "¿En qué tiempo verbal está el verbo en: 'Mañana viajaré a Coruscant'?",
+    opts: ["Presente","Pasado (pretérito)","Futuro","Imperativo"],
+    correct: 2,
+    hint: "La palabra 'mañana' nos da una pista sobre el tiempo. ¿Cuándo ocurre la acción?",
+    explain: "<strong>Futuro</strong>. 'Viajaré' es futuro imperfecto de indicativo. Se refiere a algo que pasará después del momento en que hablo. La terminación <em>-aré</em> es característica del futuro en los verbos de la 1ª conjugación (-ar). Han Solo debería haber prestado más atención en clase."
+  },
+  {
+    cat: "🔤 GRAMÁTICA — SUJETO Y PREDICADO",
+    avatar: "🌑", speaker: "DARTH VADER", role: "El sujeto tácito de esta oración",
+    setup: "Vader le pide a su secretaria que analice una oración gramaticalmente. La secretaria tiembla. 'No me falles', dice Vader. La secretaria desmaya. 'Eso complica el análisis', dice Vader.",
+    q: "En 'Los rebeldes atacaron la nave Imperial', ¿cuál es el sujeto?",
+    opts: ["atacaron","la nave Imperial","Los rebeldes","Imperial"],
+    correct: 2,
+    hint: "El sujeto es quien realiza la acción del verbo. Pregúntate: ¿quién atacó?",
+    explain: "<strong>Los rebeldes</strong> es el sujeto. Son ellos quienes realizan la acción de 'atacar'. 'La nave Imperial' es el complemento directo (objeto directo). El verbo es 'atacaron'. ¡El Análisis Sintáctico, grande es!"
+  },
+  {
+    cat: "🔤 GRAMÁTICA — DETERMINANTES",
+    avatar: "👸", speaker: "PRINCESA LEIA", role: "Defensora de los Artículos Determinados",
+    setup: "Leia declara en el Senado: 'Es inaceptable confundir UN artículo determinado con UN artículo indeterminado.' Jar Jar Binks levanta la mano: 'Mesa no entender.' Leia suspira.",
+    q: "¿Cuál de estas palabras es un artículo INDETERMINADO?",
+    opts: ["el","la","una","los"],
+    correct: 2,
+    hint: "Los artículos determinados señalan algo concreto ya conocido (el, la, los, las). Los indeterminados hablan de algo no específico (un, una, unos, unas).",
+    explain: "<strong>Una</strong> es artículo indeterminado. Decir 'quiero UNA nave' significa que no sé cuál nave exactamente. Decir 'quiero LA nave' indica una nave concreta ya conocida. Jar Jar tardó 3 horas en entender esto. ¡Tú lo has pillado en segundos!"
+  },
+
+  // ─── PUNTUACIÓN ───────────────────────────────────────────
+  {
+    cat: "🗣️ PUNTUACIÓN — COMAS",
+    avatar: "🤖", speaker: "C-3PO", role: "Defensor de las Comas desde 1977",
+    setup: "C-3PO recibe este mensaje: 'Vamos a comer niños'. Se queda paralizado de horror. 'Señor Solo, ¡esto es un escándalo gramatical! ¡Falta una coma!' Han: '¿Qué más da?' C-3PO: '¡Todo!'",
+    q: "¿Cuál es la versión CORRECTA del mensaje?",
+    opts: [
+      "Vamos, a comer niños.",
+      "Vamos a comer, niños.",
+      "Vamos a, comer niños.",
+      "Vamos a comer niños."
+    ],
+    correct: 1,
+    hint: "La coma separa el vocativo (cuando llamamos a alguien por su nombre o apelativo) del resto de la frase.",
+    explain: "<strong>'Vamos a comer, niños.'</strong> La coma antes de 'niños' indica que nos estamos dirigiendo a ellos (vocativo). Sin coma, 'niños' sería el complemento directo de comer, lo cual sería... perturbador. ¡Las comas salvan vidas en la galaxia!"
+  },
+  {
+    cat: "🗣️ PUNTUACIÓN — SIGNOS DE INTERROGACIÓN",
+    avatar: "👴", speaker: "MAESTRO YODA", role: "¿Preguntar mucho, sabio te hace?",
+    setup: "Yoda recibe un email de un Padawan que escribe: 'Maestro Yoda que si puedo faltar a la clase de hoy'. Yoda fruce el ceño 900 años de edad tienen y nunca habían visto algo tan horrible.",
+    q: "¿Cuál es la versión correctamente puntuada?",
+    opts: [
+      "¿Maestro Yoda, puedo faltar a clase hoy?",
+      "Maestro Yoda, puedo faltar a clase hoy?",
+      "¿Maestro Yoda puedo faltar a clase hoy.",
+      "Maestro Yoda: puedo faltar a clase hoy."
+    ],
+    correct: 0,
+    hint: "En español, las preguntas necesitan signos de interrogación AL PRINCIPIO (¿) y AL FINAL (?).",
+    explain: "<strong>'¿Maestro Yoda, puedo faltar a clase hoy?'</strong> En español usamos ¡¡doble signo!! al inicio y al final. Es única en el mundo. La coma separa el vocativo 'Maestro Yoda' del resto. Yoda respondió: 'Faltar, no puedes. La Fuerza, estudiar debe.'"
+  },
+
+  // ─── TIPOS DE TEXTO ───────────────────────────────────────
+  {
+    cat: "📝 TIPOS DE TEXTO",
+    avatar: "🦾", speaker: "HAN SOLO", role: "Lector ocasional de instrucciones (solo las de naves)",
+    setup: "Han Solo necesita reparar el Halcón Milenario pero no entiende el manual. 'Este texto me explica cómo hacer algo paso a paso', dice. Chewbacca gruñe. 'Sí, ya sé que soy el mejor piloto, pero necesito el manual, Chewie.'",
+    q: "Un texto que explica cómo hacer algo, paso a paso, se llama...",
+    opts: ["Texto narrativo","Texto descriptivo","Texto instructivo","Texto argumentativo"],
+    correct: 2,
+    hint: "Piensa en las instrucciones de un juego, una receta de cocina o un manual. ¿Cómo se llama ese tipo de texto?",
+    explain: "Se llama <strong>texto instructivo</strong>. Sirve para dar instrucciones o explicar procedimientos: recetas, manuales, reglas de juego... El manual del Halcón Milenario tiene 4.000 páginas. Han Solo leyó la página 1 y se rindió."
+  },
+  {
+    cat: "📝 TIPOS DE TEXTO — NARRACIÓN",
+    avatar: "👴", speaker: "MAESTRO YODA", role: "Narrador de historias desde el año 800 BBY",
+    setup: "Yoda cuenta la historia de Star Wars a unos Younglings. 'Hace mucho tiempo, en una galaxia muy lejana... comenzó todo.' Un Youngling levanta la mano: '¿Eso es un texto narrativo?' Yoda: 'Muy observador eres, joven Padawan.'",
+    q: "¿Cuál de estos elementos es CARACTERÍSTICO de un texto narrativo?",
+    opts: [
+      "Dar instrucciones claras paso a paso",
+      "Tener personajes, narrador y una historia con inicio, nudo y desenlace",
+      "Convencer al lector de una opinión",
+      "Describir cómo es un lugar o persona"
+    ],
+    correct: 1,
+    hint: "Narra = contar una historia. ¿Qué necesita una historia para existir?",
+    explain: "El texto narrativo tiene <strong>personajes, un narrador y una estructura</strong>: planteamiento (presentación), nudo (problema) y desenlace (solución). Star Wars es una narración épica... con tilde en 'épica, porque lleva acento prosódico en la é."
+  },
+];
+
+// ═══════════════════════════════════════════════════════════
+// GAME ENGINE
+// ═══════════════════════════════════════════════════════════
+let questions = [], idx = 0, lives = 3, score = 0, hinted = false, answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function selectQuestions() {
+  return shuffle(BANK).slice(0, 10);
+}
+
+function skipCrawl() {
+  document.getElementById('crawl-screen').style.display = 'none';
+  document.getElementById('main-container').style.display = 'block';
+}
+
+setTimeout(() => skipCrawl(), 9000);
+
+function startGame() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  questions = selectQuestions();
+  idx = 0; lives = 3; score = 0;
+  renderQ();
+}
+
+function renderQ() {
+  const q = questions[idx];
+  hinted = false; answered = false;
+
+  document.getElementById('q-count').textContent = `${idx+1}/10`;
+  document.getElementById('lives-display').textContent = '⚔️'.repeat(lives) + '💀'.repeat(3-lives);
+  document.getElementById('score-val').textContent = score;
+  const pct = Math.round((idx/10)*100);
+  document.getElementById('force-fill').style.width = pct+'%';
+  document.getElementById('force-pct').textContent = pct+'%';
+
+  document.getElementById('cat-tag').textContent = q.cat;
+  document.getElementById('q-avatar').textContent = q.avatar;
+  document.getElementById('q-speaker').textContent = q.speaker;
+  document.getElementById('q-role').textContent = q.role;
+  document.getElementById('q-setup').textContent = q.setup;
+  document.getElementById('q-text').textContent = q.q;
+
+  document.getElementById('hint-panel').classList.remove('on');
+  document.getElementById('hint-txt').textContent = q.hint;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'sith-feedback';
+  document.getElementById('explain').classList.remove('on');
+  document.getElementById('btn-force').disabled = false;
+  document.getElementById('btn-hyper').style.display = 'none';
+
+  // Render answers — shuffle keeping track of correct
+  const grid = document.getElementById('ans-grid');
+  grid.innerHTML = '';
+  const indexed = q.opts.map((t, i) => ({t, i}));
+  shuffle(indexed).forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.textContent = opt.t;
+    btn.onclick = () => handleAns(opt.i === q.correct, btn, q);
+    grid.appendChild(btn);
+  });
+}
+
+function handleAns(correct, btn, q) {
+  if (answered) return;
+  answered = true;
+  document.querySelectorAll('.ans-btn').forEach(b => b.disabled = true);
+  document.getElementById('btn-force').disabled = true;
+
+  const fb = document.getElementById('feedback');
+  const ex = document.getElementById('explain');
+
+  if (correct) {
+    btn.classList.add('correct');
+    const pts = hinted ? 5 : 10;
+    score += pts;
+    document.getElementById('score-val').textContent = score;
+    const msgs = ["¡QUE LA FUERZA TE ACOMPAÑE!","¡MAESTRO YODA SONRÍE!","¡C-3PO ESTÁ EMOCIONADO!","¡HASTA VADER ASIENTE!","¡PADAWAN EXCELENTE!","¡LA REPÚBLICA TE LO AGRADECE!"];
+    fb.textContent = msgs[Math.floor(Math.random()*msgs.length)];
+    fb.className = 'sith-feedback jedi';
+    spawnStars(btn);
+  } else {
+    btn.classList.add('wrong');
+    lives--;
+    document.getElementById('lives-display').textContent = '⚔️'.repeat(lives) + '💀'.repeat(3-lives);
+    const msgs = ["VADER: «DECEPCIONANTE»","EL LADO OSCURO AVANZA...","YODA: «Estudiar más, debes»","R2-D2 PITA TRISTEMENTE","HAN: «TENGO MAL PRESENTIMIENTO»"];
+    fb.textContent = msgs[Math.floor(Math.random()*msgs.length)];
+    fb.className = 'sith-feedback sith';
+  }
+
+  ex.innerHTML = q.explain;
+  ex.classList.add('on');
+
+  const btnHyper = document.getElementById('btn-hyper');
+  btnHyper.style.display = 'block';
+  if (lives === 0 || idx >= 9) btnHyper.textContent = 'VER RESULTADO FINAL →';
+  else btnHyper.textContent = 'SALTO HIPERESPACIO →';
+}
+
+function useForce() {
+  hinted = true;
+  document.getElementById('hint-panel').classList.add('on');
+  document.getElementById('btn-force').disabled = true;
+}
+
+function nextQ() {
+  if (lives === 0 || idx >= 9) { showEnd(); return; }
+  idx++;
+  flashHyperspace();
+  setTimeout(renderQ, 600);
+}
+
+function flashHyperspace() {
+  const h = document.getElementById('hyperspace');
+  h.style.display = 'block';
+  setTimeout(() => { h.style.display = 'none'; }, 500);
+}
+
+function showEnd() {
+  document.getElementById('game-screen').style.display = 'none';
+  const end = document.getElementById('end-screen');
+  end.classList.add('on');
+  const title = document.getElementById('end-title');
+  const msg = document.getElementById('end-msg');
+
+  if (lives > 0) {
+    title.textContent = '¡JEDI MAESTRO!';
+    title.className = 'end-big jedi';
+    msg.innerHTML = `¡Impresionante, Padawan André! Has completado las 10 misiones y el Consejo Jedi te otorga el rango de <strong>Maestro Jedi de Lengua Castellana</strong>. Yoda llora de emoción (bueno, intenta llorar, pero tiene 900 años y los lagrimales no le funcionan bien). Vader ha pedido clases particulares contigo.`;
+  } else {
+    title.textContent = 'EL LADO OSCURO...';
+    title.className = 'end-big sith';
+    msg.innerHTML = `El Imperio ha ganado esta batalla, pero no la guerra, André. Cada error es una lección. Yoda dice: <em>'Tropezar no es fracasar. Levantarse, la victoria es.'</em> ¡Vuelve a intentarlo, la galaxia te necesita!`;
+  }
+  document.getElementById('end-pts').textContent = `⭐ ${score} MIDI-CHLORIANS ⭐`;
+}
+
+function restartGame() {
+  document.getElementById('end-screen').classList.remove('on');
+  document.getElementById('start-screen').style.display = 'block';
+}
+
+function spawnStars(btn) {
+  const rect = btn.getBoundingClientRect();
+  const emojis = ['⭐','✨','💫','🌟','⚡'];
+  for (let i = 0; i < 6; i++) {
+    const el = document.createElement('div');
+    el.className = 'sparkle';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left = rect.left + rect.width/2 + 'px';
+    el.style.top = rect.top + rect.height/2 + 'px';
+    const tx = (Math.random()-0.5)*120;
+    const ty = (Math.random()-0.8)*100;
+    el.style.setProperty('--tx', tx+'px');
+    el.style.setProperty('--ty', ty+'px');
+    el.style.animationDelay = Math.random()*0.2+'s';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
+  }
+}
+</script>
+</body>
+</html>

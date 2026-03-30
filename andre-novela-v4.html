@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>El Mundo del Revés se Come los Deberes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Special+Elite&family=Nunito:wght@400;700;900&display=swap');
+
+:root {
+  /* ── LIGHT THEME — máxima legibilidad ── */
+  --bg:        #ffffff;
+  --bg-warm:   #fafaf8;
+  --panel:     #f4f4f1;
+  --panel2:    #eeecea;
+  --border:    #d4d0c8;
+  --border2:   #c0bbb0;
+
+  --red:       #c0392b;
+  --red-soft:  #e74c3c;
+  --red-bg:    #fdf0ee;
+  --teal:      #0d7377;
+  --teal-bg:   #e8f5f5;
+  --yellow:    #d4a017;
+  --yellow-bg: #fef9e7;
+  --purple:    #6c3483;
+  --purple-bg: #f5eef8;
+  --green:     #1a7a4a;
+  --green-bg:  #eafaf1;
+
+  --text:      #1a1a1a;
+  --text-mid:  #3d3d3d;
+  --text-dim:  #666666;
+  --white:     #ffffff;
+
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md: 0 3px 12px rgba(0,0,0,0.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LIGHTS STRIP (decorative top) ── */
+.lights {
+  position: fixed; top: 0; left: 0; right: 0; height: 6px; z-index: 999;
+  background: repeating-linear-gradient(90deg,
+    transparent 0, transparent 22px,
+    #c0392b 22px, #c0392b 30px,
+    transparent 30px, transparent 52px,
+    #0d7377 52px, #0d7377 60px,
+    transparent 60px, transparent 82px,
+    #d4a017 82px, #d4a017 90px,
+    transparent 90px, transparent 112px,
+    #6c3483 112px, #6c3483 120px
+  );
+  animation: lflicker 7s infinite; opacity: 0.7;
+}
+@keyframes lflicker {
+  0%,100%{opacity:.7} 15%{opacity:.15} 16%{opacity:.7} 52%{opacity:.4} 53%{opacity:.7} 80%{opacity:.2} 81%{opacity:.7}
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar {
+  position: fixed; top: 6px; left: 0; right: 0; height: 3px; z-index: 998;
+  background: transparent;
+}
+.progress-fill {
+  height: 100%; background: var(--red); transition: width .4s ease; opacity: .6;
+}
+
+/* ── SCORE BADGE ── */
+.score-badge {
+  position: fixed; top: 16px; right: 14px; z-index: 990;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 5px 14px;
+  font-family: 'Nunito', sans-serif; font-size: .78rem; font-weight: 900;
+  color: var(--red); display: flex; align-items: center; gap: 5px;
+  opacity: 0; transition: opacity .3s;
+  box-shadow: var(--shadow-md);
+}
+.score-badge.on { opacity: 1; }
+
+/* ── WRAPPER ── */
+.wrap {
+  max-width: 680px; margin: 0 auto;
+  padding: 0 0 70px; position: relative; z-index: 1;
+}
+
+/* ══════════════════════════════════
+   PORTADA
+══════════════════════════════════ */
+#cover {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 48px 24px 40px; text-align: center;
+  background: var(--bg-warm);
+}
+
+.cover-eyebrow {
+  font-family: 'Nunito', sans-serif; font-size: .68rem; font-weight: 900;
+  letter-spacing: 5px; text-transform: uppercase; color: var(--teal);
+  margin-bottom: 22px;
+}
+
+.cover-icon { font-size: 4rem; margin-bottom: 22px; display: block; animation: floatbob 3.5s ease-in-out infinite; }
+@keyframes floatbob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+
+.cover-title {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(1.9rem, 7vw, 3.2rem);
+  line-height: 1.1; color: var(--red);
+  margin-bottom: 8px;
+}
+
+.cover-subtitle {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(1rem, 3.2vw, 1.4rem);
+  color: var(--text-mid); margin-bottom: 30px;
+  font-style: italic;
+}
+
+.cover-divider {
+  width: 50px; height: 2px; background: var(--red);
+  margin: 0 auto 28px; opacity: .4;
+}
+
+.cover-blurb {
+  max-width: 460px; font-size: 1.02rem; line-height: 1.85;
+  color: var(--text-mid); margin-bottom: 30px;
+}
+.cover-blurb strong { color: var(--text); }
+
+.cover-meta {
+  font-family: 'Nunito', sans-serif; font-size: .78rem;
+  color: var(--text-dim); margin-bottom: 36px; line-height: 2;
+  background: var(--panel); border-radius: 12px; padding: 14px 20px;
+  border: 1px solid var(--border);
+}
+.cover-meta .hi { color: var(--teal); font-weight: 700; }
+
+.btn-begin {
+  font-family: 'Nunito', sans-serif; font-weight: 900;
+  font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;
+  color: #fff; background: var(--red);
+  border: none; border-radius: 12px; padding: 17px 48px; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(192,57,43,.3); transition: all .2s;
+}
+.btn-begin:hover { background: var(--red-soft); transform: translateY(-2px); box-shadow: 0 7px 22px rgba(192,57,43,.35); }
+.btn-begin:active { transform: translateY(0); }
+
+/* ══════════════════════════════════
+   CHAPTER HEADER
+══════════════════════════════════ */
+.chapter-header {
+  padding: 48px 24px 4px; text-align: center; background: var(--bg-warm);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+
+.chapter-number {
+  font-family: 'Nunito', sans-serif; font-size: .65rem; font-weight: 900;
+  letter-spacing: 5px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px;
+}
+
+.chapter-title {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
+  color: var(--red); line-height: 1.2; margin-bottom: 20px;
+}
+
+/* ══════════════════════════════════
+   NOVEL TEXT
+══════════════════════════════════ */
+.novel-body {
+  padding: 28px 24px 12px;
+  background: var(--white);
+}
+
+.novel-body p {
+  font-size: clamp(1.08rem, 2.8vw, 1.2rem);
+  line-height: 2.0;
+  color: var(--text);
+  margin-bottom: 1.5em;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.novel-body p:first-of-type::first-letter {
+  font-family: 'Special Elite', cursive;
+  font-size: 3.4em; float: left; line-height: .75;
+  margin: 4px 10px 0 0; color: var(--red);
+}
+
+.novel-body .dialogue {
+  font-style: italic; color: var(--text);
+}
+.novel-body .dialogue::before { content: '—'; margin-right: 5px; color: var(--red); font-style: normal; }
+
+.novel-body .emphasis { color: var(--red); font-weight: 700; }
+
+.novel-body .scene-break {
+  text-align: center; color: var(--text-dim);
+  margin: 2em 0; font-size: 1.1rem; letter-spacing: 8px;
+}
+
+.character-note {
+  background: var(--panel); border: 1px solid var(--border);
+  border-left: 4px solid var(--red);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px; margin: 20px 0;
+  font-family: 'Nunito', sans-serif;
+  font-size: .9rem; line-height: 1.65; color: var(--text-mid);
+}
+.character-note strong { color: var(--red); font-size: .95rem; display: block; margin-bottom: 4px; }
+
+/* ══════════════════════════════════
+   CHALLENGE CARD
+══════════════════════════════════ */
+.challenge {
+  margin: 28px 16px 8px;
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.challenge-top {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  background: var(--panel);
+}
+
+.ch-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--white); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+}
+
+.ch-meta { flex: 1; }
+.ch-label {
+  font-family: 'Nunito', sans-serif; font-size: .6rem; font-weight: 900;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--purple);
+  display: block; margin-bottom: 2px;
+}
+.ch-subject {
+  font-family: 'Nunito', sans-serif; font-size: .8rem;
+  color: var(--text-dim); font-weight: 700;
+}
+
+.challenge-body { padding: 20px 20px 16px; }
+
+.ch-situation {
+  font-style: italic; font-size: .92rem; line-height: 1.65;
+  color: var(--text-mid); margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--yellow-bg); border-radius: 8px;
+  border-left: 3px solid var(--yellow);
+  font-family: 'Lora', Georgia, serif;
+}
+
+.ch-question {
+  font-size: 1.1rem; font-weight: 700; line-height: 1.55;
+  color: var(--text); margin-bottom: 18px;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Attempt dots */
+.attempts-row {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 14px;
+}
+.adot {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--border); transition: all .3s;
+}
+.adot.used { background: var(--red); }
+.atxt {
+  font-family: 'Nunito', sans-serif; font-size: .68rem;
+  color: var(--text-dim); margin-left: 2px;
+}
+
+/* Options */
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 16px; }
+.opts.solo { grid-template-columns: 1fr; }
+
+.opt {
+  background: var(--white); border: 2px solid var(--border);
+  border-radius: 10px; padding: 13px 14px;
+  font-family: 'Nunito', sans-serif; font-size: .95rem; font-weight: 700;
+  color: var(--text); cursor: pointer; transition: all .16s;
+  text-align: left; line-height: 1.35;
+}
+.opt:hover:not(:disabled) {
+  border-color: var(--teal); background: var(--teal-bg); color: var(--teal);
+  transform: translateX(3px);
+}
+.opt.ok {
+  background: var(--green-bg); border-color: var(--green); color: var(--green);
+  animation: optpop .3s ease;
+}
+.opt.no {
+  background: var(--red-bg); border-color: var(--red); color: var(--red);
+  animation: optshake .35s ease;
+}
+.opt:disabled { cursor: default; }
+@keyframes optpop   { 0%{transform:scale(1)} 50%{transform:scale(1.04)} 100%{transform:scale(1)} }
+@keyframes optshake { 0%,100%{transform:translateX(0)} 30%{transform:translateX(-5px)} 70%{transform:translateX(5px)} }
+
+/* Open input */
+.open-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.open-input {
+  flex: 1; background: var(--white); border: 2px solid var(--border);
+  border-radius: 10px; padding: 13px 16px;
+  font-family: 'Nunito', sans-serif; font-size: 1.05rem; font-weight: 700;
+  color: var(--text); outline: none; transition: border-color .2s;
+}
+.open-input:focus { border-color: var(--teal); }
+.open-input.ok { border-color: var(--green); background: var(--green-bg); }
+.open-input.no { border-color: var(--red);   background: var(--red-bg); }
+
+.btn-check {
+  background: var(--teal); border: none; border-radius: 10px; padding: 13px 18px;
+  font-family: 'Nunito', sans-serif; font-size: .88rem; font-weight: 900;
+  color: #fff; cursor: pointer; transition: all .16s; white-space: nowrap;
+}
+.btn-check:hover { background: var(--teal); filter: brightness(1.1); transform: translateY(-1px); }
+.btn-check:disabled { opacity: .35; cursor: default; transform: none; }
+
+/* Feedback line */
+.ch-feedback {
+  font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 900;
+  min-height: 1.5rem; margin-bottom: 10px; text-align: center;
+}
+.ch-feedback.ok   { color: var(--green); }
+.ch-feedback.fail { color: var(--red); }
+
+/* Blanca box */
+.blanca-box {
+  background: var(--purple-bg); border: 1.5px solid #c39bd3;
+  border-radius: 12px; padding: 16px; display: none; margin-bottom: 6px;
+}
+.blanca-box.on { display: block; }
+
+.blanca-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.blanca-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: #d2b4de; border: 2px solid #c39bd3;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.blanca-name {
+  font-family: 'Nunito', sans-serif; font-size: .65rem; font-weight: 900;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--purple);
+  display: block;
+}
+.blanca-role { font-family: 'Nunito', sans-serif; font-size: .7rem; color: var(--text-dim); }
+
+.blanca-text {
+  font-family: 'Lora', serif; font-size: .92rem; line-height: 1.7; color: var(--text-mid);
+}
+.blanca-text strong { color: var(--purple); }
+.blanca-text em { color: var(--text); font-style: normal; font-weight: 700; }
+
+/* Continue btn */
+.btn-cont {
+  display: none; width: 100%;
+  background: var(--red); border: none; border-radius: 10px; padding: 14px;
+  font-family: 'Nunito', sans-serif; font-size: .92rem; font-weight: 900;
+  letter-spacing: 2px; text-transform: uppercase; color: #fff;
+  cursor: pointer; transition: all .2s; margin-top: 12px;
+  box-shadow: 0 3px 12px rgba(192,57,43,.25);
+}
+.btn-cont.on { display: block; }
+.btn-cont:hover { background: var(--red-soft); transform: translateY(-2px); }
+
+/* ══════════════════════════════════
+   SECTION CONTROL
+══════════════════════════════════ */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ══════════════════════════════════
+   CHAPTER NAV BUTTON
+══════════════════════════════════ */
+.chapter-nav {
+  padding: 20px 24px 0; text-align: center; background: var(--white);
+}
+
+/* ══════════════════════════════════
+   END SCREEN
+══════════════════════════════════ */
+#ending {
+  display: none; padding: 56px 24px 70px; text-align: center;
+  background: var(--bg-warm);
+}
+#ending.on { display: block; }
+
+.ending-title {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(1.8rem, 6vw, 2.8rem);
+  color: var(--green); line-height: 1.2; margin-bottom: 10px;
+}
+.ending-icon { font-size: 3.5rem; margin: 18px 0; display: block; }
+.ending-body {
+  max-width: 480px; margin: 0 auto 24px;
+  font-size: 1.05rem; line-height: 1.9; color: var(--text-mid);
+}
+.ending-body strong { color: var(--text); }
+.ending-score {
+  font-family: 'Special Elite', cursive; font-size: 2rem;
+  color: var(--red); margin-bottom: 24px;
+}
+.ending-summary {
+  font-family: 'Nunito', sans-serif; font-size: .82rem;
+  color: var(--text-dim); margin-bottom: 28px; line-height: 1.9;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px;
+}
+.ending-summary .hi { color: var(--teal); font-weight: 700; }
+
+.btn-restart {
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: .9rem;
+  letter-spacing: 2px; text-transform: uppercase; color: #fff;
+  background: var(--teal); border: none; border-radius: 12px;
+  padding: 15px 38px; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(13,115,119,.3); transition: all .2s;
+}
+.btn-restart:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+/* Burst particles */
+.burst-p {
+  position: fixed; pointer-events: none; z-index: 900;
+  font-size: 1.2rem; animation: bfly .9s ease forwards;
+}
+@keyframes bfly {
+  0%{transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) scale(.15);opacity:0}
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .opts { grid-template-columns: 1fr; }
+  .novel-body p { font-size: 1.08rem; }
+  .challenge { margin: 20px 10px 8px; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--panel); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="lights"></div>
+<div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+<div class="score-badge" id="score-badge">⭐ <span id="score-display">0</span> pts</div>
+
+<div class="wrap">
+
+<!-- ══════════════════════════════════════════════
+     PORTADA
+══════════════════════════════════════════════ -->
+<div id="cover" class="section active">
+  <div class="cover-eyebrow">Una novela-aventura interactiva</div>
+  <span class="cover-icon">🔦</span>
+  <div class="cover-title">EL MUNDO DEL REVÉS<br>SE COME LOS DEBERES</div>
+  <div class="cover-subtitle">(Y Alguien Tiene que Pararlo)</div>
+  <div class="cover-divider"></div>
+  <p class="cover-blurb">
+    El portal al Mundo del Revés se ha abierto justo debajo del
+    colegio <strong>Rosa Luxemburgo</strong>. Las tildes han desaparecido,
+    las fracciones se han vuelto locas y el inglés suena al revés.
+    Solo <strong>El Grupo</strong> —con un aliado inesperado llamado André—
+    puede salvar el año escolar antes de que el caos sea total.
+  </p>
+  <div class="cover-meta">
+    📖 Para leer en avión · Bergen → Amsterdam → Madrid<br>
+    ✏️ Desafíos de <span class="hi">Matemáticas · Lengua · Inglés</span><br>
+    🎓 Currículo 5º de Primaria · Comunidad de Madrid<br>
+    👻 Stranger Things (sin sustos de verdad, prometido)
+  </div>
+  <button class="btn-begin" onclick="goTo('prologue')">ABRIR EL LIBRO 📖</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PRÓLOGO
+══════════════════════════════════════════════ -->
+<div id="prologue" class="section">
+  <div class="chapter-header">
+    <div class="chapter-number">Prólogo</div>
+    <div class="chapter-title">Lo que Nadie Debería Encontrar en su Mochila</div>
+  </div>
+  <div class="novel-body">
+    <p>Todo empezó un martes. Un martes completamente normal, de esos que huelen a bocadillo de queso y a fotocopiadora. El sol entraba oblicuo por las ventanas del colegio <span class="emphasis">Rosa Luxemburgo</span> y los pájaros cantaban, probablemente cantaban, aunque nadie los escuchaba porque estaban todos demasiado ocupados quejándose de los deberes.</p>
+
+    <p>Fue Dustin Henderson quien lo encontró primero.</p>
+
+    <p class="dialogue">Chicos —dijo, con la voz de quien acaba de descubrir que el universo tiene un error tipográfico—. Mirad esto.</p>
+
+    <p>Tenía en la mano un cuaderno. Un cuaderno de matemáticas, concretamente. Las páginas estaban en blanco. No había ecuaciones, ni problemas, ni siquiera el nombre del alumno en la portada. Solo un mensaje escrito con letras que parpadeaban:</p>
+
+    <div class="character-note">
+      <strong>📝 Nota encontrada en el cuaderno:</strong>
+      «SI QUERÉIS RECUPERAR EL CONOCIMIENTO, TENDRÉIS QUE GANÁROSLO. EL MUNDO DEL REVÉS OS ESPERA. — EL MIND FLAYER (que ya tiene suficientes problemas sin necesitar los vuestros, pero bueno)»
+    </div>
+
+    <p>Mike Wheeler miró a Lucas Sinclair. Lucas miró a Will Byers. Will miró al techo durante unos tres segundos, que era su forma habitual de procesar las malas noticias. Eleven simplemente dijo:</p>
+
+    <p class="dialogue">Malo.</p>
+
+    <p>Y Eleven solía tener razón en estas cosas.</p>
+
+    <p>Lo que nadie sabía aún era que esa misma noche, mientras el grupo hacía planes en el sótano de los Wheeler, un chaval llamado <span class="emphasis">André</span> abría su mochila en un aeropuerto lejano y encontraba exactamente el mismo cuaderno en blanco. Con exactamente el mismo mensaje. Y una nota adicional, escrita a mano con letra de profesora, con doble subrayado y todo:</p>
+
+    <div class="character-note">
+      <strong>✏️ Nota adicional:</strong>
+      «André: sé que estás en el avión. Sé que creías que ibas a descansar. Lo siento mucho (más o menos). El Mundo del Revés ha robado el conocimiento de 5º de Primaria y tú eres parte del grupo que tiene que recuperarlo. No te preocupes: estaré por aquí. Aparezco cuando menos te lo esperas. — Blanca»
+    </div>
+
+    <p>André parpadeó. Miró por la ventanilla del avión. Luego miró el cuaderno. Luego volvió a mirar por la ventanilla.</p>
+
+    <p>Iba a ser un vuelo muy interesante.</p>
+  </div>
+  <div class="chapter-nav">
+    <button class="btn-begin" onclick="goTo('ch1')">Capítulo 1 →</button>
+  </div>
+  <div style="height:32px;"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CAPÍTULO 1
+══════════════════════════════════════════════ -->
+<div id="ch1" class="section">
+  <div class="chapter-header">
+    <div class="chapter-number">Capítulo Uno</div>
+    <div class="chapter-title">El Portal Bajo la Biblioteca (y Otros Problemas de un Lunes)</div>
+  </div>
+  <div class="novel-body">
+    <p>La biblioteca del Rosa Luxemburgo olía a polvo, a papel viejo y, desde aquella mañana, a algo que Dustin describió como «ozono mezclado con el aliento del Demogorgon». El grupo se reunió allí porque era el único sitio del colegio donde podías hablar en voz baja sin que nadie te mandara callar —paradójico, pero cierto.</p>
+
+    <p class="dialogue">El portal está exactamente aquí —dijo Lucas, señalando un punto entre las estanterías de Geografía y Ciencias Naturales—. He calculado las coordenadas. O lo que quedaba de ellas, porque mis apuntes de mates también han desaparecido.</p>
+
+    <p class="dialogue">Los míos también —confirmó Mike—. Y los de lengua. Y el diccionario entero, Lucas. ¿Cómo se lleva alguien un diccionario?</p>
+
+    <p class="dialogue">El Mundo del Revés no necesita llevárselo físicamente —explicó Dustin, con la paciencia de quien lleva años siendo el más listo de la sala—. Absorbe el conocimiento directamente. Como una esponja, pero maligna y con tentáculos.</p>
+
+    <p>Will había estado callado todo el rato. De repente dijo:</p>
+
+    <p class="dialogue">Noto el portal. Está ahí debajo. Y está creciendo.</p>
+
+    <p>Fue entonces cuando el walkie-talkie de Mike crepitó. Una voz nueva dijo:</p>
+
+    <p class="dialogue">Grupo. Soy André. Estoy en un avión. Os veo a través del cuaderno. No sé cómo funciona esto, pero hay una profe que dice que tenéis que empezar por las fracciones.</p>
+
+    <p>Dustin miró el walkie-talkie. Luego a los demás. Luego al walkie-talkie otra vez.</p>
+
+    <p class="dialogue">Genial —dijo—. Tenemos un aliado misterioso en un avión. Esto es exactamente como la vez con Suzie, pero más educativo.</p>
+
+    <p>Eleven encontró junto al portal una pequeña caja metálica. Dentro había una tarjeta con el primer desafío. Las letras brillaban con una luz roja y verde, como si el Mundo del Revés hubiera decidido poner un examen.</p>
+  </div>
+
+  <!-- ── DESAFÍO 1: FRACCIONES (Singapur) ── -->
+  <div class="challenge" id="c1">
+    <div class="challenge-top">
+      <div class="ch-icon">🧮</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 1 · Matemáticas</span>
+        <span class="ch-subject">Fracciones de una cantidad — Método Singapur</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">
+        El portal emite un zumbido y aparece grabado en el suelo: «EL PORTAL LLEVA ABIERTO 3/4 DE HORA. PARA CERRAR UN CUARTO DEL PORTAL NECESITAS SABER CUÁNTOS MINUTOS SON 3/4 DE HORA».
+      </div>
+      <div class="ch-question">Si una hora tiene 60 minutos, ¿cuántos minutos son 3/4 de hora?</div>
+      <div class="attempts-row"><div class="adot" id="c1d1"></div><div class="adot" id="c1d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c1g">
+        <button class="opt" onclick="checkOpt('c1',0,2,'c1g','c1f','c1b','c1c')">A) 30 minutos</button>
+        <button class="opt" onclick="checkOpt('c1',1,2,'c1g','c1f','c1b','c1c')">B) 40 minutos</button>
+        <button class="opt" onclick="checkOpt('c1',2,2,'c1g','c1f','c1b','c1c')">C) 45 minutos</button>
+        <button class="opt" onclick="checkOpt('c1',3,2,'c1g','c1f','c1b','c1c')">D) 50 minutos</button>
+      </div>
+      <div class="ch-feedback" id="c1f"></div>
+      <div class="blanca-box" id="c1b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Blanca</span><span class="blanca-role">Aparece de la nada, como siempre</span></div></div>
+        <div class="blanca-text"><strong>¡Exacto!</strong> En Singapur lo visualizamos así: divide los 60 minutos en 4 partes iguales → cada parte son <em>60 ÷ 4 = 15 minutos</em>. Tres de esas partes: <em>3 × 15 = 45 minutos</em>. ¡El portal ha crujido! Eso es buena señal… creo.</div>
+      </div>
+      <button class="btn-cont" id="c1c" onclick="goTo('ch1b')">Seguir leyendo →</button>
+    </div>
+  </div>
+</div>
+
+<div id="ch1b" class="section">
+  <div class="novel-body" style="padding-top:34px;">
+    <p>El suelo vibró. Una pequeña grieta en el portal se selló con un sonido como el de un bote de mermelada que por fin consigues abrir: satisfactorio y ligeramente decepcionante a la vez.</p>
+
+    <p class="dialogue">¡Funciona! —gritó Mike—. ¡André, ha funcionado! ¿Qué viene ahora?</p>
+
+    <p>La voz de André llegó con estática:</p>
+
+    <p class="dialogue">Hay otro mensaje. Dice que el siguiente cierre requiere lengua castellana. Tipos de palabras, específicamente.</p>
+
+    <p class="dialogue">¡Genial! —exclamó Dustin—. El Mundo del Revés ha decidido que nuestra destrucción pase por la gramática. Eso es lo más humillante que me ha pasado en la vida.</p>
+
+    <p class="dialogue">¿Más que cuando te persiguió el Demogorgon hasta el comedor? —preguntó Lucas.</p>
+
+    <p class="dialogue">Eso fue físico. Esto es intelectual. Es diferente.</p>
+
+    <p>Grabado en el suelo, con la misma caligrafía que el cuaderno, había una nueva pregunta.</p>
+  </div>
+
+  <!-- ── DESAFÍO 2: LENGUA — CLASES DE PALABRAS ── -->
+  <div class="challenge" id="c2">
+    <div class="challenge-top">
+      <div class="ch-icon">📚</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 2 · Lengua Castellana</span>
+        <span class="ch-subject">Clases de palabras: sustantivo, verbo, adjetivo, adverbio</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">El portal forma estas palabras en el aire: «RÁPIDAMENTE · CORRÍA · OSCURO · MONSTRUO». Para sellar esta sección, debes identificar el SUSTANTIVO.</div>
+      <div class="ch-question">¿Cuál de estas cuatro palabras es un sustantivo?</div>
+      <div class="attempts-row"><div class="adot" id="c2d1"></div><div class="adot" id="c2d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c2g">
+        <button class="opt" onclick="checkOpt('c2',0,3,'c2g','c2f','c2b','c2c')">A) rápidamente</button>
+        <button class="opt" onclick="checkOpt('c2',1,3,'c2g','c2f','c2b','c2c')">B) corría</button>
+        <button class="opt" onclick="checkOpt('c2',2,3,'c2g','c2f','c2b','c2c')">C) oscuro</button>
+        <button class="opt" onclick="checkOpt('c2',3,3,'c2g','c2f','c2b','c2c')">D) monstruo</button>
+      </div>
+      <div class="ch-feedback" id="c2f"></div>
+      <div class="blanca-box" id="c2b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Blanca</span><span class="blanca-role">Entre dos estanterías, lo cual es inquietante</span></div></div>
+        <div class="blanca-text"><strong>¡Correcto!</strong> <em>Monstruo</em> es un sustantivo: nombra un ser (aunque horrible). <em>Corría</em> = verbo (acción). <em>Oscuro</em> = adjetivo (cualidad). <em>Rápidamente</em> = adverbio (cómo). Truco: ponle «el» o «la» delante → si suena bien, es sustantivo. «El monstruo». ¿Ves? Funciona. Por desgracia.</div>
+      </div>
+      <button class="btn-cont" id="c2c" onclick="goTo('ch2')">Capítulo 2 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CAPÍTULO 2 — DUSTIN Y EL MAPA IMPOSIBLE
+══════════════════════════════════════════════ -->
+<div id="ch2" class="section">
+  <div class="chapter-header">
+    <div class="chapter-number">Capítulo Dos</div>
+    <div class="chapter-title">Dustin, el Mapa Imposible y el Precio de la Tiza</div>
+  </div>
+  <div class="novel-body">
+    <p>Dustin tenía un mapa. O más bien, tenía lo que quedaba de uno: los bordes y la leyenda, porque el Mundo del Revés se había comido la parte del medio, que era precisamente la parte importante de un mapa.</p>
+
+    <p class="dialogue">El Mundo del Revés tiene sentido del humor —observó Lucas.</p>
+
+    <p class="dialogue">Sentido del humor TERRIBLE —corrigió Dustin—, que es diferente.</p>
+
+    <p>El mapa indicaba cinco puntos del portal distribuidos por el Rosa Luxemburgo: la biblioteca, el laboratorio, el gimnasio, la sala de informática y el comedor. El laboratorio era el siguiente. Problema: el señor Clarke llevaba encerrado desde las nueve dibujando espirales en la pizarra y hablando solo sobre la teoría de cuerdas.</p>
+
+    <p class="dialogue">Está en modo Mundo del Revés —diagnosticó Will—. Les pasa a los adultos. Se desconectan.</p>
+
+    <p>Para distraer a la directora y poder pasar, el plan era simple: hablar de presupuesto. Nada distraía más a la directora del Rosa Luxemburgo que una discusión sobre los gastos del colegio.</p>
+
+    <p class="dialogue">André —dijo Mike—, necesitamos un cálculo rápido. ¿Sigues ahí?</p>
+
+    <p>La voz llegó con sonido de motores de avión de fondo:</p>
+
+    <p class="dialogue">Sigo aquí. Estoy sobre el Atlántico, o sobre Bélgica. El caso es que floto, lo cual es raro cuando lo piensas.</p>
+  </div>
+
+  <!-- ── DESAFÍO 3: MEDIDAS — LONGITUD Y CONVERSIÓN ── -->
+  <div class="challenge" id="c3">
+    <div class="challenge-top">
+      <div class="ch-icon">📏</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 3 · Matemáticas</span>
+        <span class="ch-subject">Medidas de longitud — Conversión de unidades</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">La directora explica: «La valla del colegio Rosa Luxemburgo mide 2 km y 350 metros en total. ¿Cuántos metros es eso? Necesito saberlo para pedir presupuesto a la empresa de pintura.»</div>
+      <div class="ch-question">¿Cuántos metros mide la valla en total?</div>
+      <div class="attempts-row"><div class="adot" id="c3d1"></div><div class="adot" id="c3d2"></div><span class="atxt">intentos</span></div>
+      <div class="open-row">
+        <input class="open-input" id="c3i" type="number" placeholder="Escribe los metros..." />
+        <button class="btn-check" id="c3btn" onclick="checkOpen('c3',2350,0,'c3i','c3btn','c3f','c3b','c3c')">✓ Comprobar</button>
+      </div>
+      <div class="ch-feedback" id="c3f"></div>
+      <div class="blanca-box" id="c3b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Blanca</span><span class="blanca-role">Asomada desde detrás de un archivador</span></div></div>
+        <div class="blanca-text"><strong>¡Perfecto!</strong> 1 km = 1.000 m → 2 km = 2.000 m. Más 350 m = <em>2.350 metros</em>. Recuerda: para pasar de km a m, multiplica por 1.000. La directora ya puede llamar a la empresa de pintura. Y de paso, tapar el portal.</div>
+      </div>
+      <button class="btn-cont" id="c3c" onclick="goTo('ch2b')">Seguir →</button>
+    </div>
+  </div>
+</div>
+
+<div id="ch2b" class="section">
+  <div class="novel-body" style="padding-top:34px;">
+    <p>La directora, satisfecha con los cálculos, se levantó murmurando sobre el precio de la pintura y se fue pasillo abajo. El grupo se coló en el laboratorio como un equipo perfectamente coordinado, lo que significaba que Mike tropezó, Dustin chocó con Mike, Lucas abrió la puerta en el momento equivocado y Eleven entró tranquilamente mientras los demás se recuperaban.</p>
+
+    <p>En la pared del fondo, entre los carteles del sistema periódico, había una grieta que brillaba: el segundo punto del portal.</p>
+
+    <p class="dialogue">Para cerrarlo necesitamos resolver lo que hay en el cristal del armario —dijo Will—. Es en inglés.</p>
+
+    <p class="dialogue">¿El Mundo del Revés habla inglés? —Mike frunció el ceño.</p>
+
+    <p class="dialogue">El Mundo del Revés habla lo que sea necesario para causarte el máximo inconveniente —dijo Dustin—. Es su filosofía.</p>
+
+    <p>En ese momento, el walkie-talkie emitió un sonido distinto al habitual. No era estática ni la voz de André. Era una voz nueva, clara, con un tono entre divertido y profesional:</p>
+
+    <p class="dialogue">Hola, grupo. Me llamo Rocío. Soy la profesora de inglés de André. He llegado antes que Blanca porque los desafíos de inglés son míos. Blanca y yo hemos llegado a un acuerdo: ella hace las mates y la lengua, yo el inglés. Tenemos un contrato y todo.</p>
+
+    <p class="dialogue">¿Hay más profesoras en el cuaderno? —preguntó Lucas.</p>
+
+    <p class="dialogue">Solo las necesarias —respondió Rocío.</p>
+
+    <p class="dialogue">¿Y cómo funciona exactamente este...? —empezó Mike.</p>
+
+    <p class="dialogue">Menos preguntas, más verbos irregulares —cortó Rocío, con amabilidad pero firmeza—. Ese cristal no se va a descifrar solo.</p>
+  </div>
+
+  <!-- ── DESAFÍO 4: INGLÉS — PAST SIMPLE ── -->
+  <div class="challenge" id="c4">
+    <div class="challenge-top">
+      <div class="ch-icon">🇬🇧</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 4 · English — con Rocío</span>
+        <span class="ch-subject">Past Simple — Regular & Irregular Verbs</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">The glass door shows: «Yesterday, Eleven _____ (go) into the lab and _____ (find) the portal.» Fill in the correct past simple forms.</div>
+      <div class="ch-question">Choose the correct past simple of GO and FIND:</div>
+      <div class="attempts-row"><div class="adot" id="c4d1"></div><div class="adot" id="c4d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c4g">
+        <button class="opt" onclick="checkOpt('c4',0,1,'c4g','c4f','c4b','c4c')">A) goed / finded</button>
+        <button class="opt" onclick="checkOpt('c4',1,1,'c4g','c4f','c4b','c4c')">B) went / found</button>
+        <button class="opt" onclick="checkOpt('c4',2,1,'c4g','c4f','c4b','c4c')">C) goes / finds</button>
+        <button class="opt" onclick="checkOpt('c4',3,1,'c4g','c4f','c4b','c4c')">D) went / finded</button>
+      </div>
+      <div class="ch-feedback" id="c4f"></div>
+      <div class="blanca-box" id="c4b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Rocío</span><span class="blanca-role">Profesora de Inglés · Primera aparición</span></div></div>
+        <div class="blanca-text"><strong>Well done!</strong> Go and Find are irregular verbs: <em>go → went</em>, <em>find → found</em>. Irregular verbs don't follow the -ed rule — you have to memorise them. Good news: there aren't that many. Bad news: the Upside Down stole the list. Memorise them anyway. — Rocío ✏️</div>
+      </div>
+      <button class="btn-cont" id="c4c" onclick="goTo('ch3')">Capítulo 3 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CAPÍTULO 3 — EL GIMNASIO
+══════════════════════════════════════════════ -->
+<div id="ch3" class="section">
+  <div class="chapter-header">
+    <div class="chapter-number">Capítulo Tres</div>
+    <div class="chapter-title">El Gimnasio, las Tildes y el Pelo de Dustin</div>
+  </div>
+  <div class="novel-body">
+    <p>El gimnasio del Rosa Luxemburgo era, en condiciones normales, un lugar que olía a zapatilla húmeda y a derrota. Ese día, además, tenía una electricidad estática que hacía que el pelo se pusiera de punta, especialmente dramático en el caso de Dustin.</p>
+
+    <p class="dialogue">¡Mi pelo! —exclamó—. ¡Llevo veinte minutos peinándome esta mañana!</p>
+
+    <p class="dialogue">Dustin —dijo Mike—, literalmente estamos perseguidos por una entidad dimensional y te preocupa el pelo.</p>
+
+    <p class="dialogue">El pelo ES importante, Mike. Es lo primero que la gente ve de ti. ¿Sabes lo que dice la gente cuando me ve?</p>
+
+    <p>Nadie preguntó qué decía la gente.</p>
+
+    <p>El gimnasio estaba lleno de palabras flotando en el aire. No era una metáfora: eran palabras reales, suspendidas a distintas alturas, algunas al revés, otras girando lentamente. Palabras que habían perdido sus tildes, que flotaban separadas de sus vocales como almas en pena.</p>
+
+    <p class="dialogue">«arbol» sin tilde —leyó Will—. «camion». «lapiz». «musica». Están todas mal.</p>
+
+    <p class="dialogue">El Mundo del Revés odia la ortografía —concluyó Eleven.</p>
+
+    <p class="dialogue">El Mundo del Revés y el cincuenta por ciento de los mensajes de WhatsApp —murmuró Dustin.</p>
+
+    <p>Para sellar el portal del gimnasio, las palabras tenían que volver al suelo. Y solo lo harían si se identificaba correctamente cuál necesitaba tilde. Desde el walkie-talkie, André informó:</p>
+
+    <p class="dialogue">Ya llegamos a Ámsterdam. Tenemos escala de dos horas. Y el cuaderno dice que el siguiente desafío es de tildes. Qué oportuno.</p>
+  </div>
+
+  <!-- ── DESAFÍO 5: TILDES ── -->
+  <div class="challenge" id="c5">
+    <div class="challenge-top">
+      <div class="ch-icon">✍️</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 5 · Lengua Castellana</span>
+        <span class="ch-subject">Acentuación — Agudas, llanas y esdrújulas</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">Cuatro palabras flotan en el gimnasio. Solo una lleva tilde. Identifícala para que bajen al suelo.</div>
+      <div class="ch-question">¿Cuál de estas palabras se escribe CON tilde?</div>
+      <div class="attempts-row"><div class="adot" id="c5d1"></div><div class="adot" id="c5d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c5g">
+        <button class="opt" onclick="checkOpt('c5',0,2,'c5g','c5f','c5b','c5c')">A) examen</button>
+        <button class="opt" onclick="checkOpt('c5',1,2,'c5g','c5f','c5b','c5c')">B) camion</button>
+        <button class="opt" onclick="checkOpt('c5',2,2,'c5g','c5f','c5b','c5c')">C) música</button>
+        <button class="opt" onclick="checkOpt('c5',3,2,'c5g','c5f','c5b','c5c')">D) mesa</button>
+      </div>
+      <div class="ch-feedback" id="c5f"></div>
+      <div class="blanca-box" id="c5b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Blanca</span><span class="blanca-role">Baja del techo. Literalmente.</span></div></div>
+        <div class="blanca-text"><strong>¡Sí!</strong> <em>Música</em> es esdrújula: la sílaba fuerte es MÚ-si-ca (la antepenúltima). Las esdrújulas SIEMPRE llevan tilde, sin excepción. <em>Examen</em> es llana acabada en N → sin tilde. <em>Mesa</em> es llana en vocal → sin tilde. <em>Camión</em> sí llevaría (aguda en N), pero aquí estaba escrita sin ella (trampa del Mind Flayer). ¡Esdrújulas: tilde siempre!</div>
+      </div>
+      <button class="btn-cont" id="c5c" onclick="goTo('ch3b')">Seguir →</button>
+    </div>
+  </div>
+</div>
+
+<div id="ch3b" class="section">
+  <div class="novel-body" style="padding-top:34px;">
+    <p>Las palabras cayeron al suelo una a una, con un pequeño «clic» satisfactorio. El portal del gimnasio emitió un pitido agudo y se redujo a la mitad.</p>
+
+    <p class="dialogue">¡Funciona! —gritó Lucas—. ¡El conocimiento está volviendo!</p>
+
+    <p class="dialogue">Quedan dos puntos —dijo Eleven—. Informática. Y el comedor.</p>
+
+    <p>En el aeropuerto de Ámsterdam, André abría el cuaderno. Las páginas ya no estaban completamente en blanco: pequeñas manchas de conocimiento reaparecían en los márgenes. Y había una nota nueva.</p>
+
+    <div class="character-note">
+      <strong>✏️ Nota de Blanca (aparece entre dos páginas sin previo aviso):</strong>
+      «André: van bien. Pero el comedor va a ser complicado. El Mind Flayer ha decidido que allí haya un desafío doble: medidas Y inglés. Ah, y hay que cruzar la cafetería sin pisar las rayas del suelo. Eso último no tiene nada que ver con los deberes, pero el Mind Flayer ha dicho que sí. — B.»
+    </div>
+
+    <p>André no estaba seguro de si reírse o preocuparse. Decidió hacer ambas cosas a la vez, que es lo que hacen los buenos lectores cuando la trama se complica.</p>
+
+    <p>El grupo llegó a la sala de informática.</p>
+  </div>
+
+  <!-- ── DESAFÍO 6: MEDIDAS — MASA Y PESO ── -->
+  <div class="challenge" id="c6">
+    <div class="challenge-top">
+      <div class="ch-icon">⚖️</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 6 · Matemáticas</span>
+        <span class="ch-subject">Medidas de masa — Conversión kg y gramos</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">La pantalla del ordenador muestra: «Hopper carga su mochila para entrar al portal. Lleva 2 kg de equipo, 750 g de comida y 500 g de linterna de repuesto. ¿Cuántos gramos pesa todo en total?»</div>
+      <div class="ch-question">¿Cuántos gramos pesa la mochila de Hopper en total?</div>
+      <div class="attempts-row"><div class="adot" id="c6d1"></div><div class="adot" id="c6d2"></div><span class="atxt">intentos</span></div>
+      <div class="open-row">
+        <input class="open-input" id="c6i" type="number" placeholder="Total en gramos..." />
+        <button class="btn-check" id="c6btn" onclick="checkOpen('c6',3250,0,'c6i','c6btn','c6f','c6b','c6c')">✓ Comprobar</button>
+      </div>
+      <div class="ch-feedback" id="c6f"></div>
+      <div class="blanca-box" id="c6b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Blanca</span><span class="blanca-role">Sale de detrás de un ordenador de 1987</span></div></div>
+        <div class="blanca-text"><strong>¡Correcto!</strong> 1 kg = 1.000 g → 2 kg = 2.000 g. Más 750 g más 500 g = <em>2.000 + 750 + 500 = 3.250 gramos</em>. Hopper necesitará reforzarse la espalda. Los portales no esperan, pero las lesiones de espalda tampoco.</div>
+      </div>
+      <button class="btn-cont" id="c6c" onclick="goTo('ch3c')">Seguir →</button>
+    </div>
+  </div>
+</div>
+
+<div id="ch3c" class="section">
+  <div class="novel-body" style="padding-top:34px;">
+    <p>La grieta de la sala de informática se selló con un zumbido eléctrico que hizo apagarse y encenderse todas las pantallas a la vez, mostrando durante medio segundo unos fondos de escritorio que nadie había elegido pero que eran exactamente los que cada persona habría elegido. Misterioso.</p>
+
+    <p>Quedaba un solo punto. El comedor.</p>
+
+    <p class="dialogue">¿Todos listos? —preguntó Mike.</p>
+
+    <p class="dialogue">No —dijeron Dustin y Lucas a la vez.</p>
+
+    <p class="dialogue">Vamos —dijo Eleven.</p>
+
+    <p>Eso zanjó el debate.</p>
+  </div>
+
+  <!-- ── DESAFÍO 7: MEDIDAS — LÍQUIDOS ── -->
+  <div class="challenge" id="c7">
+    <div class="challenge-top">
+      <div class="ch-icon">🧪</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 7 · Matemáticas</span>
+        <span class="ch-subject">Medidas de capacidad — Litros y mililitros</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">En el pasillo hacia el comedor hay una cañería rota del portal. Gotea líquido del Mundo del Revés a un ritmo de 250 ml por minuto. El cubo de la limpieza tiene 3 litros de capacidad. Dustin necesita saber en cuántos minutos se llenará el cubo para no derramar nada.</div>
+      <div class="ch-question">¿En cuántos minutos se llena el cubo de 3 litros si entra 250 ml por minuto?</div>
+      <div class="attempts-row"><div class="adot" id="c7d1"></div><div class="adot" id="c7d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c7g">
+        <button class="opt" onclick="checkOpt('c7',0,3,'c7g','c7f','c7b','c7c')">A) 8 minutos</button>
+        <button class="opt" onclick="checkOpt('c7',1,3,'c7g','c7f','c7b','c7c')">B) 10 minutos</button>
+        <button class="opt" onclick="checkOpt('c7',2,3,'c7g','c7f','c7b','c7c')">C) 12 minutos</button>
+        <button class="opt" onclick="checkOpt('c7',3,3,'c7g','c7f','c7b','c7c')">D) 15 minutos</button>
+      </div>
+      <div class="ch-feedback" id="c7f"></div>
+      <div class="blanca-box" id="c7b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Blanca</span><span class="blanca-role">Flotando junto a la cañería, con paraguas</span></div></div>
+        <div class="blanca-text"><strong>¡Correcto!</strong> 3 litros = 3.000 ml. Si entran 250 ml por minuto → 3.000 ÷ 250 = <em>12 minutos</em>. Dustin tiene exactamente 12 minutos antes de que el pasillo sea un lago del Mundo del Revés. Que corra.</div>
+      </div>
+      <button class="btn-cont" id="c7c" onclick="goTo('ch4')">Capítulo 4 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CAPÍTULO 4 — EL COMEDOR
+══════════════════════════════════════════════ -->
+<div id="ch4" class="section">
+  <div class="chapter-header">
+    <div class="chapter-number">Capítulo Cuatro</div>
+    <div class="chapter-title">El Comedor, el Mind Flayer y el Día que la Gramática Salvó el Mundo</div>
+  </div>
+  <div class="novel-body">
+    <p>El comedor del Rosa Luxemburgo era, en condiciones normales, el lugar donde los sueños morían entre trozos de macarrones y vasos de leche tibia. Ese día, además, era el cuartel general del Mind Flayer, que había decidido instalarse allí porque, según Will, «le gusta la energía desesperada de los lunes».</p>
+
+    <p>El comedor estaba lleno de mesas flotando al revés, bandejas girando en órbita y, en el centro, una nube oscura que pulsaba lentamente. La puerta al patio estaba bloqueada por una barrera de energía del Mundo del Revés.</p>
+
+    <p class="dialogue">André —dijo Mike—, el cuaderno.</p>
+
+    <p>André, en el avión de Ámsterdam a Madrid, abrió el cuaderno.</p>
+
+    <p class="dialogue">Veo dos desafíos. El Mind Flayer dice que «la vida raramente te presenta los problemas de uno en uno».</p>
+
+    <p class="dialogue">El Mind Flayer es muy filosófico para ser una entidad de pura maldad dimensional —comentó Dustin.</p>
+
+    <p class="dialogue">Tiene tiempo libre —dijo Lucas—. ¿Qué va a hacer? ¿Netflix?</p>
+  </div>
+
+  <!-- ── DESAFÍO 8: MEDIDAS — TIEMPO ── -->
+  <div class="challenge" id="c8">
+    <div class="challenge-top">
+      <div class="ch-icon">⏱️</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 8 · Matemáticas</span>
+        <span class="ch-subject">Medidas de tiempo — Horas, minutos y segundos</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">El Mind Flayer anuncia: «Tenéis exactamente 2 horas y 35 minutos para cerrar el portal antes de que sea permanente. Pero lleváis ya 47 minutos desde que llegasteis al colegio. ¿Cuánto tiempo os queda?»</div>
+      <div class="ch-question">¿Cuánto tiempo les queda al grupo para cerrar el portal?</div>
+      <div class="attempts-row"><div class="adot" id="c8d1"></div><div class="adot" id="c8d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c8g">
+        <button class="opt" onclick="checkOpt('c8',0,1,'c8g','c8f','c8b','c8c')">A) 1 h 48 min</button>
+        <button class="opt" onclick="checkOpt('c8',1,1,'c8g','c8f','c8b','c8c')">B) 1 h y 48 min</button>
+        <button class="opt" onclick="checkOpt('c8',2,1,'c8g','c8f','c8b','c8c')">C) 2 h y 12 min</button>
+        <button class="opt" onclick="checkOpt('c8',3,1,'c8g','c8f','c8b','c8c')">D) 1 h y 12 min</button>
+      </div>
+      <div class="ch-feedback" id="c8f"></div>
+      <div class="blanca-box" id="c8b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Blanca</span><span class="blanca-role">Sobre una bandeja flotante, con total normalidad</span></div></div>
+        <div class="blanca-text"><strong>¡Exacto!</strong> 2 h 35 min − 47 min. Primero: 35 min − 47 min no puede ser directo → tomamos prestada 1 hora: 60 + 35 = 95 min − 47 min = <em>48 min</em>. Las horas: 2 − 1 (la que prestamos) = <em>1 hora</em>. Total: <em>1 hora y 48 minutos</em>. ¡Corred!</div>
+      </div>
+      <button class="btn-cont" id="c8c" onclick="goTo('ch4b')">Seguir →</button>
+    </div>
+  </div>
+</div>
+
+<div id="ch4b" class="section">
+  <div class="novel-body" style="padding-top:34px;">
+    <p>La barrera tembló pero no cedió del todo.</p>
+
+    <p class="dialogue">El segundo desafío —dijo Will—. Todavía falta el segundo.</p>
+
+    <p>El Mind Flayer emitió un sonido entre rugido y suspiro de frustración.</p>
+
+    <p class="dialogue">¿Podéis daros prisa? —preguntó desde la nube—. Tengo otras dimensiones que corromper.</p>
+
+    <p class="dialogue">¿El Mind Flayer acaba de hablar? —susurró Lucas.</p>
+
+    <p class="dialogue">Sí —dijo Eleven.</p>
+
+    <p class="dialogue">¿Y tiene agenda?</p>
+
+    <p class="dialogue">Aparentemente.</p>
+
+    <p>El segundo desafío apareció en el suelo: inglés. Concretamente, comparativos de adjetivos. Y en ese momento, desde el walkie-talkie, volvió a sonar aquella voz clara y directa:</p>
+
+    <p class="dialogue">Rocío al habla. Este es mío.</p>
+
+    <p class="dialogue">¿Cómo sabe siempre cuándo aparecer? —preguntó Mike.</p>
+
+    <p class="dialogue">Los profesores de inglés tenemos oído para los comparativos —respondió Rocío—. Es un sentido que se desarrolla con los años. Vamos allá.</p>
+  </div>
+
+  <!-- ── DESAFÍO 9: INGLÉS — COMPARATIVOS ── -->
+  <div class="challenge" id="c9">
+    <div class="challenge-top">
+      <div class="ch-icon">🇬🇧</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 9 · English — con Rocío</span>
+        <span class="ch-subject">Comparative adjectives</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">The Mind Flayer writes on the wall: «The Upside Down is DARK. But my patience is _____ than the Upside Down.» Complete the comparative correctly.</div>
+      <div class="ch-question">«My patience is _____ than the Upside Down.»</div>
+      <div class="attempts-row"><div class="adot" id="c9d1"></div><div class="adot" id="c9d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c9g">
+        <button class="opt" onclick="checkOpt('c9',0,3,'c9g','c9f','c9b','c9c')">A) more dark</button>
+        <button class="opt" onclick="checkOpt('c9',1,3,'c9g','c9f','c9b','c9c')">B) darkest</button>
+        <button class="opt" onclick="checkOpt('c9',2,3,'c9g','c9f','c9b','c9c')">C) most dark</button>
+        <button class="opt" onclick="checkOpt('c9',3,3,'c9g','c9f','c9b','c9c')">D) darker</button>
+      </div>
+      <div class="ch-feedback" id="c9f"></div>
+      <div class="blanca-box" id="c9b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Rocío</span><span class="blanca-role">Profesora de Inglés · Aparece entre las bandejas</span></div></div>
+        <div class="blanca-text"><strong>Correct!</strong> <em>Darker</em>. Rule: short adjectives (1 syllable) → add <em>-er + than</em>. Dark → darker. Long adjectives (2+ syllables) → <em>more + adjective</em>: more beautiful. And the superlative is <em>darkest</em>. Even the Mind Flayer has grammar rules. He just ignores the ones about being polite. — Rocío ✏️</div>
+      </div>
+      <button class="btn-cont" id="c9c" onclick="goTo('ch4c')">Seguir →</button>
+    </div>
+  </div>
+</div>
+
+<div id="ch4c" class="section">
+  <div class="novel-body" style="padding-top:34px;">
+    <p>La barrera cedió. Con un sonido de globo enorme al desinflarse, la puerta al patio quedó libre. El Mind Flayer emitió algo que, transcrito, sería: «Noooooo, aunque la verdad es que lo habéis hecho bastante bien».</p>
+
+    <p>Salieron al patio. En el centro del suelo, donde los charcos se juntan cuando llueve, había una grieta brillante. El último punto del portal.</p>
+
+    <p>Y al lado de la grieta había dos personas. Una sentada con las piernas cruzadas y un cuaderno en las rodillas, bolígrafo en mano, mirando al grupo con la expresión de alguien que lleva un rato esperando. La otra de pie, con los brazos cruzados y una tarjeta plastificada que decía INGLÉS colgada al cuello, como si acabara de llegar de una conferencia.</p>
+
+    <p class="dialogue">Hola —dijo la primera—. Soy Blanca. Los dos últimos desafíos son nuestros.</p>
+
+    <p class="dialogue">Rocío —dijo la segunda, señalándose la tarjeta—. El de inglés es mío. Por si había dudas.</p>
+
+    <p>Dustin abrió la boca. La cerró. La volvió a abrir.</p>
+
+    <p class="dialogue">¿Las dos profes de André están en el patio del colegio?</p>
+
+    <p class="dialogue">Los profesores llegamos donde hacemos falta —dijo Blanca.</p>
+
+    <p class="dialogue">Y cuando hay inglés, yo llego antes —añadió Rocío.</p>
+
+    <p class="dialogue">Llegamos a la vez —puntualizó Blanca.</p>
+
+    <p class="dialogue">Yo llegué tres segundos antes.</p>
+
+    <p class="dialogue">Eso es discutible.</p>
+
+    <p>El grupo decidió no meterse en eso.</p>
+  </div>
+
+  <!-- ── DESAFÍO 10: MEDIDAS — PROBLEMA SINGAPUR (volumen/capacidad) ── -->
+  <div class="challenge" id="c10">
+    <div class="challenge-top">
+      <div class="ch-icon">🏺</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío 10 · Matemáticas</span>
+        <span class="ch-subject">Problema de medidas — Volumen y capacidad (Singapur)</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">Blanca explica: «Para sellar el portal necesitamos llenarlo con agua especial. El portal tiene forma de cubo: 2 m de lado, 2 m de ancho y 2 m de fondo. ¿Cuántos litros de agua necesitamos? (Nota: 1 m³ = 1.000 litros)»</div>
+      <div class="ch-question">¿Cuántos litros de agua se necesitan para llenar el portal?</div>
+      <div class="attempts-row"><div class="adot" id="c10d1"></div><div class="adot" id="c10d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c10g">
+        <button class="opt" onclick="checkOpt('c10',0,1,'c10g','c10f','c10b','c10c')">A) 4.000 litros</button>
+        <button class="opt" onclick="checkOpt('c10',1,1,'c10g','c10f','c10b','c10c')">B) 8.000 litros</button>
+        <button class="opt" onclick="checkOpt('c10',2,1,'c10g','c10f','c10b','c10c')">C) 2.000 litros</button>
+        <button class="opt" onclick="checkOpt('c10',3,1,'c10g','c10f','c10b','c10c')">D) 6.000 litros</button>
+      </div>
+      <div class="ch-feedback" id="c10f"></div>
+      <div class="blanca-box" id="c10b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Blanca</span><span class="blanca-role">En persona. Por fin.</span></div></div>
+        <div class="blanca-text"><strong>¡Exacto!</strong> Volumen del cubo = lado × lado × lado = 2 × 2 × 2 = <em>8 m³</em>. Como 1 m³ = 1.000 litros → 8 m³ = <em>8.000 litros</em>. El Rosa Luxemburgo necesita 8.000 litros de agua especial. Joyce Byers ya está buscando cubos.</div>
+      </div>
+      <button class="btn-cont" id="c10c" onclick="goTo('ch4d')">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<div id="ch4d" class="section">
+  <div class="novel-body" style="padding-top:34px;">
+    <p>El portal parpadeó. Se redujo a la mitad de su tamaño. El suelo dejó de temblar por un momento, como si el planeta se tomara un respiro antes del acto final.</p>
+
+    <p>En el avión, André vio que las páginas del cuaderno estaban casi completamente llenas de nuevo. Fracciones, palabras, conjugaciones, medidas: todo volviendo a su sitio. Solo quedaba una página en blanco. La última.</p>
+
+    <p>En esa página había dos notas, una debajo de la otra. La primera con letra redondeada y doble subrayado. La segunda con letra más pequeña y un símbolo de bandera británica en el margen.</p>
+
+    <div class="character-note">
+      <strong>✏️ Nota de Blanca:</strong>
+      «André: el de medidas lo has hecho perfecto. Ahora Rocío tiene la última palabra. Literalmente. — B.»
+    </div>
+
+    <div class="character-note">
+      <strong>🇬🇧 Nota de Rocío:</strong>
+      «André: último desafío. Es de comprensión lectora en inglés. Lee despacio, no te precipites y recuerda: la respuesta siempre está EN el texto. No hay que inventar nada. Confía en lo que lees. — Rocío ✏️»
+    </div>
+
+    <p>André miró por la ventanilla. España en el horizonte. Respiró hondo.</p>
+
+    <p>Estaba listo.</p>
+  </div>
+
+  <!-- ── DESAFÍO 11 FINAL: INGLÉS — READING COMPREHENSION ── -->
+  <div class="challenge" id="c11">
+    <div class="challenge-top">
+      <div class="ch-icon">⚡</div>
+      <div class="ch-meta">
+        <span class="ch-label">Desafío Final · English — con Rocío</span>
+        <span class="ch-subject">Reading comprehension — Inference</span>
+      </div>
+    </div>
+    <div class="challenge-body">
+      <div class="ch-situation">Read this text from the Upside Down files: «The portal was opened by accident. Nobody wanted it to happen. But once it was open, strange things started appearing: creatures, shadows and lost knowledge. The group worked together for hours to close it. In the end, it was not the strongest person who saved the day — it was the one who knew the answers.»</div>
+      <div class="ch-question">According to the text, who saved the day in the end?</div>
+      <div class="attempts-row"><div class="adot" id="c11d1"></div><div class="adot" id="c11d2"></div><span class="atxt">intentos</span></div>
+      <div class="opts" id="c11g">
+        <button class="opt" onclick="checkOpt('c11',0,2,'c11g','c11f','c11b','c11c')">A) The strongest person</button>
+        <button class="opt" onclick="checkOpt('c11',1,2,'c11g','c11f','c11b','c11c')">B) The one who opened the portal</button>
+        <button class="opt" onclick="checkOpt('c11',2,2,'c11g','c11f','c11b','c11c')">C) The one who knew the answers</button>
+        <button class="opt" onclick="checkOpt('c11',3,2,'c11g','c11f','c11b','c11c')">D) The creatures from the Upside Down</button>
+      </div>
+      <div class="ch-feedback" id="c11f"></div>
+      <div class="blanca-box" id="c11b">
+        <div class="blanca-header"><div class="blanca-av">👩‍🏫</div><div><span class="blanca-name">Rocío</span><span class="blanca-role">Último mensaje. Por ahora.</span></div></div>
+        <div class="blanca-text"><strong>Perfect, André!</strong> The last sentence says: «it was not the strongest — it was <em>the one who knew the answers</em>.» Key rule: «According to the text» = the answer is always written there. Read it, find it, trust it. Don't invent. You didn't need to invent anything today — you just knew. Well done. — Rocío ✏️</div>
+      </div>
+      <button class="btn-cont" id="c11c" onclick="goTo('epilogue')">Epílogo →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     EPÍLOGO
+══════════════════════════════════════════════ -->
+<div id="epilogue" class="section">
+  <div class="chapter-header">
+    <div class="chapter-number">Epílogo</div>
+    <div class="chapter-title">De Vuelta a Casa (Más o Menos)</div>
+  </div>
+  <div class="novel-body">
+    <p>La grieta del patio del Rosa Luxemburgo emitió un último destello rojo, luego verde, luego nada. Se cerró con la discreción elegante de un portal interdimensional que sabe cuándo ha perdido.</p>
+
+    <p>El suelo quedó perfectamente liso. Como si nunca hubiera pasado nada. Excepto que había pasado todo.</p>
+
+    <p class="dialogue">¿Eso es todo? —preguntó Lucas.</p>
+
+    <p class="dialogue">Eso es todo —confirmaron Blanca y Rocío a la vez. Se miraron. Luego miraron al grupo.</p>
+
+    <p class="dialogue">Llevamos ensayando eso —admitió Rocío.</p>
+
+    <p class="dialogue">¿Y usted cómo ha llegado aquí? —preguntó Dustin—. El Rosa Luxemburgo está en Madrid.</p>
+
+    <p class="dialogue">Los profesores llegamos donde hacemos falta —dijo Blanca.</p>
+
+    <p class="dialogue">Y cuando hay inglés, llegamos un poco antes —añadió Rocío.</p>
+
+    <p class="dialogue">A la vez —dijo Blanca.</p>
+
+    <p class="dialogue">Eso es discutible —dijo Rocío.</p>
+
+    <p class="dialogue">Eso es más impresionante que los poderes de Eleven —murmuró Lucas.</p>
+
+    <p class="dialogue">Lo he oído —dijo Eleven.</p>
+
+    <p>En el avión, André cerró el cuaderno. Las páginas estaban completamente llenas: fracciones, conversiones, volúmenes, tiempos, tildes, clases de palabras, verbos irregulares, comparativos, comprensión lectora. Todo ordenado y claro y, de alguna manera, más interesante que cuando era solo una lista de deberes.</p>
+
+    <p>Por la ventanilla se veía ya el aeropuerto de Barajas. El sol de Madrid, ese sol que no se parece a ningún otro sol del mundo, entraba oblicuo por la ventanilla.</p>
+
+    <p>En el cuaderno, en la última página, había dos notas finales.</p>
+
+    <div class="character-note">
+      <strong>✏️ Nota final de Blanca:</strong>
+      «André: el Mundo del Revés roba el conocimiento porque el conocimiento es lo más valioso que existe. Más que los Eggos (casi). Lo que has aprendido hoy está bajo llave en tu cabeza y el Mind Flayer no puede quitártelo. Hasta la próxima aventura. Y recuerda: las esdrújulas siempre llevan tilde. Siempre. Sin excepciones. — Blanca»
+    </div>
+
+    <div class="character-note">
+      <strong>🇬🇧 Nota final de Rocío:</strong>
+      «André: well done today. Keep reading in English whenever you can — on the plane, at home, anywhere. The more you read, the easier it gets. The Upside Down can steal books, but it can't steal what's already in your head. See you in class. — Rocío ✏️»
+    </div>
+
+    <p>André sonrió. Metió el cuaderno en la mochila. El avión aterrizó con ese sonido suave y definitivo que tienen los aterrizajes cuando sabes que ya has llegado a donde tenías que llegar.</p>
+
+    <p>Hawkins estaba a salvo. El Rosa Luxemburgo también.</p>
+    <p>El conocimiento había vuelto.</p>
+    <p>Y André tenía los deberes hechos.</p>
+    <p>Más o menos.</p>
+
+    <div class="scene-break">✦ ✦ ✦</div>
+
+    <p style="text-align:center; font-style:italic; color:var(--text-dim); font-size:.92rem;">
+      ¿Continuará? Solo si el Mind Flayer decide que necesita repasar los temas de 6º...
+    </p>
+  </div>
+  <div class="chapter-nav">
+    <button class="btn-begin" onclick="showEnding()">Ver mi puntuación final 🌟</button>
+  </div>
+  <div style="height:32px;"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ENDING
+══════════════════════════════════════════════ -->
+<div id="ending">
+  <div class="ending-title">¡EL PORTAL ESTÁ CERRADO!</div>
+  <span class="ending-icon">🔦</span>
+  <div class="ending-body">
+    <strong>Misión completada, André.</strong><br><br>
+    Has salvado el conocimiento del Rosa Luxemburgo, cerrado todos los portales al Mundo del Revés y demostrado que los deberes pueden ser una aventura si los haces en el sitio adecuado.<br><br>
+    El Grupo te manda sus respetos. Dustin dice que eres «impresionantemente competente». Eleven dice «bueno». Mike dice gracias. Lucas dice que lo sabía desde el principio.<br><br>
+    Y Blanca dice que el lunes hay clase.
+  </div>
+  <div class="ending-score">⭐ <span id="final-score">0</span> puntos ⭐</div>
+  <div class="ending-summary">
+    📏 Longitud · ⚖️ Masa · 🧪 Capacidad · ⏱️ Tiempo · 🏺 Volumen<br>
+    🧮 Fracciones · Decimales (Método Singapur)<br>
+    ✍️ Clases de palabras · Tildes · Conectores<br>
+    🇬🇧 Past Simple · Comparatives · Reading Comprehension<br>
+    <span class="hi">Currículo 5º Primaria · Comunidad de Madrid · Colegio Rosa Luxemburgo</span>
+  </div>
+  <button class="btn-restart" onclick="restartAll()">🔄 Leer de nuevo</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     RESUME MODAL
+══════════════════════════════════════════════ -->
+<div id="resume-modal" style="display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,0.55); align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#fff; border-radius:18px; padding:30px 24px; max-width:380px; width:100%;
+    box-shadow:0 8px 40px rgba(0,0,0,0.25); text-align:center; font-family:'Lora',serif;">
+    <div style="font-size:2.5rem; margin-bottom:14px;">🔦</div>
+    <div style="font-family:'Special Elite',cursive; font-size:1.5rem; color:#c0392b; margin-bottom:8px;">
+      ¡Bienvenido de vuelta, André!
+    </div>
+    <p style="font-size:.95rem; line-height:1.75; color:#3d3d3d; margin-bottom:20px;">
+      Tienes una aventura guardada.<br>
+      <strong style="color:#1a1a1a;">
+        Hasta: <span id="resume-chapter">—</span>
+      </strong><br>
+      <span style="color:#6c3483; font-weight:700;">⭐ <span id="resume-score">0</span> puntos</span>
+      &nbsp;·&nbsp;
+      <span style="color:#1a7a4a; font-weight:700;">✅ <span id="resume-solved">0</span> desafíos superados</span>
+    </p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button onclick="resumeGame()" style="background:#c0392b; border:none; border-radius:10px;
+        padding:14px; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:900;
+        color:#fff; cursor:pointer; letter-spacing:1px;">
+        ▶ CONTINUAR LA AVENTURA
+      </button>
+      <button onclick="newGame()" style="background:#fff; border:2px solid #d4d0c8; border-radius:10px;
+        padding:12px; font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:700;
+        color:#666; cursor:pointer;">
+        Empezar desde el principio
+      </button>
+    </div>
+    <p style="font-size:.68rem; color:#999; margin-top:14px; line-height:1.5;">
+      El progreso se guarda en este navegador.<br>Si cambias de app, empezará de cero.
+    </p>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ═══════════════════════════════════════
+// PERSISTENCE — localStorage
+// ═══════════════════════════════════════
+const SAVE_KEY = 'andre_novel_save';
+
+function saveProgress() {
+  try {
+    const data = {
+      score,
+      attempts,
+      currentSection,
+      solvedChallenges,
+      ts: Date.now()
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+
+function clearProgress() {
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+}
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let score = 0;
+let attempts = {};
+let currentSection = 'cover';
+let solvedChallenges = {}; // cid → true when solved
+
+const ALT = {
+  c1:  'Divide 60 minutos en 4 partes iguales. ¿Cuánto vale cada parte? Ahora multiplícalo por 3.',
+  c2:  'Truco: pon "el" o "la" delante de cada palabra. ¿Cuál funciona sin que suene raro?',
+  c3:  '1 km son 1.000 m. Convierte los kilómetros a metros primero, luego suma.',
+  c4:  'Go y Find son irregulares. No llevan -ed. Go → went. Find → found.',
+  c5:  'Las esdrújulas tienen la síleta fuerte en la ANTEPENÚLTIMA sílaba y siempre llevan tilde.',
+  c6:  '1 kg = 1.000 g. Convierte los 2 kg a gramos y luego suma todo.',
+  c7:  '3 litros = 3.000 ml. Divide 3.000 entre 250 para saber cuántos minutos.',
+  c8:  '2h 35min − 47min. Si los minutos no alcanzan, toma 60 minutos prestados de las horas.',
+  c9:  'Dark tiene 1 sílaba → comparativo con -er: dar___. Completa: dark+er = ?',
+  c10: '2×2×2 = 8 m³. Y 1 m³ = 1.000 litros. Multiplica.',
+  c11: 'The last sentence has the answer. Re-read it carefully.'
+};
+
+const SECTION_ORDER = [
+  'cover','prologue','ch1','ch1b','ch2','ch2b','ch3','ch3b','ch3c','ch4','ch4b','ch4c','ch4d','epilogue'
+];
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function goTo(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('score-badge').classList.add('on');
+  const idx = SECTION_ORDER.indexOf(id);
+  const pct = idx < 0 ? 0 : Math.round((idx / (SECTION_ORDER.length - 1)) * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  currentSection = id;
+  saveProgress();
+}
+
+// ═══════════════════════════════════════
+// MULTIPLE CHOICE
+// ═══════════════════════════════════════
+function checkOpt(cid, chosen, correctIdx, gridId, fbId, blancaId, contId) {
+  if (!attempts[cid]) attempts[cid] = 0;
+  const btns   = document.getElementById(gridId).querySelectorAll('.opt');
+  const fb     = document.getElementById(fbId);
+  const blanca = document.getElementById(blancaId);
+  const cont   = document.getElementById(contId);
+  const dot1   = document.getElementById(cid + 'd1');
+  const dot2   = document.getElementById(cid + 'd2');
+
+  if (chosen === correctIdx) {
+    btns.forEach(b => b.disabled = true);
+    btns[chosen].classList.add('ok');
+    const pts = attempts[cid] === 0 ? 20 : 10;
+    score += pts; updateScore();
+    fb.textContent = attempts[cid] === 0 ? '¡CORRECTO A LA PRIMERA! ⚡' : '¡CORRECTO! Bien hecho 👍';
+    fb.className = 'ch-feedback ok';
+    blanca.classList.add('on');
+    cont.classList.add('on');
+    solvedChallenges[cid] = true;
+    saveProgress();
+    burst();
+  } else {
+    attempts[cid]++;
+    btns[chosen].classList.add('no');
+    setTimeout(() => btns[chosen].classList.remove('no'), 500);
+    if (attempts[cid] === 1) {
+      dot1.classList.add('used');
+      fb.textContent = '¡No es esa! Intenta de nuevo 🔦';
+      fb.className = 'ch-feedback fail';
+    } else if (attempts[cid] === 2) {
+      dot2.classList.add('used');
+      const sit = document.querySelector('#' + cid + ' .ch-situation');
+      if (sit && ALT[cid]) sit.innerHTML = '💡 <strong>Nueva pista:</strong> ' + ALT[cid];
+      fb.textContent = '¡Casi! Lee la nueva pista de arriba 👆';
+      fb.className = 'ch-feedback fail';
+    } else {
+      fb.textContent = '¡Sigue intentando! Puedes 💪';
+      fb.className = 'ch-feedback fail';
+    }
+  }
+}
+
+// ═══════════════════════════════════════
+// OPEN ANSWER
+// ═══════════════════════════════════════
+function checkOpen(cid, correct, tol, inputId, btnId, fbId, blancaId, contId) {
+  if (!attempts[cid]) attempts[cid] = 0;
+  const input  = document.getElementById(inputId);
+  const btn    = document.getElementById(btnId);
+  const fb     = document.getElementById(fbId);
+  const blanca = document.getElementById(blancaId);
+  const cont   = document.getElementById(contId);
+  const dot1   = document.getElementById(cid + 'd1');
+  const dot2   = document.getElementById(cid + 'd2');
+  const val    = parseFloat(input.value.replace(',', '.'));
+
+  if (isNaN(val)) { fb.textContent = 'Escribe un número 🔢'; fb.className = 'ch-feedback fail'; return; }
+
+  if (Math.abs(val - correct) <= tol) {
+    input.disabled = true; btn.disabled = true;
+    input.classList.add('ok');
+    const pts = attempts[cid] === 0 ? 20 : 10;
+    score += pts; updateScore();
+    fb.textContent = '¡CORRECTO! ⚡ ¡Exactamente!';
+    fb.className = 'ch-feedback ok';
+    blanca.classList.add('on');
+    cont.classList.add('on');
+    solvedChallenges[cid] = true;
+    saveProgress();
+    burst();
+  } else {
+    attempts[cid]++;
+    input.classList.add('no');
+    setTimeout(() => { input.classList.remove('no'); input.value = ''; }, 500);
+    if (attempts[cid] === 1) {
+      dot1.classList.add('used');
+      fb.textContent = 'No es ese número. ¡Revisa el cálculo! 🔦';
+      fb.className = 'ch-feedback fail';
+    } else if (attempts[cid] === 2) {
+      dot2.classList.add('used');
+      const sit = document.querySelector('#' + cid + ' .ch-situation');
+      if (sit && ALT[cid]) sit.innerHTML = '💡 <strong>Pista:</strong> ' + ALT[cid];
+      fb.textContent = '¡Nueva pista arriba! Vuelve a intentarlo 👆';
+      fb.className = 'ch-feedback fail';
+    } else {
+      fb.textContent = '¡Casi! Repasa los pasos uno a uno 💪';
+      fb.className = 'ch-feedback fail';
+    }
+  }
+}
+
+// ═══════════════════════════════════════
+// SCORE & END
+// ═══════════════════════════════════════
+function updateScore() {
+  document.getElementById('score-display').textContent = score;
+}
+
+function showEnding() {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('ending').style.display = 'block';
+  document.getElementById('final-score').textContent = score;
+  document.getElementById('prog').style.width = '100%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  clearProgress(); // adventure complete — wipe save
+}
+
+function restartAll() {
+  score = 0; attempts = {}; solvedChallenges = {}; currentSection = 'cover';
+  updateScore();
+  clearProgress();
+  document.getElementById('ending').style.display = 'none';
+  document.getElementById('resume-modal').style.display = 'none';
+  document.querySelectorAll('.opt').forEach(b => { b.disabled = false; b.classList.remove('ok','no'); });
+  document.querySelectorAll('.open-input').forEach(i => { i.disabled = false; i.value = ''; i.classList.remove('ok','no'); });
+  document.querySelectorAll('.btn-check').forEach(b => b.disabled = false);
+  document.querySelectorAll('.ch-feedback').forEach(f => { f.textContent = ''; f.className = 'ch-feedback'; });
+  document.querySelectorAll('.blanca-box').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.btn-cont').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.adot').forEach(d => d.classList.remove('used'));
+  goTo('cover');
+}
+
+// ─── Restore a saved state onto the DOM ───────────────────────
+function applyState(saved) {
+  score = saved.score || 0;
+  attempts = saved.attempts || {};
+  solvedChallenges = saved.solvedChallenges || {};
+  updateScore();
+
+  // Re-apply solved challenge UI
+  Object.keys(solvedChallenges).forEach(cid => {
+    // Mark correct option (find the green btn — we just lock all and show blanca+cont)
+    const grid = document.querySelector('#' + cid + ' .opts, #' + cid + ' .open-row');
+    if (grid) {
+      grid.querySelectorAll('.opt').forEach(b => b.disabled = true);
+      const inp = document.querySelector('#' + cid + ' .open-input');
+      const btn = document.querySelector('#' + cid + ' .btn-check');
+      if (inp) { inp.disabled = true; inp.classList.add('ok'); }
+      if (btn) btn.disabled = true;
+    }
+    const fb = document.getElementById(cid + 'f');
+    if (fb) { fb.textContent = '✅ Desafío superado'; fb.className = 'ch-feedback ok'; }
+    const blanca = document.getElementById(cid + 'b');
+    if (blanca) blanca.classList.add('on');
+    const cont = document.getElementById(cid + 'c');
+    if (cont) cont.classList.add('on');
+  });
+
+  // Re-apply attempt dots
+  Object.keys(attempts).forEach(cid => {
+    const n = attempts[cid];
+    if (n >= 1) { const d = document.getElementById(cid + 'd1'); if(d) d.classList.add('used'); }
+    if (n >= 2) { const d = document.getElementById(cid + 'd2'); if(d) d.classList.add('used'); }
+  });
+}
+
+// ─── RESUME MODAL ─────────────────────────────────────────────
+function resumeGame() {
+  document.getElementById('resume-modal').style.display = 'none';
+  const saved = loadProgress();
+  if (saved) {
+    applyState(saved);
+    goTo(saved.currentSection || 'cover');
+  }
+}
+
+function newGame() {
+  document.getElementById('resume-modal').style.display = 'none';
+  clearProgress();
+  goTo('cover');
+}
+
+// ═══════════════════════════════════════
+// BURST
+// ═══════════════════════════════════════
+function burst() {
+  const em = ['⭐','✨','🔦','💫','📚','⚡','🌟'];
+  for (let i = 0; i < 7; i++) {
+    const el = document.createElement('div');
+    el.className = 'burst-p';
+    el.textContent = em[Math.floor(Math.random() * em.length)];
+    el.style.left = (25 + Math.random() * 50) + '%';
+    el.style.top  = (35 + Math.random() * 25) + '%';
+    el.style.setProperty('--tx', (Math.random() - .5) * 140 + 'px');
+    el.style.setProperty('--ty', -(40 + Math.random() * 90) + 'px');
+    el.style.animationDelay = i * .07 + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1100);
+  }
+}
+
+// ═══════════════════════════════════════
+// INIT — check for saved game
+// ═══════════════════════════════════════
+updateScore();
+
+(function init() {
+  const saved = loadProgress();
+  if (saved && saved.currentSection && saved.currentSection !== 'cover') {
+    // Show resume modal
+    const modal = document.getElementById('resume-modal');
+    // Fill in progress info
+    const chapterNames = {
+      'prologue':'Prólogo', 'ch1':'Capítulo 1', 'ch1b':'Capítulo 1',
+      'ch2':'Capítulo 2', 'ch2b':'Capítulo 2', 'ch3':'Capítulo 3',
+      'ch3b':'Capítulo 3', 'ch3c':'Capítulo 3', 'ch4':'Capítulo 4',
+      'ch4b':'Capítulo 4', 'ch4c':'Capítulo 4', 'ch4d':'Capítulo 4',
+      'epilogue':'Epílogo'
+    };
+    const solved = Object.keys(saved.solvedChallenges || {}).length;
+    document.getElementById('resume-chapter').textContent =
+      chapterNames[saved.currentSection] || saved.currentSection;
+    document.getElementById('resume-score').textContent = saved.score || 0;
+    document.getElementById('resume-solved').textContent = solved;
+    modal.style.display = 'flex';
+  }
+})();
+</script>
+</body>
+</html>

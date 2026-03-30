@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English from the Upside Down — André's Mission</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Nunito:wght@400;600;700;900&display=swap');
+
+:root {
+  --bg: #06080f;
+  --panel: #0e1020;
+  --panel2: #141828;
+  --border: #1e2240;
+  --red: #e63946;
+  --red-glow: rgba(230,57,70,0.4);
+  --teal: #00f0c8;
+  --teal-glow: rgba(0,240,200,0.35);
+  --yellow: #ffd166;
+  --purple: #9b5de5;
+  --purple-glow: rgba(155,93,229,0.4);
+  --text: #d0d8f0;
+  --dim: #505878;
+  --white: #fff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Vines / tentacle SVG bg */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(155,93,229,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 30% at 80% 100%, rgba(230,57,70,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Spore particles */
+.spore {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  animation: spore-drift linear infinite;
+}
+@keyframes spore-drift {
+  0%   { opacity: 0; transform: translateY(100vh) scale(0.5); }
+  10%  { opacity: 0.5; }
+  90%  { opacity: 0.2; }
+  100% { opacity: 0; transform: translateY(-10vh) scale(1.2); }
+}
+
+/* Flickering top strip */
+.flicker-strip {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg,
+    #ff2244 0px, #ff2244 20px, transparent 20px, transparent 44px,
+    #00f0c8 44px, #00f0c8 64px, transparent 64px, transparent 88px,
+    #9b5de5 88px, #9b5de5 108px, transparent 108px, transparent 132px,
+    #ffd166 132px, #ffd166 152px, transparent 152px, transparent 176px
+  );
+  animation: strip-flicker 5s infinite;
+  z-index: 999;
+}
+@keyframes strip-flicker {
+  0%,100%{opacity:1} 12%{opacity:.2} 13%{opacity:1} 55%{opacity:.5} 56%{opacity:1} 82%{opacity:.3} 83%{opacity:1}
+}
+
+/* Container */
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 18px 16px 50px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── HEADER ── */
+.hdr {
+  text-align: center;
+  padding: 22px 0 14px;
+}
+.hdr-main {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(1.9rem, 7vw, 3.2rem);
+  color: var(--red);
+  text-shadow: 0 0 18px var(--red-glow), 0 0 40px rgba(230,57,70,.2);
+  letter-spacing: 2px;
+  line-height: 1;
+  animation: redpulse 4s ease-in-out infinite;
+}
+@keyframes redpulse {
+  0%,100%{text-shadow:0 0 18px var(--red-glow)}
+  50%{text-shadow:0 0 30px rgba(230,57,70,.9),0 0 60px rgba(230,57,70,.4)}
+}
+.hdr-sub {
+  font-size: .72rem;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-top: 5px;
+  opacity: .85;
+}
+.hdr-player {
+  font-family: 'Special Elite', cursive;
+  font-size: .95rem;
+  color: var(--yellow);
+  margin-top: 8px;
+  text-shadow: 0 0 8px rgba(255,209,102,.4);
+}
+
+/* ── STATS ── */
+.stats {
+  display: flex;
+  justify-content: space-around;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 8px;
+  margin: 14px 0 10px;
+  position: relative;
+  overflow: hidden;
+}
+.stats::after {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+}
+.st { text-align:center; }
+.st-lbl { font-size:.58rem; letter-spacing:2px; text-transform:uppercase; color:var(--dim); display:block; margin-bottom:2px; }
+.st-val { font-family:'Special Elite',cursive; font-size:1.4rem; }
+.st-val.m { color:var(--teal); }
+.st-val.l { color:var(--red); }
+.st-val.s { color:var(--yellow); }
+
+/* ── PROGRESS ── */
+.prog-wrap { margin-bottom:14px; }
+.prog-lbl { display:flex; justify-content:space-between; font-size:.58rem; letter-spacing:2px; text-transform:uppercase; color:var(--dim); margin-bottom:4px; }
+.prog-lbl span { color:var(--purple); }
+.prog-track { height:5px; background:var(--panel2); border-radius:3px; border:1px solid var(--border); overflow:hidden; }
+.prog-fill { height:100%; background:linear-gradient(90deg,var(--purple),var(--teal)); border-radius:3px; transition:width .5s ease; box-shadow:0 0 6px var(--purple-glow); }
+
+/* ── CATEGORY BADGE ── */
+.cat-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(155,93,229,.1); border:1px solid rgba(155,93,229,.3);
+  border-radius:6px; padding:4px 14px;
+  font-size:.65rem; letter-spacing:2px; text-transform:uppercase;
+  color:var(--purple); margin-bottom:12px;
+}
+
+/* ── QUESTION CARD ── */
+.q-card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px 20px 18px;
+  margin-bottom:14px;
+  position:relative; overflow:hidden;
+}
+.q-card::before {
+  content:''; position:absolute; top:0;left:0;right:0; height:2px;
+  background:linear-gradient(90deg,var(--red),transparent,var(--purple));
+}
+
+.q-who { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.q-av {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--panel2); border:1.5px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem; flex-shrink:0;
+}
+.q-name { font-size:.65rem; letter-spacing:2px; color:var(--teal); font-weight:700; text-transform:uppercase; }
+.q-desc { font-size:.68rem; color:var(--dim); }
+
+.q-ctx {
+  font-size:.8rem; color:var(--dim); font-style:italic; line-height:1.5;
+  border-left:2px solid var(--border); padding-left:10px; margin-bottom:10px;
+}
+.q-txt { font-size:1.05rem; font-weight:700; line-height:1.5; color:var(--white); }
+
+/* fill-blank highlight */
+.blank {
+  display:inline-block;
+  background:rgba(0,240,200,.12);
+  border-bottom:2px solid var(--teal);
+  min-width:80px; padding:0 6px;
+  border-radius:3px 3px 0 0;
+  color:var(--teal); font-style:italic;
+}
+
+/* ── HINT ── */
+.hint-box {
+  background:rgba(255,209,102,.07); border:1px solid rgba(255,209,102,.22);
+  border-radius:8px; padding:10px 14px;
+  font-size:.8rem; color:var(--yellow); line-height:1.5;
+  display:none; margin-bottom:12px;
+}
+.hint-box.on { display:block; }
+
+/* ── ANSWERS ── */
+.ans-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:14px; }
+
+.ans-btn {
+  background:var(--panel2); border:1.5px solid var(--border);
+  border-radius:10px; padding:13px 10px;
+  font-family:'Nunito',sans-serif; font-size:.9rem; font-weight:700;
+  color:var(--text); cursor:pointer; transition:all .18s;
+  text-align:center; line-height:1.3;
+}
+.ans-btn:hover:not(:disabled) {
+  border-color:var(--teal); color:var(--white);
+  transform:translateY(-2px); box-shadow:0 4px 14px var(--teal-glow);
+  background:rgba(0,240,200,.07);
+}
+.ans-btn.ok {
+  background:rgba(0,240,200,.14); border-color:var(--teal); color:var(--teal);
+  box-shadow:0 0 18px var(--teal-glow); animation:okpop .35s ease;
+}
+.ans-btn.no {
+  background:rgba(230,57,70,.13); border-color:var(--red); color:var(--red);
+  box-shadow:0 0 16px var(--red-glow); animation:noshake .4s ease;
+}
+@keyframes okpop  { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
+@keyframes noshake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+.ans-btn:disabled { cursor:default; }
+
+/* ── FEEDBACK ── */
+.feedback {
+  text-align:center; font-family:'Special Elite',cursive;
+  font-size:1.1rem; letter-spacing:1px; min-height:1.6rem; margin-bottom:8px;
+}
+.feedback.ok  { color:var(--teal); text-shadow:0 0 12px var(--teal-glow); }
+.feedback.no  { color:var(--red);  text-shadow:0 0 12px var(--red-glow); }
+
+/* ── EXPLANATION ── */
+.explain {
+  background:var(--panel2); border-left:3px solid var(--teal);
+  border-radius:0 10px 10px 0; padding:12px 14px;
+  font-size:.8rem; line-height:1.6; color:var(--dim);
+  display:none; margin-bottom:12px;
+}
+.explain.on { display:block; }
+.explain strong { color:var(--teal); }
+.explain em { color:var(--text); font-style:normal; }
+
+/* ── DIVIDER ── */
+.vine-line {
+  height:2px; border-radius:2px; margin:12px 0;
+  background:linear-gradient(90deg,transparent,var(--purple),transparent);
+  box-shadow:0 0 7px var(--purple-glow);
+  animation:vinepulse 5s ease-in-out infinite;
+}
+@keyframes vinepulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+/* ── BUTTONS ── */
+.btn-row { display:flex; gap:8px; }
+
+.btn-hint {
+  flex:1; background:transparent;
+  border:1.5px solid rgba(255,209,102,.35); border-radius:8px; padding:10px;
+  font-family:'Nunito',sans-serif; font-size:.75rem; font-weight:700;
+  letter-spacing:1px; color:var(--yellow); cursor:pointer; transition:all .2s;
+}
+.btn-hint:hover { background:rgba(255,209,102,.09); border-color:var(--yellow); }
+.btn-hint:disabled { opacity:.25; cursor:default; }
+
+.btn-next {
+  flex:2; background:linear-gradient(135deg,#6b0012,var(--red));
+  border:none; border-radius:8px; padding:10px 20px;
+  font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:900;
+  letter-spacing:1px; color:var(--white); cursor:pointer; transition:all .2s;
+  display:none; box-shadow:0 4px 14px var(--red-glow);
+}
+.btn-next.on { display:block; }
+.btn-next:hover { transform:translateY(-2px); box-shadow:0 6px 20px var(--red-glow); }
+
+/* ── START SCREEN ── */
+#start-screen {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:16px; padding:26px 20px; margin-top:8px; text-align:center;
+  position:relative; overflow:hidden;
+}
+#start-screen::before {
+  content:''; position:absolute; top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+}
+.start-icon { font-size:3.2rem; display:block; margin-bottom:12px; animation:floatbob 3s ease-in-out infinite; }
+@keyframes floatbob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+.start-txt { font-size:.88rem; line-height:1.7; color:var(--dim); margin-bottom:18px; }
+.start-txt strong { color:var(--text); }
+.start-txt .hi { color:var(--teal); font-weight:900; }
+
+.topic-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; text-align:left; }
+.topic-item { background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:.77rem; color:var(--dim); }
+.topic-item strong { display:block; color:var(--text); font-size:.82rem; margin-bottom:1px; }
+
+.btn-start {
+  background:linear-gradient(135deg,#6b0012,var(--red));
+  border:none; border-radius:12px; padding:14px 44px;
+  font-family:'Nunito',sans-serif; font-size:1rem; font-weight:900;
+  letter-spacing:2px; text-transform:uppercase; color:var(--white);
+  cursor:pointer; box-shadow:0 4px 22px var(--red-glow); transition:all .2s;
+}
+.btn-start:hover { transform:translateY(-3px); box-shadow:0 8px 30px var(--red-glow); }
+
+/* ── END SCREEN ── */
+.end-screen { display:none; background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:30px 20px; text-align:center; }
+.end-screen.on { display:block; }
+.end-title { font-family:'Special Elite',cursive; font-size:clamp(1.6rem,6vw,2.5rem); letter-spacing:2px; margin-bottom:12px; line-height:1.2; }
+.end-title.win { color:var(--teal); text-shadow:0 0 28px var(--teal-glow); }
+.end-title.lose { color:var(--red); text-shadow:0 0 28px var(--red-glow); }
+.end-msg { font-size:.9rem; line-height:1.7; color:var(--dim); margin-bottom:16px; }
+.end-pts { font-family:'Special Elite',cursive; font-size:1.9rem; color:var(--yellow); margin-bottom:20px; }
+.btn-again {
+  background:linear-gradient(135deg,#6b0012,var(--red)); border:none; border-radius:10px;
+  padding:13px 36px; font-family:'Nunito',sans-serif; font-size:.9rem; font-weight:900;
+  letter-spacing:2px; text-transform:uppercase; color:var(--white); cursor:pointer;
+  box-shadow:0 4px 18px var(--red-glow); transition:all .2s;
+}
+.btn-again:hover { transform:translateY(-2px); box-shadow:0 6px 24px var(--red-glow); }
+
+/* Burst particles */
+.burst { position:fixed; pointer-events:none; z-index:150; font-size:1.1rem; animation:burstfly 1s ease forwards; }
+@keyframes burstfly { 0%{transform:translate(0,0) scale(1);opacity:1} 100%{transform:translate(var(--tx),var(--ty)) scale(.2);opacity:0} }
+</style>
+</head>
+<body>
+
+<div class="flicker-strip"></div>
+
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-main">ENGLISH FROM<br>THE UPSIDE DOWN</div>
+    <div class="hdr-sub">Hawkins English Academy · Level 5</div>
+    <div class="hdr-player">🔦 Agent André — Classified</div>
+  </div>
+
+  <!-- START -->
+  <div id="start-screen">
+    <span class="start-icon">🌀</span>
+    <p class="start-txt">
+      <strong>The gate to the Upside Down is open again, André.</strong><br><br>
+      The Mind Flayer has stolen all the English books from Hawkins Middle School. Every correct answer closes a part of the gate. Every mistake... and the Demogorgon gets closer.<br><br>
+      <span class="hi">10 missions. 3 lives. You can do this.</span>
+    </p>
+    <div class="topic-grid">
+      <div class="topic-item"><strong>📖 VOCABULARY</strong>synonyms, opposites, meaning</div>
+      <div class="topic-item"><strong>🔤 GRAMMAR</strong>tenses, articles, prepositions</div>
+      <div class="topic-item"><strong>✍️ SPELLING</strong>tricky English words</div>
+      <div class="topic-item"><strong>🗣️ EXPRESSIONS</strong>phrasal verbs, phrases</div>
+      <div class="topic-item"><strong>📝 READING</strong>comprehension, inference</div>
+      <div class="topic-item"><strong>🔡 WORD FORMS</strong>nouns, verbs, adjectives</div>
+    </div>
+    <button class="btn-start" onclick="startGame()">⚡ OPEN THE GATE</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="game-screen" style="display:none;">
+    <div class="stats">
+      <div class="st"><span class="st-lbl">Mission</span><span class="st-val m" id="q-num">1/10</span></div>
+      <div class="st"><span class="st-lbl">Lives</span><span class="st-val l" id="lives-disp">❤️❤️❤️</span></div>
+      <div class="st"><span class="st-lbl">Score</span><span class="st-val s" id="score-disp">0</span></div>
+    </div>
+
+    <div class="prog-wrap">
+      <div class="prog-lbl">GATE CLOSING... <span id="prog-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="cat-badge" id="cat-badge">📖 VOCABULARY</div>
+
+    <div class="q-card">
+      <div class="q-who">
+        <div class="q-av" id="q-av">🔦</div>
+        <div>
+          <div class="q-name" id="q-name">ELEVEN</div>
+          <div class="q-desc" id="q-desc">Hawkins Lab · English Expert</div>
+        </div>
+      </div>
+      <div class="q-ctx" id="q-ctx">Context loading...</div>
+      <div class="q-txt" id="q-txt">Question here</div>
+    </div>
+
+    <div class="hint-box" id="hint-box">💡 <span id="hint-txt"></span></div>
+    <div class="ans-grid" id="ans-grid"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="explain" id="explain"></div>
+    <div class="vine-line"></div>
+
+    <div class="btn-row">
+      <button class="btn-hint" id="btn-hint" onclick="showHint()">🔦 HINT</button>
+      <button class="btn-next on" id="btn-next" onclick="nextQ()" style="display:none;">NEXT MISSION →</button>
+    </div>
+  </div>
+
+  <!-- END -->
+  <div class="end-screen" id="end-screen">
+    <div class="end-title" id="end-title">GATE CLOSED!</div>
+    <div class="end-msg" id="end-msg"></div>
+    <div class="end-pts" id="end-pts"></div>
+    <button class="btn-again" onclick="restartGame()">🔄 NEW MISSION</button>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  QUESTION BANK — English 5th Primary + Stranger Things
+// ═══════════════════════════════════════════════════════════
+const BANK = [
+
+  // ── VOCABULARY ──────────────────────────────────────────
+  {
+    cat:"📖 VOCABULARY — SYNONYMS",
+    av:"👧", name:"ELEVEN", desc:"Hawkins Lab · Powers & Vocabulary",
+    ctx:"Eleven tries to explain her feelings to Mike. She says she is very SCARED in the Upside Down. Mike says: 'You mean... frightened?'",
+    q:"Which word is a SYNONYM of SCARED?",
+    opts:["bored","frightened","angry","happy"],
+    correct:1,
+    hint:"A synonym means the same (or almost the same). Think: if you're scared, you feel...?",
+    explain:"<strong>Frightened</strong> is a synonym of scared. Both mean feeling fear. Other synonyms: terrified, afraid, petrified. Eleven was ALL of these in the Upside Down!"
+  },
+  {
+    cat:"📖 VOCABULARY — OPPOSITES",
+    av:"🧒", name:"DUSTIN", desc:"The Smart One · Antonym Hunter",
+    ctx:"Dustin is writing an entry in his monster encyclopedia. He describes the Demogorgon as DANGEROUS. His mum says: 'What's the OPPOSITE of dangerous, honey?' Dustin sighs.",
+    q:"What is the OPPOSITE (antonym) of DANGEROUS?",
+    opts:["scary","huge","safe","wild"],
+    correct:2,
+    hint:"The opposite of dangerous means something that won't hurt you.",
+    explain:"<strong>Safe</strong> is the antonym of dangerous. Dangerous = can cause harm. Safe = no risk of harm. Hawkins was definitely NOT safe in seasons 1-4... or ever, really."
+  },
+  {
+    cat:"📖 VOCABULARY — WORD MEANING",
+    av:"👮", name:"CHIEF HOPPER", desc:"Hawkins Police · Dictionary Department",
+    ctx:"Hopper writes his police report: 'The creature was ENORMOUS.' His deputy asks: 'Chief, what does enormous mean exactly?' Hopper stares at him for 10 seconds.",
+    q:"What does ENORMOUS mean?",
+    opts:["very small","very fast","very large","very loud"],
+    correct:2,
+    hint:"Think of enormous things: elephants, the Upside Down, Hopper's ego...",
+    explain:"<strong>Enormous</strong> means very, very large. It comes from Latin 'enormis' meaning 'out of the normal size'. The Mind Flayer was definitely enormous. So was Hopper's appetite for Eggo waffles."
+  },
+  {
+    cat:"📖 VOCABULARY — PHRASAL VERBS",
+    av:"🦸", name:"MIKE WHEELER", desc:"Party Leader · Phrasal Verb Specialist",
+    ctx:"Mike calls Will on his walkie-talkie: 'Will, LOOK OUT! The Demogorgon is behind you!' Will: 'What does look out mean?!' Mike: 'IT MEANS BE CAREFUL, NOW RUN!'",
+    q:"What does the phrasal verb LOOK OUT mean?",
+    opts:["search for something","be careful / watch for danger","look outside a window","find a way out"],
+    correct:1,
+    hint:"Mike shouts it when Will is in danger. It's a warning.",
+    explain:"<strong>Look out!</strong> = Be careful! Watch out for danger! Other useful phrasal verbs: <em>look for</em> (search), <em>look after</em> (take care of), <em>look up</em> (search in a dictionary). Eleven should have 'looked out' for the Demogorgon a bit more."
+  },
+
+  // ── GRAMMAR ──────────────────────────────────────────────
+  {
+    cat:"🔤 GRAMMAR — PAST SIMPLE",
+    av:"👩", name:"JOYCE BYERS", desc:"Will's Mum · Tense Expert (she's lived through a lot)",
+    ctx:"Joyce is telling the story to a new police officer: 'Last year, my son Will _____ into the Upside Down.' The officer looks confused. Joyce looks MORE confused that he's confused.",
+    q:"Choose the correct PAST SIMPLE form: 'Will _____ into the Upside Down.'",
+    opts:["disappear","disappears","disappeared","is disappearing"],
+    correct:2,
+    hint:"The story happened in the past. Past simple regular verbs end in -ED.",
+    explain:"<strong>Disappeared</strong> is correct. Past simple of regular verbs: add <em>-ed</em> to the base form. 'Last year' is a clue that we need past simple. Disappeared = vanished, was gone. Poor Will disappeared A LOT throughout the series."
+  },
+  {
+    cat:"🔤 GRAMMAR — PRESENT CONTINUOUS",
+    av:"🧒", name:"LUCAS", desc:"The Realist · Grammar Watcher",
+    ctx:"Lucas sends a walkie-talkie message to the party: 'Guys! Right now, the Demogorgon _____ towards the school! We need to move!' Everyone panics. As usual.",
+    q:"Choose the correct PRESENT CONTINUOUS form:",
+    opts:["walk","walked","is walking","walks"],
+    correct:2,
+    hint:"Present continuous = something happening RIGHT NOW. Form: am/is/are + verb-ing",
+    explain:"<strong>Is walking</strong> is correct. Present continuous = <em>is/am/are + verb+ing</em>. We use it for actions happening at this exact moment. 'Right now' is the clue. Structure: He/She/It + IS + verb-ING. The Demogorgon is definitely walking towards them right now. Run!"
+  },
+  {
+    cat:"🔤 GRAMMAR — ARTICLES (a / an / the)",
+    av:"👧", name:"ELEVEN", desc:"Hawkins Lab · Article Apprentice",
+    ctx:"Eleven tries to speak more English. She tells Mike: 'I found ___ Upside Down portal under ___ school. It was ___ scary place.' Mike corrects her articles gently.",
+    q:"Fill in the gaps: 'I found ___ portal under ___ school.'",
+    opts:["a / a","the / the","a / the","an / a"],
+    correct:2,
+    hint:"First time you mention something = a/an. When it's specific or already known = the. A school is a specific building they both know.",
+    explain:"<strong>A / the</strong> is correct. We say <em>a portal</em> (first mention, one of many portals) but <em>the school</em> (a specific school they both know — Hawkins Middle School). Rule: first mention = a/an; specific/known thing = the."
+  },
+  {
+    cat:"🔤 GRAMMAR — PREPOSITIONS",
+    av:"👮", name:"CHIEF HOPPER", desc:"Hawkins Police · Preposition Patrol",
+    ctx:"Hopper writes his report: 'The creature came _____ the forest and went _____ the building. Then it hid _____ the basement.' He crosses out 'in, on, at' fifteen times.",
+    q:"Choose the correct preposition: 'The monster hid _____ the basement.'",
+    opts:["on","at","in","to"],
+    correct:2,
+    hint:"We use IN for enclosed spaces, rooms, and buildings.",
+    explain:"<strong>In</strong> is correct. We use <em>in</em> for enclosed spaces: in the basement, in the room, in the Upside Down. Compare: <em>on</em> = surface (on the table), <em>at</em> = specific point/place (at school, at home). The Mind Flayer was definitely hiding <em>in</em> the basement. Creepy."
+  },
+  {
+    cat:"🔤 GRAMMAR — QUESTIONS",
+    av:"🧒", name:"DUSTIN", desc:"Question King of Hawkins",
+    ctx:"Dustin interrogates a new kid about their knowledge of the Upside Down. He fires questions at lightning speed: 'Where do you live? What is your name? _____ you ever seen a Demogorgon?'",
+    q:"Which is the correct question form?",
+    opts:["You have ever seen...?","Have you ever seen...?","Did you ever saw...?","Do you ever seen...?"],
+    correct:1,
+    hint:"'Ever' questions about life experiences use HAVE + subject + ever + past participle.",
+    explain:"<strong>Have you ever seen...?</strong> is correct. This is the Present Perfect used for life experiences. Structure: <em>Have/Has + subject + ever + past participle</em>. 'Seen' is the past participle of 'see'. Dustin has definitely asked this question to EVERYONE in Hawkins."
+  },
+
+  // ── SPELLING ──────────────────────────────────────────────
+  {
+    cat:"✍️ SPELLING — TRICKY WORDS",
+    av:"👩‍🏫", name:"MRS CLICK", desc:"Hawkins English Teacher · Spelling Champion",
+    ctx:"Mrs Click sets a spelling test. She says: 'The Upside Down is a BEAUTIFUL but terrifying place.' One student spells it BEAUTIFULL. She nearly faints.",
+    q:"Which is the CORRECT spelling?",
+    opts:["beautifull","beutiful","beautiful","beautyful"],
+    correct:2,
+    hint:"Beauty → Beautiful. The ending is -ful (one L), and 'beauty' drops the Y and adds I.",
+    explain:"<strong>Beautiful</strong> is correct. The rule: beauty → beaut<em>i</em>ful (change Y to I, add -ful with ONE L). Other examples: plenty → plentiful, wonder → wonderful. Mrs Click would award Eleven 10 points for this!"
+  },
+  {
+    cat:"✍️ SPELLING — SILENT LETTERS",
+    av:"🧒", name:"WILL BYERS", desc:"Upside Down Survivor · Silent Letter Expert",
+    ctx:"Will tells his therapist: 'In the Upside Down, everything is quiet. Like the K in some English words.' The therapist writes: 'Patient is using spelling metaphors. Progress.'",
+    q:"Which word has a SILENT letter?",
+    opts:["jump","know","tree","lamp"],
+    correct:1,
+    hint:"Some words have letters you write but don't pronounce. The word 'know' sounds like...",
+    explain:"<strong>Know</strong> has a silent K — it sounds like 'no'. Other silent K words: knee, knock, knife, knight. English is full of silent letters: the W in 'write', the B in 'lamb', the G in 'sign'. Will says it's like the Upside Down — things aren't always what they seem."
+  },
+  {
+    cat:"✍️ SPELLING — DOUBLE LETTERS",
+    av:"🦸", name:"MIKE WHEELER", desc:"AV Club President · Spelling Nerd",
+    ctx:"Mike writes a letter to Eleven: 'I really MISS you. The town is DIFFERENT without you.' He spells 'different' wrong four times before getting it right.",
+    q:"Which is the correct spelling of 'diferent / different'?",
+    opts:["diferent","diffrent","different","diferrent"],
+    correct:2,
+    hint:"Think: dif-FER-ent. Two F's in the middle.",
+    explain:"<strong>Different</strong> is correct, with double F. A good trick: say it slowly — dif-FER-ent. Other common double-letter words: <em>necessary</em> (one C, two S), <em>tomorrow</em> (one T, double R, double O). Mike's spelling got better once Eleven came back, oddly enough."
+  },
+
+  // ── READING COMPREHENSION ─────────────────────────────────
+  {
+    cat:"📝 READING — COMPREHENSION",
+    av:"👩", name:"JOYCE BYERS", desc:"Hawkins Mum · Reading Detective",
+    ctx:'Read this short text: "The Upside Down is a dark dimension that exists parallel to the human world. It is covered in strange vines and filled with dangerous creatures. Time seems to move differently there."',
+    q:"According to the text, what is the Upside Down?",
+    opts:["A haunted house in Hawkins","A dark dimension parallel to our world","An underground laboratory","A dream Will has at night"],
+    correct:1,
+    hint:"The answer is in the first sentence of the text.",
+    explain:"<strong>A dark dimension parallel to our world</strong> — this is directly stated in the first sentence. Reading comprehension tip: for 'According to the text' questions, the answer is always IN the text, not from your own knowledge. Stick to what you read!"
+  },
+  {
+    cat:"📝 READING — INFERENCE",
+    av:"🧒", name:"DUSTIN", desc:"The Analytical One · Reading Between the Lines",
+    ctx:'"Eleven walked slowly into the cafeteria. She looked at the food on every tray. Her eyes were wide. She sat down and picked up a fork with both hands."',
+    q:"What can we INFER about Eleven from this text?",
+    opts:[
+      "She is angry at the other students",
+      "She had never used a fork before",
+      "She is probably very hungry and unfamiliar with the place",
+      "She is looking for her friends"
+    ],
+    correct:2,
+    hint:"Inference = reading between the lines. What do 'wide eyes' and looking at every tray suggest?",
+    explain:"<strong>She is probably very hungry and unfamiliar with the place</strong>. Clues: she looks at every tray of food (hungry + curious), her eyes are wide (amazed, unfamiliar), she picks up the fork with BOTH hands (not experienced with cutlery). Inference = using clues to reach a logical conclusion not directly stated."
+  },
+
+  // ── WORD FORMS ────────────────────────────────────────────
+  {
+    cat:"🔡 WORD FORMS — ADJECTIVES",
+    av:"👧", name:"ELEVEN", desc:"Hawkins Lab · Word Builder",
+    ctx:"Eleven describes the Upside Down in her English notebook: 'It was dark and _____ (danger). The creatures were _____ (horror). I felt very _____ (fright).'",
+    q:"What is the ADJECTIVE form of the noun DANGER?",
+    opts:["dangerful","dangering","dangerous","dangersome"],
+    correct:2,
+    hint:"We add -ous to many nouns to make adjectives: danger → danger+ous",
+    explain:"<strong>Dangerous</strong> is the adjective from 'danger'. The suffix <em>-ous</em> turns nouns into adjectives: danger→dangerous, horror→horrible (uses -ible), mystery→mysterious, fame→famous. Eleven's notes were very <em>dangerous</em> reading material."
+  },
+  {
+    cat:"🔡 WORD FORMS — ADVERBS",
+    av:"👮", name:"CHIEF HOPPER", desc:"Hawkins Police · Grammar Law Enforcer",
+    ctx:"Hopper describes the chase scene in his report: 'The creature moved _____ (quick) through the forest. It ran _____ (silent) past my car. I reacted _____ (slow).' He adds: 'Don't judge me.'",
+    q:"What is the ADVERB form of the adjective QUICK?",
+    opts:["quickful","quickly","quickless","quicking"],
+    correct:1,
+    hint:"Most adjectives become adverbs by adding -LY at the end.",
+    explain:"<strong>Quickly</strong> is the adverb. Rule: adjective + <em>-ly</em> = adverb. Quick→quickly, slow→slowly, silent→silently, careful→carefully. Adverbs describe HOW an action is done. The Demogorgon moved <em>quickly</em>. Hopper moved... less quickly."
+  },
+
+  // ── EXTRA GRAMMAR ─────────────────────────────────────────
+  {
+    cat:"🔤 GRAMMAR — COMPARATIVES",
+    av:"🧒", name:"LUCAS", desc:"The Strategist · Comparison Expert",
+    ctx:"Lucas compares monsters for his tactical notebook: 'The Demogorgon is SCARY, but the Mind Flayer is _____ scary. And the Vecna? Don't even ask.'",
+    q:"Fill in: 'The Mind Flayer is _____ than the Demogorgon.'",
+    opts:["more scarier","scarier","most scary","scariest"],
+    correct:1,
+    hint:"Comparative of short adjectives (1-2 syllables): add -ER. scary → scarier",
+    explain:"<strong>Scarier</strong> is correct. Short adjectives use <em>-er + than</em>: scary→scarier, big→bigger, tall→taller. Long adjectives use <em>more + adjective + than</em>: more dangerous, more terrifying. Never say 'more scarier' — that's a double comparative! Even the Mind Flayer knows that."
+  },
+  {
+    cat:"🔤 GRAMMAR — MODAL VERBS",
+    av:"🦸", name:"MIKE WHEELER", desc:"Party Leader · Modal Verb Master",
+    ctx:"Mike makes the plan for the final battle: 'We MUST close the gate. We CAN use Eleven's powers. We SHOULD bring weapons. We MIGHT need extra waffles for Eleven.'",
+    q:"Which modal verb expresses OBLIGATION (something you have to do)?",
+    opts:["can","might","should","must"],
+    correct:3,
+    hint:"Must = strong obligation, no choice. Think: 'You MUST wear a seatbelt.'",
+    explain:"<strong>Must</strong> expresses strong obligation — you have no choice. Compare: <em>can</em> = ability ('I can run fast'), <em>might</em> = possibility ('it might rain'), <em>should</em> = advice ('you should sleep'). Closing the gate was definitely a MUST, not a maybe."
+  },
+];
+
+// ═══════════════════════════════════════════════════════════
+//  ENGINE
+// ═══════════════════════════════════════════════════════════
+let questions=[], idx=0, lives=3, score=0, hinted=false, answered=false;
+
+function shuffle(a){ const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function startGame(){
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('game-screen').style.display='block';
+  questions=shuffle(BANK).slice(0,10);
+  idx=0; lives=3; score=0;
+  renderQ();
+}
+
+function renderQ(){
+  const q=questions[idx];
+  hinted=false; answered=false;
+
+  document.getElementById('q-num').textContent=`${idx+1}/10`;
+  document.getElementById('lives-disp').textContent='❤️'.repeat(lives)+'🖤'.repeat(3-lives);
+  document.getElementById('score-disp').textContent=score;
+  const pct=Math.round((idx/10)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+
+  document.getElementById('cat-badge').textContent=q.cat;
+  document.getElementById('q-av').textContent=q.av;
+  document.getElementById('q-name').textContent=q.name;
+  document.getElementById('q-desc').textContent=q.desc;
+  document.getElementById('q-ctx').textContent=q.ctx;
+  document.getElementById('q-txt').textContent=q.q;
+  document.getElementById('hint-txt').textContent=q.hint;
+
+  document.getElementById('hint-box').classList.remove('on');
+  document.getElementById('feedback').textContent='';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('explain').classList.remove('on');
+  document.getElementById('btn-hint').disabled=false;
+  document.getElementById('btn-next').style.display='none';
+
+  const grid=document.getElementById('ans-grid');
+  grid.innerHTML='';
+  shuffle(q.opts.map((t,i)=>({t,i}))).forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='ans-btn';
+    b.textContent=opt.t;
+    b.onclick=()=>handleAns(opt.i===q.correct,b,q);
+    grid.appendChild(b);
+  });
+}
+
+function handleAns(correct,btn,q){
+  if(answered) return;
+  answered=true;
+  document.querySelectorAll('.ans-btn').forEach(b=>b.disabled=true);
+  document.getElementById('btn-hint').disabled=true;
+
+  const fb=document.getElementById('feedback');
+  const ex=document.getElementById('explain');
+
+  if(correct){
+    btn.classList.add('ok');
+    const pts=hinted?5:10;
+    score+=pts;
+    document.getElementById('score-disp').textContent=score;
+    const msgs=["THE GATE IS CLOSING!","ELEVEN IS PROUD!","HOPPER HIGH-FIVES YOU!","DUSTIN DOES A VICTORY DANCE!","THE PARTY CHEERS!","HAWKINS IS SAFER NOW!"];
+    fb.textContent=msgs[Math.floor(Math.random()*msgs.length)];
+    fb.className='feedback ok';
+    burst(btn);
+  } else {
+    btn.classList.add('no');
+    lives--;
+    document.getElementById('lives-disp').textContent='❤️'.repeat(lives)+'🖤'.repeat(3-lives);
+    const msgs=["THE MIND FLAYER ADVANCES...","WRONG SIDE OF THE GATE!","STUDY, YOUNG AGENT!","THE DEMOGORGON SMILES...","HOPPER FACEPALMS"];
+    fb.textContent=msgs[Math.floor(Math.random()*msgs.length)];
+    fb.className='feedback no';
+  }
+
+  ex.innerHTML=q.explain;
+  ex.classList.add('on');
+
+  const bn=document.getElementById('btn-next');
+  bn.style.display='block';
+  if(lives===0||idx>=9) bn.textContent='SEE FINAL RESULT →';
+  else bn.textContent='NEXT MISSION →';
+}
+
+function showHint(){
+  hinted=true;
+  document.getElementById('hint-box').classList.add('on');
+  document.getElementById('btn-hint').disabled=true;
+}
+
+function nextQ(){
+  if(lives===0||idx>=9){showEnd();return;}
+  idx++;
+  renderQ();
+}
+
+function showEnd(){
+  document.getElementById('game-screen').style.display='none';
+  const es=document.getElementById('end-screen');
+  es.classList.add('on');
+  const t=document.getElementById('end-title');
+  const m=document.getElementById('end-msg');
+  if(lives>0){
+    t.textContent='GATE CLOSED! 🌀';
+    t.className='end-title win';
+    m.innerHTML='Outstanding work, Agent André! You answered all 10 missions and the gate to the Upside Down is sealed. Eleven, Mike, Dustin, Lucas and Will are throwing a party for you at the Wheeler house. Hopper is crying a little. He says it\'s allergies. It\'s not allergies.';
+  } else {
+    t.textContent='THE GATE IS OPEN...';
+    t.className='end-title lose';
+    m.innerHTML='The Mind Flayer got through this time, André. But every Jedi... wait, wrong universe. Every member of the Party learns from their mistakes. Eleven says: <em>"Friends don\'t give up."</em> Try again!';
+  }
+  document.getElementById('end-pts').textContent=`⭐ ${score} POINTS ⭐`;
+}
+
+function restartGame(){
+  document.getElementById('end-screen').classList.remove('on');
+  document.getElementById('start-screen').style.display='block';
+}
+
+function burst(btn){
+  const r=btn.getBoundingClientRect();
+  ['✨','🔦','⭐','💫','🌟','❤️'].forEach((e,i)=>{
+    const el=document.createElement('div');
+    el.className='burst'; el.textContent=e;
+    el.style.left=r.left+r.width/2+'px';
+    el.style.top=r.top+r.height/2+'px';
+    el.style.setProperty('--tx',(Math.random()-.5)*130+'px');
+    el.style.setProperty('--ty',(Math.random()-.9)*110+'px');
+    el.style.animationDelay=i*.05+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1200);
+  });
+}
+
+// Ambient spores
+function makeSpore(){
+  const s=document.createElement('div');
+  s.className='spore';
+  const size=1+Math.random()*3;
+  s.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${6+Math.random()*8}s;animation-delay:${Math.random()*4}s;background:${Math.random()>.5?'rgba(155,93,229,.5)':'rgba(0,240,200,.4)'};`;
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),14000);
+}
+setInterval(makeSpore,1200);
+</script>
+</body>
+</html>

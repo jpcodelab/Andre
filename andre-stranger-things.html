@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>André & El Mundo del Revés - Misiones de Medidas</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@400;700;900&display=swap');
+
+  :root {
+    --red: #e63946;
+    --red-dark: #9b1a22;
+    --teal: #00f5d4;
+    --teal-dim: #00c4aa;
+    --yellow: #ffd166;
+    --bg: #0a0a0f;
+    --panel: #12121c;
+    --panel2: #1a1a2e;
+    --text: #e8e8f0;
+    --dim: #6a6a8a;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Particle/light string effect */
+  .lights {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 28px,
+      #ff0000 28px, #ff0000 36px,
+      transparent 36px, transparent 64px,
+      #00ff88 64px, #00ff88 72px,
+      transparent 72px, transparent 100px,
+      #ffaa00 100px, #ffaa00 108px,
+      transparent 108px, transparent 136px,
+      #0088ff 136px, #0088ff 144px
+    );
+    animation: lights-flicker 3s infinite;
+    z-index: 999;
+    opacity: 0.9;
+  }
+
+  @keyframes lights-flicker {
+    0%,100% { opacity: 0.9; }
+    15% { opacity: 0.3; }
+    16% { opacity: 0.9; }
+    45% { opacity: 0.7; }
+    46% { opacity: 0.9; }
+    80% { opacity: 0.4; }
+    81% { opacity: 0.9; }
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 28px 0 20px;
+  }
+
+  .logo {
+    font-family: 'Creepster', cursive;
+    font-size: clamp(2.2rem, 8vw, 3.8rem);
+    color: var(--red);
+    text-shadow: 0 0 20px rgba(230,57,70,0.7), 0 0 40px rgba(230,57,70,0.3);
+    letter-spacing: 3px;
+    line-height: 1;
+    animation: pulse-red 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-red {
+    0%,100% { text-shadow: 0 0 20px rgba(230,57,70,0.7), 0 0 40px rgba(230,57,70,0.3); }
+    50% { text-shadow: 0 0 30px rgba(230,57,70,1), 0 0 60px rgba(230,57,70,0.5), 0 0 80px rgba(230,57,70,0.2); }
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: var(--teal);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    opacity: 0.9;
+  }
+
+  .player-name {
+    font-family: 'Creepster', cursive;
+    font-size: 1.1rem;
+    color: var(--yellow);
+    margin-top: 10px;
+    text-shadow: 0 0 10px rgba(255,209,102,0.5);
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel);
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin: 16px 0;
+    gap: 12px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .stat-value {
+    font-family: 'Creepster', cursive;
+    font-size: 1.5rem;
+    color: var(--teal);
+    text-shadow: 0 0 8px rgba(0,245,212,0.4);
+  }
+
+  .stat-value.lives { color: var(--red); text-shadow: 0 0 8px rgba(230,57,70,0.4); }
+  .stat-value.score { color: var(--yellow); text-shadow: 0 0 8px rgba(255,209,102,0.4); }
+
+  /* Progress */
+  .progress-wrap {
+    background: #1a1a2e;
+    border-radius: 4px;
+    height: 6px;
+    margin: 0 0 18px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--teal));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 8px rgba(0,245,212,0.4);
+  }
+
+  /* Category badge */
+  .category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,245,212,0.1);
+    border: 1px solid rgba(0,245,212,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 14px;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--panel);
+    border: 1px solid #2a2a4a;
+    border-radius: 16px;
+    padding: 24px 22px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--red), transparent, var(--teal));
+  }
+
+  .question-context {
+    font-size: 0.82rem;
+    color: var(--dim);
+    margin-bottom: 10px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .question-text {
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--white);
+  }
+
+  .question-emoji {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  /* Hint */
+  .hint-box {
+    background: rgba(255,209,102,0.07);
+    border: 1px solid rgba(255,209,102,0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 14px 0;
+    font-size: 0.82rem;
+    color: var(--yellow);
+    display: none;
+  }
+  .hint-box.visible { display: block; }
+
+  /* Answers grid */
+  .answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .answer-btn {
+    background: var(--panel2);
+    border: 1.5px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 14px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    line-height: 1.3;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .answer-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,245,212,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .answer-btn:hover:not(:disabled) {
+    border-color: var(--teal);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,245,212,0.15);
+  }
+  .answer-btn:hover:not(:disabled)::before { opacity: 1; }
+
+  .answer-btn.correct {
+    background: rgba(0,245,212,0.15);
+    border-color: var(--teal);
+    color: var(--teal);
+    box-shadow: 0 0 20px rgba(0,245,212,0.3);
+    animation: correct-flash 0.4s ease;
+  }
+
+  .answer-btn.wrong {
+    background: rgba(230,57,70,0.15);
+    border-color: var(--red);
+    color: var(--red);
+    box-shadow: 0 0 20px rgba(230,57,70,0.3);
+    animation: wrong-shake 0.4s ease;
+  }
+
+  @keyframes correct-flash {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  @keyframes wrong-shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .answer-btn:disabled { cursor: default; }
+
+  /* Action buttons */
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .btn-hint {
+    flex: 1;
+    background: transparent;
+    border: 1.5px solid rgba(255,209,102,0.4);
+    border-radius: 10px;
+    padding: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--yellow);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .btn-hint:hover { background: rgba(255,209,102,0.1); border-color: var(--yellow); }
+  .btn-hint:disabled { opacity: 0.3; cursor: default; }
+
+  .btn-next {
+    flex: 2;
+    background: linear-gradient(135deg, var(--red-dark), var(--red));
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: var(--white);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    display: none;
+    box-shadow: 0 4px 16px rgba(230,57,70,0.3);
+  }
+  .btn-next.visible { display: block; }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(230,57,70,0.5); }
+
+  /* Feedback message */
+  .feedback {
+    text-align: center;
+    font-family: 'Creepster', cursive;
+    font-size: 1.3rem;
+    min-height: 1.8rem;
+    margin-bottom: 6px;
+    transition: all 0.3s;
+  }
+  .feedback.correct-msg { color: var(--teal); text-shadow: 0 0 12px rgba(0,245,212,0.5); }
+  .feedback.wrong-msg { color: var(--red); text-shadow: 0 0 12px rgba(230,57,70,0.5); }
+
+  /* Explanation */
+  .explanation {
+    background: var(--panel2);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--dim);
+    display: none;
+    margin-bottom: 12px;
+  }
+  .explanation.visible { display: block; }
+  .explanation strong { color: var(--text); }
+
+  /* Game over / win screens */
+  .end-screen {
+    display: none;
+    text-align: center;
+    padding: 30px 20px;
+    background: var(--panel);
+    border: 1px solid #2a2a4a;
+    border-radius: 16px;
+  }
+  .end-screen.visible { display: block; }
+
+  .end-title {
+    font-family: 'Creepster', cursive;
+    font-size: 2.8rem;
+    margin-bottom: 12px;
+  }
+  .end-title.win { color: var(--teal); text-shadow: 0 0 30px rgba(0,245,212,0.6); }
+  .end-title.lose { color: var(--red); text-shadow: 0 0 30px rgba(230,57,70,0.6); }
+
+  .end-msg { font-size: 0.95rem; line-height: 1.6; color: var(--dim); margin-bottom: 20px; }
+  .end-score { font-family: 'Creepster', cursive; font-size: 2rem; color: var(--yellow); margin-bottom: 20px; }
+
+  .btn-restart {
+    background: linear-gradient(135deg, var(--red-dark), var(--red));
+    border: none;
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--white);
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 20px rgba(230,57,70,0.4);
+    transition: all 0.2s;
+  }
+  .btn-restart:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(230,57,70,0.5); }
+
+  /* Lives display */
+  .lives-icons { font-size: 1.2rem; letter-spacing: 2px; }
+
+  /* Floating particles */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--teal);
+    border-radius: 50%;
+    animation: float-up linear infinite;
+    opacity: 0;
+  }
+  @keyframes float-up {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+  }
+
+  .question-number {
+    font-size: 0.72rem;
+    color: var(--dim);
+    letter-spacing: 2px;
+    text-align: right;
+    margin-bottom: 8px;
+  }
+
+  /* Start screen */
+  #start-screen {
+    text-align: center;
+    padding: 30px 20px;
+    background: var(--panel);
+    border: 1px solid #2a2a4a;
+    border-radius: 16px;
+    margin-top: 10px;
+  }
+  .start-emoji { font-size: 3.5rem; margin-bottom: 16px; display: block; }
+  .start-desc { color: var(--dim); font-size: 0.9rem; line-height: 1.6; margin-bottom: 24px; }
+  .start-desc strong { color: var(--text); }
+
+  .category-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .cat-item {
+    background: var(--panel2);
+    border: 1px solid #2a2a4a;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    color: var(--dim);
+  }
+  .cat-item span { display: block; font-weight: 700; color: var(--text); font-size: 0.9rem; }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--red-dark), var(--red));
+    border: none;
+    border-radius: 14px;
+    padding: 16px 48px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--white);
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 24px rgba(230,57,70,0.4);
+    transition: all 0.2s;
+  }
+  .btn-start:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(230,57,70,0.6); }
+</style>
+</head>
+<body>
+
+<div class="lights"></div>
+<div class="particles" id="particles"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">STRANGER<br>MATH</div>
+    <div class="subtitle">Misiones del Mundo del Revés</div>
+    <div class="player-name">🔦 Agente André — Hawkins Lab</div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+    <span class="start-emoji">👁️</span>
+    <p class="start-desc">
+      <strong>André</strong>, el Mundo del Revés ha invadido Hawkins y solo TÚ puedes detenerlo.<br><br>
+      Cada misión requiere resolver un problema de <strong>medidas</strong>. El Demogorgon huye con cada respuesta correcta. ¡3 vidas, 10 misiones!
+    </p>
+    <div class="category-list">
+      <div class="cat-item">📏 <span>Longitud</span>metros, cm, km</div>
+      <div class="cat-item">⚖️ <span>Peso</span>kg, gramos</div>
+      <div class="cat-item">🧪 <span>Líquidos</span>litros, ml</div>
+      <div class="cat-item">⏱️ <span>Tiempo</span>horas, minutos</div>
+    </div>
+    <button class="btn-start" onclick="startGame()">⚡ INICIAR MISIÓN</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" style="display:none;">
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-label">Misión</span>
+        <span class="stat-value" id="q-counter">1/10</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Vidas</span>
+        <span class="stat-value lives" id="lives-display">❤️❤️❤️</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Puntos</span>
+        <span class="stat-value score" id="score-display">0</span>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <div class="category-badge" id="category-badge">📏 Longitud</div>
+
+    <div class="question-card" id="question-card">
+      <div class="question-number" id="q-number">MISIÓN 1 DE 10</div>
+      <span class="question-emoji" id="q-emoji">🔦</span>
+      <div class="question-context" id="q-context"></div>
+      <div class="question-text" id="q-text"></div>
+    </div>
+
+    <div class="hint-box" id="hint-box">💡 <span id="hint-text"></span></div>
+
+    <div class="answers" id="answers-grid"></div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="explanation" id="explanation"></div>
+
+    <div class="actions">
+      <button class="btn-hint" id="btn-hint" onclick="showHint()">🔦 PISTA</button>
+      <button class="btn-next visible" id="btn-next" onclick="nextQuestion()" style="display:none;">SIGUIENTE MISIÓN →</button>
+    </div>
+  </div>
+
+  <!-- END SCREEN -->
+  <div class="end-screen" id="end-screen">
+    <div class="end-title" id="end-title"></div>
+    <div class="end-msg" id="end-msg"></div>
+    <div class="end-score" id="end-score"></div>
+    <button class="btn-restart" onclick="restartGame()">🔄 NUEVA MISIÓN</button>
+  </div>
+</div>
+
+<script>
+// ─── QUESTION BANK ───────────────────────────────────────────────
+const ALL_QUESTIONS = [
+  // LONGITUD
+  {
+    category: "📏 Longitud",
+    emoji: "🚲",
+    context: "Eleven y Mike deben llegar en bici desde la casa de los Byers hasta el laboratorio de Hawkins para detener al Demogorgon.",
+    question: "La distancia es 3 km y 500 metros. ¿Cuántos metros es eso en total?",
+    options: ["3.005 m","3.500 m","350 m","30.500 m"],
+    correct: 1,
+    hint: "1 km = 1.000 metros. Suma 3.000 + 500.",
+    explanation: "<strong>3 km = 3.000 m</strong>. Más 500 m = <strong>3.500 metros</strong> en total. ¡Pedalearon mucho!"
+  },
+  {
+    category: "📏 Longitud",
+    emoji: "🌲",
+    context: "Dustin mide el túnel del Mundo del Revés para hacer un mapa. El túnel tiene 250 cm de largo.",
+    question: "¿Cuántos metros mide el túnel?",
+    options: ["25 m","0,25 m","2,5 m","250 m"],
+    correct: 2,
+    hint: "100 cm = 1 metro. Divide 250 entre 100.",
+    explanation: "<strong>250 cm ÷ 100 = 2,5 metros</strong>. Dustin anotó bien en su cuaderno."
+  },
+  {
+    category: "📏 Longitud",
+    emoji: "🔭",
+    context: "Will encuentra una criatura del Mundo del Revés. Mide 180 cm de alto y Will mide 140 cm.",
+    question: "¿Cuánto MÁS alta es la criatura que Will?",
+    options: ["30 cm","50 cm","40 cm","20 cm"],
+    correct: 2,
+    hint: "Resta: 180 - 140.",
+    explanation: "180 - 140 = <strong>40 cm</strong>. ¡La criatura es mucho más grande que Will!"
+  },
+  {
+    category: "📏 Longitud",
+    emoji: "🚗",
+    context: "Joyce conduce desde Hawkins hasta el laboratorio. Son 4 km de ida.",
+    question: "Si va y vuelve, ¿cuántos km recorre en total?",
+    options: ["4 km","6 km","8 km","12 km"],
+    correct: 2,
+    hint: "Ida y vuelta = doble de la distancia.",
+    explanation: "4 km × 2 = <strong>8 km</strong> en total. Joyce necesitaba gasolina extra."
+  },
+
+  // PESO
+  {
+    category: "⚖️ Peso",
+    emoji: "🧲",
+    context: "Hopper carga su mochila de explorador para entrar al Mundo del Revés. Lleva equipo de 2 kg y comida de 500 g.",
+    question: "¿Cuántos gramos pesa todo lo que lleva?",
+    options: ["2.500 g","2.050 g","502 g","3.000 g"],
+    correct: 0,
+    hint: "1 kg = 1.000 g. Convierte los 2 kg y suma los 500 g.",
+    explanation: "<strong>2 kg = 2.000 g</strong>. Más 500 g = <strong>2.500 gramos</strong>. ¡Pesada mochila, Hopper!"
+  },
+  {
+    category: "⚖️ Peso",
+    emoji: "🐾",
+    context: "El perro de los Byers pesa 8 kg. Dustin tiene a Dart (demogorgon bebé) que pesa 300 g.",
+    question: "¿Cuánto más pesa el perro que Dart?",
+    options: ["7,4 kg","7,7 kg","7 kg","8 kg"],
+    correct: 1,
+    hint: "Convierte 300 g a kg: 300 g = 0,3 kg. Luego resta.",
+    explanation: "300 g = 0,3 kg. Entonces 8 - 0,3 = <strong>7,7 kg</strong>. ¡Dart era aún pequeñito!"
+  },
+  {
+    category: "⚖️ Peso",
+    emoji: "🍔",
+    context: "Eleven se escapó del laboratorio y encontró una tienda. Compró 3 paquetes de Eggo waffles. Cada paquete pesa 400 g.",
+    question: "¿Cuántos gramos de waffles tiene en total?",
+    options: ["1.000 g","1.200 g","800 g","1.400 g"],
+    correct: 1,
+    hint: "Multiplica 400 g × 3.",
+    explanation: "400 × 3 = <strong>1.200 gramos</strong> de waffles. ¡Friends don't lie, y Eleven AMA los Eggos!"
+  },
+  {
+    category: "⚖️ Peso",
+    emoji: "🎒",
+    context: "Lucas tiene 4 bolsas de pólvora para su tirachinas. Cada una pesa 250 g.",
+    question: "¿Cuántos kg es eso en total?",
+    options: ["1 kg","10 kg","0,1 kg","2 kg"],
+    correct: 0,
+    hint: "4 × 250 g = 1.000 g. ¿Y 1.000 g cuántos kg es?",
+    explanation: "4 × 250 = 1.000 g. <strong>1.000 g = 1 kg</strong>. Lucas estaba bien equipado."
+  },
+
+  // LÍQUIDOS
+  {
+    category: "🧪 Líquidos",
+    emoji: "🛁",
+    context: "Para abrir el portal al Mundo del Revés, Eleven necesita una piscina de sal. Llenaron la bañera con 80 litros de agua.",
+    question: "¿Cuántos vasos de 200 ml necesitarían para tener esos 80 litros?",
+    options: ["400 vasos","40 vasos","4.000 vasos","800 vasos"],
+    correct: 0,
+    hint: "80 litros = 80.000 ml. Divide entre 200.",
+    explanation: "80 L = 80.000 ml. 80.000 ÷ 200 = <strong>400 vasos</strong>. ¡Eso es muchísimo!"
+  },
+  {
+    category: "🧪 Líquidos",
+    emoji: "🧃",
+    context: "Joyce compró 3 litros de refresco para la celebración después de salvar a Will.",
+    question: "Si cada persona bebe 500 ml, ¿cuántas personas pueden tomar?",
+    options: ["30","3","6","60"],
+    correct: 2,
+    hint: "3 litros = 3.000 ml. Divide entre 500.",
+    explanation: "3.000 ml ÷ 500 = <strong>6 personas</strong>. ¡Hay suficiente para todos en el grupo!",
+  },
+  {
+    category: "🧪 Líquidos",
+    emoji: "⚗️",
+    context: "En el laboratorio de Hawkins, el Dr. Brenner mezcla dos pociones. Una tiene 1,5 litros y otra tiene 750 ml.",
+    question: "¿Cuántos mililitros hay en total?",
+    options: ["1.750 ml","2.250 ml","2.750 ml","15.750 ml"],
+    correct: 1,
+    hint: "1,5 litros = 1.500 ml. Ahora suma 1.500 + 750.",
+    explanation: "1,5 L = 1.500 ml. 1.500 + 750 = <strong>2.250 ml</strong>. ¡Qué poción tan grande!"
+  },
+  {
+    category: "🧪 Líquidos",
+    emoji: "🔴",
+    context: "Eleven usa 2 litros de agua especial para entrenar sus poderes. Cada sesión usa 250 ml.",
+    question: "¿Para cuántas sesiones de entrenamiento alcanza el agua?",
+    options: ["4","6","8","12"],
+    correct: 2,
+    hint: "2 litros = 2.000 ml. Divide entre 250.",
+    explanation: "2.000 ÷ 250 = <strong>8 sesiones</strong>. Eleven puede entrenar 8 veces."
+  },
+
+  // TIEMPO
+  {
+    category: "⏱️ Tiempo",
+    emoji: "⏰",
+    context: "Mike espera a Eleven durante 353 días. ¿Puedes ayudar a Mike a saber cuántas horas esperó?",
+    question: "Si 1 día = 24 horas, ¿cuántas horas son 5 días?",
+    options: ["100 h","120 h","12 h","240 h"],
+    correct: 1,
+    hint: "Multiplica 5 × 24.",
+    explanation: "5 × 24 = <strong>120 horas</strong>. ¡Mike esperó muchísimo más que eso por Eleven!"
+  },
+  {
+    category: "⏱️ Tiempo",
+    emoji: "🕐",
+    context: "El grupo planea atacar al Demogorgon a medianoche. Son las 9 de la noche.",
+    question: "¿Cuántos minutos faltan para medianoche? (1 hora = 60 min)",
+    options: ["120 min","150 min","180 min","200 min"],
+    correct: 2,
+    hint: "De las 9 pm a las 12 am hay 3 horas. Multiplica 3 × 60.",
+    explanation: "3 horas × 60 = <strong>180 minutos</strong>. ¡El grupo tiene tiempo para prepararse!"
+  },
+];
+
+// ─── GAME STATE ───────────────────────────────────────────────────
+let questions = [];
+let currentIdx = 0;
+let lives = 3;
+let score = 0;
+let hintUsed = false;
+let answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function selectQuestions() {
+  // Pick 10 questions: mix of categories
+  const byCategory = {};
+  ALL_QUESTIONS.forEach(q => {
+    const key = q.category;
+    if (!byCategory[key]) byCategory[key] = [];
+    byCategory[key].push(q);
+  });
+
+  let selected = [];
+  Object.values(byCategory).forEach(arr => {
+    selected = selected.concat(shuffle(arr).slice(0, 3));
+  });
+  selected = shuffle(selected).slice(0, 10);
+  return selected;
+}
+
+function startGame() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  questions = selectQuestions();
+  currentIdx = 0;
+  lives = 3;
+  score = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentIdx];
+  hintUsed = false;
+  answered = false;
+
+  document.getElementById('q-counter').textContent = `${currentIdx + 1}/10`;
+  document.getElementById('lives-display').textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+  document.getElementById('score-display').textContent = score;
+  document.getElementById('progress-bar').style.width = `${(currentIdx / 10) * 100}%`;
+
+  document.getElementById('category-badge').textContent = q.category;
+  document.getElementById('q-number').textContent = `MISIÓN ${currentIdx + 1} DE 10`;
+  document.getElementById('q-emoji').textContent = q.emoji;
+  document.getElementById('q-context').textContent = q.context;
+  document.getElementById('q-text').textContent = q.question;
+
+  document.getElementById('hint-box').classList.remove('visible');
+  document.getElementById('hint-text').textContent = q.hint;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('explanation').classList.remove('visible');
+  document.getElementById('btn-hint').disabled = false;
+
+  const btnNext = document.getElementById('btn-next');
+  btnNext.style.display = 'none';
+
+  // Render options (shuffle options but track correct)
+  const grid = document.getElementById('answers-grid');
+  grid.innerHTML = '';
+
+  // Create indexed options
+  const opts = q.options.map((text, i) => ({ text, i }));
+  const shuffled = shuffle(opts);
+
+  shuffled.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.textContent = opt.text;
+    btn.onclick = () => handleAnswer(opt.i === q.correct, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function handleAnswer(isCorrect, clickedBtn) {
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.answer-btn');
+  allBtns.forEach(b => b.disabled = true);
+  document.getElementById('btn-hint').disabled = true;
+
+  const fb = document.getElementById('feedback');
+  const exp = document.getElementById('explanation');
+  const q = questions[currentIdx];
+
+  if (isCorrect) {
+    clickedBtn.classList.add('correct');
+    const pts = hintUsed ? 5 : 10;
+    score += pts;
+    document.getElementById('score-display').textContent = score;
+
+    const msgs = ["¡PERFECTO, AGENTE!", "¡EL DEMOGORGON HUYE!", "¡HAWKINS ESTÁ SEGURA!", "¡ERES INCREÍBLE!", "¡ELEVEN ESTARÍA ORGULLOSA!"];
+    fb.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+    fb.className = 'feedback correct-msg';
+    spawnParticles();
+  } else {
+    clickedBtn.classList.add('wrong');
+    lives--;
+    document.getElementById('lives-display').textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+
+    const msgs = ["¡EL DEMOGORGON AVANZA!", "¡CUIDADO, AGENTE!", "¡HAWKINS NECESITA MÁS!", "¡SIGUE INTENTANDO!"];
+    fb.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+    fb.className = 'feedback wrong-msg';
+  }
+
+  exp.innerHTML = q.explanation;
+  exp.classList.add('visible');
+
+  const btnNext = document.getElementById('btn-next');
+  btnNext.style.display = 'block';
+
+  if (lives === 0) {
+    btnNext.textContent = 'VER RESULTADO →';
+  } else if (currentIdx === 9) {
+    btnNext.textContent = 'VER RESULTADO →';
+  }
+}
+
+function showHint() {
+  hintUsed = true;
+  document.getElementById('hint-box').classList.add('visible');
+  document.getElementById('btn-hint').disabled = true;
+}
+
+function nextQuestion() {
+  if (lives === 0) {
+    showEndScreen(false);
+    return;
+  }
+  if (currentIdx >= 9) {
+    showEndScreen(true);
+    return;
+  }
+  currentIdx++;
+  renderQuestion();
+}
+
+function showEndScreen(win) {
+  document.getElementById('game-screen').style.display = 'none';
+  const endScreen = document.getElementById('end-screen');
+  endScreen.classList.add('visible');
+
+  const title = document.getElementById('end-title');
+  const msg = document.getElementById('end-msg');
+  const scoreEl = document.getElementById('end-score');
+
+  if (win || lives > 0) {
+    title.textContent = '¡MISIÓN CUMPLIDA!';
+    title.className = 'end-title win';
+    msg.textContent = `¡Increíble, André! Completaste todas las misiones y salvaste Hawkins del Demogorgon. El Mundo del Revés ha sido sellado gracias a tus cálculos perfectos. ¡Eres el mejor agente del laboratorio!`;
+  } else {
+    title.textContent = '¡HAWKINS NECESITA MÁS!';
+    title.className = 'end-title lose';
+    msg.textContent = `El Demogorgon fue demasiado fuerte esta vez, André. Pero cada gran agente aprende de cada misión. ¡Vuelve a intentarlo y salva Hawkins!`;
+  }
+  scoreEl.textContent = `⭐ ${score} PUNTOS ⭐`;
+}
+
+function restartGame() {
+  document.getElementById('end-screen').classList.remove('visible');
+  document.getElementById('start-screen').style.display = 'block';
+  score = 0;
+  lives = 3;
+}
+
+// Particles
+function spawnParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.animationDuration = `${1.5 + Math.random() * 2}s`;
+    p.style.animationDelay = `${Math.random() * 0.5}s`;
+    p.style.width = p.style.height = `${1 + Math.random() * 3}px`;
+    const colors = ['#00f5d4','#ffd166','#ff6b6b','#7b2fff'];
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 4000);
+  }
+}
+
+// Ambient particles
+setInterval(() => {
+  const container = document.getElementById('particles');
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = `${Math.random() * 100}%`;
+  p.style.animationDuration = `${4 + Math.random() * 6}s`;
+  p.style.opacity = '0';
+  p.style.width = p.style.height = '2px';
+  container.appendChild(p);
+  setTimeout(() => p.remove(), 10000);
+}, 1500);
+</script>
+</body>
+</html>

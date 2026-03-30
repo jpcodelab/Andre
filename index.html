@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca de André · jpcodelab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Nunito:wght@400;600;700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --bg:       #fafaf8;
+  --white:    #ffffff;
+  --panel:    #f2f1ee;
+  --border:   #dedad2;
+  --red:      #c0392b;
+  --red-soft: #e74c3c;
+  --red-bg:   #fdf2f0;
+  --teal:     #0d7377;
+  --teal-bg:  #e6f4f4;
+  --yellow:   #d4a017;
+  --yel-bg:   #fef9e7;
+  --purple:   #6c3483;
+  --pur-bg:   #f5eef8;
+  --blue:     #1a5276;
+  --blue-bg:  #eaf2fb;
+  --text:     #1a1a1a;
+  --mid:      #3d3d3d;
+  --dim:      #6b6b6b;
+  --shadow:   0 2px 12px rgba(0,0,0,0.09);
+  --shadow-lg:0 6px 28px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LIGHTS ── */
+.lights {
+  height: 6px; width: 100%;
+  background: repeating-linear-gradient(90deg,
+    transparent 0,transparent 22px,
+    #c0392b 22px,#c0392b 30px,
+    transparent 30px,transparent 52px,
+    #0d7377 52px,#0d7377 60px,
+    transparent 60px,transparent 82px,
+    #d4a017 82px,#d4a017 90px,
+    transparent 90px,transparent 112px,
+    #6c3483 112px,#6c3483 120px
+  );
+  opacity: 0.7;
+  animation: lf 7s infinite;
+}
+@keyframes lf {
+  0%,100%{opacity:.7}15%{opacity:.15}16%{opacity:.7}52%{opacity:.4}53%{opacity:.7}80%{opacity:.2}81%{opacity:.7}
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 44px 24px 36px;
+  text-align: center;
+}
+
+.hero-eyebrow {
+  font-size: .65rem; font-weight: 900; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--teal); margin-bottom: 14px;
+}
+
+.hero-icon { font-size: 3.2rem; display: block; margin-bottom: 14px; animation: bob 3.5s ease-in-out infinite; }
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+
+.hero-title {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  color: var(--red); line-height: 1.1; margin-bottom: 8px;
+}
+
+.hero-subtitle {
+  font-family: 'Lora', serif; font-style: italic;
+  font-size: clamp(.95rem, 2.5vw, 1.15rem);
+  color: var(--mid); margin-bottom: 22px;
+}
+
+.hero-divider {
+  width: 48px; height: 2px; background: var(--red);
+  margin: 0 auto 22px; opacity: .4;
+}
+
+.hero-desc {
+  max-width: 520px; margin: 0 auto 24px;
+  font-family: 'Lora', serif;
+  font-size: 1rem; line-height: 1.8; color: var(--mid);
+}
+
+.hero-tags {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: center; margin-bottom: 8px;
+}
+.tag {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: .72rem; font-weight: 700; color: var(--dim);
+  letter-spacing: .5px;
+}
+
+/* ── SECTION HEADER ── */
+.section-hdr {
+  max-width: 900px; margin: 40px auto 0; padding: 0 20px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; gap: 12px;
+}
+.section-hdr h2 {
+  font-family: 'Special Elite', cursive;
+  font-size: 1.25rem; color: var(--text);
+}
+.section-hdr span {
+  font-size: .72rem; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--dim);
+}
+
+/* ── GRID ── */
+.grid {
+  max-width: 900px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px; padding: 24px 20px 48px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: all .22s;
+  display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--mid);
+}
+
+.card-accent { height: 5px; }
+.card-accent.st  { background: linear-gradient(90deg, var(--red), #ff6b6b); }
+.card-accent.sw  { background: linear-gradient(90deg, #1a3a5c, var(--teal)); }
+.card-accent.en  { background: linear-gradient(90deg, var(--blue), #5dade2); }
+.card-accent.nov { background: linear-gradient(90deg, var(--purple), var(--red)); }
+
+.card-body { padding: 20px 20px 16px; flex: 1; }
+
+.card-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 6px; padding: 3px 10px; margin-bottom: 12px;
+  font-size: .62rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+}
+.badge-st  { background: var(--red-bg);  color: var(--red); }
+.badge-sw  { background: var(--teal-bg); color: var(--teal); }
+.badge-en  { background: var(--blue-bg); color: var(--blue); }
+.badge-nov { background: var(--pur-bg);  color: var(--purple); }
+
+.card-icon { font-size: 2.2rem; display: block; margin-bottom: 10px; }
+
+.card-title {
+  font-family: 'Special Elite', cursive;
+  font-size: 1.15rem; line-height: 1.25; margin-bottom: 8px; color: var(--text);
+}
+
+.card-desc {
+  font-family: 'Lora', serif; font-size: .88rem;
+  line-height: 1.65; color: var(--dim); margin-bottom: 14px;
+}
+
+.card-subjects {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px;
+}
+.subj {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 4px; padding: 2px 8px;
+  font-size: .65rem; font-weight: 700; color: var(--dim);
+}
+
+.card-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--panel);
+}
+.card-footer-meta { font-size: .72rem; color: var(--dim); font-weight: 600; }
+.card-cta {
+  font-size: .78rem; font-weight: 900; letter-spacing: 1px;
+  padding: 7px 16px; border-radius: 8px; border: none;
+  color: #fff; cursor: pointer; transition: filter .15s;
+  text-decoration: none; display: inline-block;
+}
+.card-cta.st  { background: var(--red); }
+.card-cta.sw  { background: var(--teal); }
+.card-cta.en  { background: var(--blue); }
+.card-cta.nov { background: var(--purple); }
+.card-cta:hover { filter: brightness(1.12); }
+
+/* ── TEACHERS SECTION ── */
+.teachers-wrap {
+  max-width: 900px; margin: 0 auto; padding: 0 20px 48px;
+}
+
+.teachers-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px; margin-top: 20px;
+}
+
+.teacher-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 16px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--shadow);
+}
+.teacher-av {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.teacher-av.blanca { background: var(--pur-bg); border: 2px solid #c39bd3; }
+.teacher-av.rocio  { background: var(--blue-bg); border: 2px solid #a9cce3; }
+.teacher-name {
+  font-size: .8rem; font-weight: 900; color: var(--text); display: block; margin-bottom: 2px;
+}
+.teacher-role { font-size: .7rem; color: var(--dim); line-height: 1.4; }
+
+/* ── HOW TO USE ── */
+.howto {
+  max-width: 900px; margin: 0 auto; padding: 0 20px 48px;
+}
+.howto-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px; margin-top: 20px;
+}
+.howto-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 16px;
+  box-shadow: var(--shadow);
+}
+.howto-num {
+  font-family: 'Special Elite', cursive; font-size: 1.8rem;
+  color: var(--red); display: block; margin-bottom: 6px;
+}
+.howto-text { font-size: .85rem; line-height: 1.6; color: var(--mid); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--white); border-top: 1px solid var(--border);
+  padding: 24px 24px; text-align: center;
+  font-size: .75rem; color: var(--dim); line-height: 1.9;
+}
+footer strong { color: var(--mid); }
+footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; }
+  .teachers-grid, .howto-grid { grid-template-columns: 1fr 1fr; }
+  .hero { padding: 32px 18px 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="lights"></div>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-eyebrow">jpcodelab.github.io · Biblioteca Educativa</div>
+  <span class="hero-icon">🔦</span>
+  <h1 class="hero-title">La Biblioteca de André</h1>
+  <p class="hero-subtitle">Juegos y aventuras para aprender sin darse cuenta</p>
+  <div class="hero-divider"></div>
+  <p class="hero-desc">
+    Una colección de juegos educativos creados para André, alumno de 5º de Primaria
+    del Colegio Rosa Luxemburgo (Comunidad de Madrid). Cada juego cubre contenidos
+    del currículo oficial con temáticas que molan: Stranger Things, Star Wars, y una
+    novela interactiva con sus profes como personajes.
+  </p>
+  <div class="hero-tags">
+    <span class="tag">🎓 5º Primaria</span>
+    <span class="tag">📐 Método Singapur</span>
+    <span class="tag">✏️ Lengua Castellana</span>
+    <span class="tag">🇬🇧 English</span>
+    <span class="tag">📱 Funciona sin internet</span>
+    <span class="tag">🏫 Rosa Luxemburgo · Madrid</span>
+  </div>
+</div>
+
+<!-- ── GAMES ── -->
+<div class="section-hdr">
+  <h2>Los Juegos</h2>
+  <span>4 aventuras · descarga y juega offline</span>
+</div>
+
+<div class="grid">
+
+  <!-- NOVELA -->
+  <a class="card" href="andre-novela-v4.html">
+    <div class="card-accent nov"></div>
+    <div class="card-body">
+      <div class="card-badge badge-nov">📖 Novela Interactiva</div>
+      <span class="card-icon">🌀</span>
+      <div class="card-title">El Mundo del Revés se Come los Deberes</div>
+      <p class="card-desc">
+        Una novela de verdad con capítulos, personajes y humor. El portal al Mundo del Revés
+        se ha abierto bajo el Rosa Luxemburgo y hay que cerrar 11 portales resolviendo desafíos.
+        Con Blanca y Rocío como personajes. Guarda el progreso entre sesiones.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Fracciones</span>
+        <span class="subj">Medidas</span>
+        <span class="subj">Tildes</span>
+        <span class="subj">Gramática</span>
+        <span class="subj">English</span>
+        <span class="subj">Singapur</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">👻 Stranger Things · 11 desafíos · ~45 min</span>
+      <span class="card-cta nov">Leer →</span>
+    </div>
+  </a>
+
+  <!-- STRANGER THINGS MEDIDAS -->
+  <a class="card" href="andre-stranger-things.html">
+    <div class="card-accent st"></div>
+    <div class="card-body">
+      <div class="card-badge badge-st">🔦 Stranger Things</div>
+      <span class="card-icon">📏</span>
+      <div class="card-title">Stranger Math: Misiones del Mundo del Revés</div>
+      <p class="card-desc">
+        10 misiones de medidas con el grupo de Hawkins. Cada respuesta correcta cierra
+        una parte del portal. Longitud, masa, capacidad, tiempo y fracciones.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Longitud</span>
+        <span class="subj">Masa</span>
+        <span class="subj">Capacidad</span>
+        <span class="subj">Tiempo</span>
+        <span class="subj">Fracciones</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🧮 Matemáticas · 10 misiones · ~15 min</span>
+      <span class="card-cta st">Jugar →</span>
+    </div>
+  </a>
+
+  <!-- STAR WARS LENGUA -->
+  <a class="card" href="starwars-lengua.html">
+    <div class="card-accent sw"></div>
+    <div class="card-body">
+      <div class="card-badge badge-sw">⚔️ Star Wars</div>
+      <span class="card-icon">🌟</span>
+      <div class="card-title">Academia Jedi de Lengua</div>
+      <p class="card-desc">
+        El Imperio ha prohibido las tildes y Vader usa las comas fatal. Solo un Padawan
+        con dominio de la Lengua Castellana puede salvar la galaxia. Con Yoda, C-3PO,
+        Leia y Han Solo como profesores involuntarios.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Tildes</span>
+        <span class="subj">Ortografía</span>
+        <span class="subj">Gramática</span>
+        <span class="subj">Vocabulario</span>
+        <span class="subj">Puntuación</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">✍️ Lengua · 10 misiones · ~15 min</span>
+      <span class="card-cta sw">Jugar →</span>
+    </div>
+  </a>
+
+  <!-- STRANGER THINGS INGLÉS -->
+  <a class="card" href="andre-english-upsidedown.html">
+    <div class="card-accent en"></div>
+    <div class="card-body">
+      <div class="card-badge badge-en">🇬🇧 English</div>
+      <span class="card-icon">🌀</span>
+      <div class="card-title">English from the Upside Down</div>
+      <p class="card-desc">
+        The Mind Flayer has stolen all the English books from Hawkins Middle School.
+        10 missions to recover them: vocabulary, grammar, spelling, reading comprehension
+        and phrasal verbs — all with Eleven, Dustin and the gang.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Vocabulary</span>
+        <span class="subj">Grammar</span>
+        <span class="subj">Spelling</span>
+        <span class="subj">Reading</span>
+        <span class="subj">Tenses</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🇬🇧 English · 10 missions · ~15 min</span>
+      <span class="card-cta en">Play →</span>
+    </div>
+  </a>
+
+</div>
+
+<!-- ── TEACHERS ── -->
+<div class="section-hdr">
+  <h2>Las Profes</h2>
+  <span>Personajes de la novela · tutoras de André</span>
+</div>
+
+<div class="teachers-wrap">
+  <div class="teachers-grid">
+    <div class="teacher-card">
+      <div class="teacher-av blanca">👩‍🏫</div>
+      <div>
+        <span class="teacher-name">Blanca</span>
+        <span class="teacher-role">Tutora · Lengua y Matemáticas<br>Aparece y desaparece misteriosamente en los desafíos</span>
+      </div>
+    </div>
+    <div class="teacher-card">
+      <div class="teacher-av rocio">👩‍🏫</div>
+      <div>
+        <span class="teacher-name">Rocío</span>
+        <span class="teacher-role">Tutora de Inglés<br>Llega antes que Blanca a los desafíos de inglés. Eso es discutible.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HOW TO USE ── -->
+<div class="section-hdr">
+  <h2>¿Cómo usar la biblioteca?</h2>
+  <span>Para tutoras, padres y compañeros</span>
+</div>
+
+<div class="howto">
+  <div class="howto-grid">
+    <div class="howto-item">
+      <span class="howto-num">1</span>
+      <p class="howto-text"><strong>Sin instalar nada.</strong> Haz clic en cualquier juego. Se abre directamente en el navegador.</p>
+    </div>
+    <div class="howto-item">
+      <span class="howto-num">2</span>
+      <p class="howto-text"><strong>Sin internet.</strong> Descarga el archivo HTML y ábrelo desde el móvil o tablet, también en avión.</p>
+    </div>
+    <div class="howto-item">
+      <span class="howto-num">3</span>
+      <p class="howto-text"><strong>La novela guarda progreso.</strong> Si la cierras y la vuelves a abrir en el mismo navegador, continúa donde la dejaste.</p>
+    </div>
+    <div class="howto-item">
+      <span class="howto-num">4</span>
+      <p class="howto-text"><strong>Currículo oficial.</strong> Todos los contenidos siguen el currículo de 5º de Primaria de la Comunidad de Madrid.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <strong>Biblioteca de André</strong> · <a href="https://jpcodelab.github.io">jpcodelab.github.io</a><br>
+  Creado con ❤️ para el Colegio Rosa Luxemburgo · Comunidad de Madrid<br>
+  Currículo 5º Primaria · Matemáticas (Método Singapur) · Lengua Castellana · English<br>
+  <span style="color:#bbb;">Los personajes de Stranger Things y Star Wars pertenecen a sus respectivos creadores. Uso educativo sin ánimo de lucro.</span>
+</footer>
+
+</body>
+</html>
