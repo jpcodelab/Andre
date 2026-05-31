@@ -1,7 +1,7 @@
 # CLAUDE.md — Proyecto André: Biblioteca de Juegos Educativos
 
 > Documento de contexto para Claude Code. Leer antes de cualquier sesión de trabajo.
-> Última actualización: mayo 2026
+> Última actualización: mayo 2026 (rev. 2)
 
 ---
 
@@ -65,8 +65,9 @@ CEIP Rosa Luxemburgo (Madrid, Comunidad de Madrid).
 - Reforzar reglas ortográficas con ejemplos de interferencia portugués-castellano.
 - Trabajar concordancia, preposiciones y vocabulario en contexto narrativo.
 
-### Inglés (asignaturas CLIL)
-- Contenidos alineados con Social Sciences y Natural Sciences en inglés.
+### Inglés · Social Science · Natural Science (CLIL)
+- Rocío da las tres asignaturas: English, Social Science y Natural Science.
+- Los juegos de inglés incluyen contenido CLIL de las otras dos asignaturas.
 - Foco en: past simple, comparatives, reading comprehension, vocabulary.
 
 ### Lenguaje Musical
@@ -136,8 +137,10 @@ Andre/
   - `.geo` — verde `#2e7d32` (Geografía)
   - `.mus` — naranja `#e65100` (Lenguaje Musical)
 - Para añadir un color nuevo: definir `.card-accent.X`, `.badge-X` y `.card-cta.X`.
-- La barra `<nav class="subject-nav">` enlaza secciones por `id`; añadir entrada al agregar sección.
-- Los sub-encabezados `.subgroup-hdr` separan tipos dentro de una sección (ej: mapas vs. repasos).
+- La barra `<nav class="subject-nav">` es sticky (z-index:100); enlaza secciones por `id`; añadir entrada al agregar sección nueva.
+- Un IntersectionObserver en `<script>` marca con `.active` el enlace de nav de la sección visible. Estilos: `.subject-nav a[href="#juegos"].active` (rojo) y `.subject-nav a[href="#musica"].active` (naranja).
+- Los sub-encabezados `.subgroup-hdr` separan tipos o asignaturas dentro de una sección.
+- La sección "Los Juegos" usa subgrupos por asignatura: Matemáticas · Lengua · Inglés/SS/NS · Geografía · Novela.
 
 ### Diseño visual — juegos individuales
 - Fondo blanco (`#ffffff`).
@@ -150,7 +153,7 @@ Andre/
 
 ### Personajes-tutoras
 - **Blanca** — matemáticas y lengua. Tono: cómplice, directa, humor seco.
-- **Rocío** — inglés. Tono: animada, positiva, ejemplos visuales.
+- **Rocío** — inglés, Social Science y Natural Science. Tono: animada, positiva, ejemplos visuales.
 - Se representan con emoji o avatar simple (sin imágenes externas).
 
 ### Estructura de un juego típico

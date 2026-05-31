@@ -6,13 +6,13 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 
 ## 🎮 Juegos
 
-| Archivo | Temática | Materia | Tiempo |
+| Archivo | Subgrupo | Materia | Tiempo |
 |---------|----------|---------|--------|
-| `andre-novela-v4.html` | Stranger Things | Mates + Lengua + Inglés | ~45 min |
-| `andre-stranger-things.html` | Stranger Things | Matemáticas (medidas) | ~15 min |
-| `starwars-lengua.html` | Star Wars | Lengua Castellana | ~15 min |
-| `andre-english-upsidedown.html` | Stranger Things | English | ~15 min |
-| `provincias_espana_v4.html` | — | Social Science · Geografía | infinito |
+| `andre-stranger-things.html` | 📐 Matemáticas | Matemáticas (medidas, Singapur) | ~15 min |
+| `starwars-lengua.html` | ✏️ Lengua Castellana | Lengua Castellana | ~15 min |
+| `andre-english-upsidedown.html` | 🇬🇧 Inglés · Social & Natural Science | English + CLIL | ~15 min |
+| `provincias_espana_v4.html` | 🗺️ Geografía · Social Science | Geografía | infinito |
+| `andre-novela-v4.html` | 📖 Novela Interactiva | Mates + Lengua + Inglés | ~45 min |
 
 ## 🎵 Lenguaje Musical
 
@@ -54,13 +54,14 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 - Tipos de texto y conectores argumentativos
 - Vocabulario: sinónimos, antónimos, polisemia
 
-**English (5º Primaria)**
+**English · Social & Natural Science (CLIL, 5º Primaria)**
 - Past Simple: regular & irregular verbs
 - Present Continuous
 - Articles, prepositions, modal verbs
 - Comparative adjectives
 - Reading comprehension & inference
 - Vocabulary & phrasal verbs
+- Social Science y Natural Science content (Rocío lleva las tres asignaturas)
 
 **Social Science · Geografía**
 - 50 provincias de España
@@ -82,10 +83,12 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 
 Descarga cualquier archivo `.html` y ábrelo en el navegador del móvil o tablet. Funciona sin conexión — ideal para avión o tren. Los repasos de música guardan el progreso y el registro de sesión en localStorage.
 
-## 👩‍🏫 Personajes-tutoras
+## 👩‍🏫 Tutoras
 
-- **Blanca** — Tutora de Matemáticas y Lengua.
-- **Rocío** — Tutora de Inglés.
+- **Blanca** — Tutora de Matemáticas y Lengua. Aparece misteriosamente en los desafíos de su especialidad.
+- **Rocío** — Tutora de Inglés, Social Science y Natural Science. Llega antes que Blanca a los desafíos de inglés. Eso también es discutible.
+
+Ambas aparecen como personajes en la novela interactiva.
 
 ---
 
