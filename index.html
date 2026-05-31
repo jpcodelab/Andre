@@ -118,9 +118,9 @@ body {
 .subject-nav a:hover { background: var(--border); color: var(--text); }
 .subject-nav a.active { color: #fff; border-color: transparent; }
 .subject-nav a[href="#juegos"].active         { background: var(--red); }
+.subject-nav a[href="#musica"].active         { background: #e65100; }
 .subject-nav a[href="#musica-teoria"].active  { background: #e65100; }
 .subject-nav a[href="#musica-dictado"].active { background: #1565c0; }
-.subject-nav a[href="#profes"].active         { background: var(--purple); }
 .subject-nav a[href="#como-usar"].active      { background: var(--mid); }
 
 /* ── SECTION HEADER ── */
@@ -286,6 +286,7 @@ body {
 .teachers-wrap {
   max-width: 900px; margin: 0 auto; padding: 0 20px 48px;
 }
+.teachers-inline { padding-bottom: 4px; }
 .teachers-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 14px; margin-top: 20px;
@@ -416,9 +417,9 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 <!-- ── SUBJECT NAV ── -->
 <nav class="subject-nav">
   <a href="#juegos">🎮 Juegos del Cole</a>
+  <a href="#musica">🎵 Escuela de Música</a>
   <a href="#musica-teoria">🎺 Teoría Musical</a>
   <a href="#musica-dictado">🎧 Dictado Rítmico</a>
-  <a href="#profes">👩‍🏫 Las Profes</a>
   <a href="#como-usar">ℹ️ Cómo usar</a>
 </nav>
 
@@ -566,38 +567,34 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-</div>
-
-<!-- ── LAS PROFES ── -->
-<div class="section-hdr" id="profes">
-  <h2>Las Profes</h2>
-  <span>Tutoras de André · personajes de la novela</span>
-</div>
-
-<div class="teachers-wrap">
-  <div class="teachers-grid">
-    <div class="teacher-card">
-      <div class="teacher-av blanca">👩‍🏫</div>
-      <div>
-        <span class="teacher-name">Blanca</span>
-        <span class="teacher-role">Tutora · Lengua y Matemáticas<br>Aparece y desaparece misteriosamente en los desafíos</span>
+  <!-- Las Profes — dentro de la sección del cole -->
+  <div class="subgroup-hdr" style="grid-column:1/-1"><span>👩‍🏫 Las Profes</span></div>
+  <div class="teachers-inline" style="grid-column:1/-1">
+    <div class="teachers-grid">
+      <div class="teacher-card">
+        <div class="teacher-av blanca">👩‍🏫</div>
+        <div>
+          <span class="teacher-name">Blanca</span>
+          <span class="teacher-role">Tutora · Lengua y Matemáticas<br>Aparece y desaparece misteriosamente en los desafíos</span>
+        </div>
+      </div>
+      <div class="teacher-card">
+        <div class="teacher-av rocio">👩‍🏫</div>
+        <div>
+          <span class="teacher-name">Rocío</span>
+          <span class="teacher-role">Inglés · Social Science · Natural Science<br>Llega antes que Blanca a los desafíos de inglés. Eso también es discutible.</span>
+        </div>
       </div>
     </div>
-    <div class="teacher-card">
-      <div class="teacher-av rocio">👩‍🏫</div>
-      <div>
-        <span class="teacher-name">Rocío</span>
-        <span class="teacher-role">Inglés · Social Science · Natural Science<br>Tutora de Inglés, Social Science y Natural Science. Llega antes que Blanca a los desafíos de inglés. Eso también es discutible.</span>
-      </div>
-    </div>
+    <p class="teachers-note">Blanca y Rocío también aparecen como personajes en la novela interactiva.</p>
   </div>
-  <p class="teachers-note">Blanca y Rocío también aparecen como personajes en la novela interactiva.</p>
+
 </div>
 
-<!-- ── LENGUAJE MUSICAL ── -->
+<!-- ── ESCUELA DE MÚSICA ── -->
 <div class="section-hdr" id="musica">
-  <h2>Lenguaje Musical 🎺</h2>
-  <span>3 mapas imprimibles + 7 repasos interactivos + 2 dictados</span>
+  <h2>Escuela de Música 🎵</h2>
+  <span>3 mapas · 7 repasos · 2 dictados · Lenguaje Musical 5º</span>
 </div>
 <p class="section-desc">Todo el material de repaso para la escuela de música. Los mapas son para imprimir; los repasos son tests adaptativos que guardan tu progreso. El dictado necesita sonido.</p>
 
@@ -951,8 +948,7 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
   /* ── Nav active state ── */
   const idToHref = {
     'juegos':          '#juegos',
-    'profes':          '#profes',
-    'musica':          '#musica-teoria',
+    'musica':          '#musica',
     'musica-teoria':   '#musica-teoria',
     'musica-dictado':  '#musica-dictado',
     'como-usar':       '#como-usar',
