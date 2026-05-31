@@ -35,6 +35,8 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 | `teoria-musica/repaso2_compas_musica_andre.html` | 22 | Foco intensivo en compás |
 | `teoria-musica/repaso_completo_musica_andre.html` | 40 | Barrido completo con partituras |
 | `teoria-musica/repaso_completo2_musica_andre.html` | 40 | Preguntas nuevas por unidad (U10–U15 + U1–5) |
+| `teoria-musica/dictado_ritmico_andre.html` | — | Dictado rítmico · Sesión 1 (4/4 y 3/4, Web Audio API) |
+| `teoria-musica/dictado_ritmico_andre_s2.html` | — | Dictado rítmico · Sesión 2 (foco en corchea por posición) |
 
 ---
 

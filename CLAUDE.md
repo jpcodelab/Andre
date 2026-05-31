@@ -75,7 +75,9 @@ CEIP Rosa Luxemburgo (Madrid, Comunidad de Madrid).
 - Los repasos usan test adaptativo: hasta 3 intentos por tema, feedback inmediato,
   progreso guardado en localStorage, registro de sesión copiable al final.
 - Los mapas son fichas de una o dos páginas para imprimir — no son juegos interactivos.
-- Secuencia natural de los repasos: Nivel 1 → Nivel 2 → Nivel 3 → Final → Compás → Gran Repaso 1 → Gran Repaso 2.
+- Los dictados rítmicos usan Web Audio API (sin ficheros de audio externos) — requieren
+  Chrome/Edge; no funcionan offline ni son imprimibles.
+- Secuencia natural de los repasos: Nivel 1 → Nivel 2 → Nivel 3 → Final → Compás → Gran Repaso 1 → Gran Repaso 2 → Dictado S1 → Dictado S2.
 
 ---
 
@@ -103,7 +105,9 @@ Andre/
 │   ├── repaso_final_musica_andre.html        # Repaso final · 26 temas
 │   ├── repaso2_compas_musica_andre.html      # Repaso compás · 22 temas
 │   ├── repaso_completo_musica_andre.html     # Gran repaso 1 · 40 temas
-│   └── repaso_completo2_musica_andre.html    # Gran repaso 2 · 40 temas (por unidad)
+│   ├── repaso_completo2_musica_andre.html    # Gran repaso 2 · 40 temas (por unidad)
+│   ├── dictado_ritmico_andre.html            # Dictado rítmico S1 · 4/4 y 3/4 · Web Audio API
+│   └── dictado_ritmico_andre_s2.html         # Dictado rítmico S2 · foco corchea por posición
 │
 ├── CLAUDE.md                          # Este fichero — contexto para Claude Code
 └── README.md                          # Descripción pública del repositorio

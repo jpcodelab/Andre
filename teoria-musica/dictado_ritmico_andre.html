@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dictado rítmico · André</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinta:#1a1a1a;
+    --acento:#1d6e6e;       /* teal sobrio para botones e indicadores */
+    --acento-suave:#e7f1f0;
+    --gris:#6b6b6b;
+    --linea:#d8d8d8;
+    --ok:#2e7d32;
+    --rep:#b25b00;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Lora', Georgia, serif;
+    color:var(--tinta);
+    background:#ffffff;
+    margin:0;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:32px 22px 80px;}
+
+  header h1{font-size:1.9rem; margin:0 0 4px; font-weight:700; letter-spacing:.2px;}
+  header .sub{color:var(--gris); font-size:1rem; margin:0 0 6px; font-style:italic;}
+  .meta{font-size:.92rem; color:var(--gris); border-left:3px solid var(--acento); padding:6px 0 6px 12px; margin:14px 0 6px;}
+
+  /* control de tempo */
+  .barra-control{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    margin:18px 0 6px; padding:12px 14px; background:var(--acento-suave); border-radius:10px;
+  }
+  .barra-control span{font-weight:600;}
+  .tempo-btn{
+    font-family:inherit; font-size:.95rem; cursor:pointer;
+    border:1.5px solid var(--acento); background:#fff; color:var(--acento);
+    padding:6px 16px; border-radius:20px; transition:all .15s;
+  }
+  .tempo-btn.activo{background:var(--acento); color:#fff;}
+
+  /* progreso */
+  .progreso-caja{margin:8px 0 22px;}
+  .progreso-txt{font-size:.92rem; color:var(--gris); margin-bottom:6px;}
+  .progreso-pista{height:10px; background:#eee; border-radius:6px; overflow:hidden;}
+  .progreso-relleno{height:100%; width:0%; background:var(--acento); transition:width .35s;}
+
+  h2.bloque{
+    font-size:1.35rem; margin:38px 0 2px; padding-bottom:6px;
+    border-bottom:2px solid var(--tinta);
+  }
+  h2.bloque .compas{color:var(--acento); font-size:1.05rem; font-weight:600;}
+  .bloque-nota{font-size:.92rem; color:var(--gris); margin:4px 0 18px; font-style:italic;}
+
+  /* leyenda */
+  .leyenda{
+    display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 8px;
+  }
+  .ley-item{
+    display:flex; flex-direction:column; align-items:center;
+    border:1px solid var(--linea); border-radius:10px; padding:8px 14px; min-width:96px;
+  }
+  .ley-item .nombre{font-size:.82rem; margin-top:2px;}
+  .ley-item .valor{font-size:.74rem; color:var(--gris);}
+
+  /* tarjeta de celda */
+  .celda{
+    border:1px solid var(--linea); border-radius:12px;
+    padding:16px 18px; margin:14px 0;
+  }
+  .celda.ejemplo{background:var(--acento-suave); border-color:var(--acento);}
+  .celda-cab{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .celda-num{font-weight:700; font-size:1.05rem;}
+  .celda.ejemplo .celda-num{color:var(--acento);}
+  .btn{
+    font-family:inherit; font-size:.95rem; cursor:pointer;
+    border:none; border-radius:22px; padding:9px 20px; transition:transform .1s, background .15s;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-oir{background:var(--acento); color:#fff;}
+  .btn-oir:hover{background:#175757;}
+  .btn-sol{background:#fff; color:var(--tinta); border:1.5px solid var(--tinta);}
+  .btn-sol:hover{background:#f3f3f3;}
+
+  .escribe{
+    font-size:.92rem; color:var(--gris); margin:10px 0 0;
+    border-top:1px dashed var(--linea); padding-top:10px;
+  }
+
+  .solucion{display:none; margin-top:14px;}
+  .solucion.visible{display:block; animation:aparece .25s ease;}
+  @keyframes aparece{from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;}}
+  .pentagrama-rit{
+    display:flex; align-items:flex-end; gap:6px; flex-wrap:wrap;
+    padding:14px 8px 8px; background:#fff; border:1px solid var(--linea); border-radius:8px;
+    min-height:78px;
+  }
+  .fig-svg{display:block;}
+  .sol-nombres{font-size:.85rem; color:var(--gris); margin-top:8px;}
+  .sol-conteo{font-size:.9rem; margin-top:6px;}
+
+  .marcar{display:flex; gap:10px; margin-top:12px;}
+  .btn-marca{
+    font-family:inherit; font-size:.88rem; cursor:pointer; border-radius:18px;
+    padding:6px 14px; border:1.5px solid var(--linea); background:#fff; color:var(--gris);
+  }
+  .btn-marca.bien.activo{background:var(--ok); color:#fff; border-color:var(--ok);}
+  .btn-marca.repasar.activo{background:var(--rep); color:#fff; border-color:var(--rep);}
+
+  .pie{margin-top:42px; border-top:1px solid var(--linea); padding-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
+  .btn-reset{font-family:inherit; font-size:.85rem; background:none; border:1px solid var(--linea); color:var(--gris); border-radius:18px; padding:6px 14px; cursor:pointer;}
+  .pie .recordatorio{font-size:.85rem; color:var(--gris); font-style:italic; max-width:440px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Dictado rítmico</h1>
+    <p class="sub">Lenguaje musical · André · Sesión 1</p>
+  </header>
+
+  <p class="meta">
+    Cómo funciona: André pulsa <strong>Escuchar</strong> (las veces que necesite), escribe el ritmo
+    en su papel, y solo después pulsa <strong>Ver solución</strong> para comparar. No se da la respuesta antes.
+    Antes de cada ritmo suena un compás de pulso (clic) para marcar el tempo.
+  </p>
+
+  <div class="barra-control">
+    <span>Velocidad:</span>
+    <button class="tempo-btn activo" data-bpm="69" onclick="setTempo(this,69)">Lento</button>
+    <button class="tempo-btn" data-bpm="84" onclick="setTempo(this,84)">Normal</button>
+  </div>
+
+  <div class="progreso-caja">
+    <div class="progreso-txt" id="progresoTxt">Marcados: 0 / 9</div>
+    <div class="progreso-pista"><div class="progreso-relleno" id="progresoRelleno"></div></div>
+  </div>
+
+  <!-- LEYENDA -->
+  <div class="leyenda" id="leyenda"></div>
+
+  <!-- BLOQUE 1 -->
+  <h2 class="bloque">Bloque 1 <span class="compas">· compás 4/4</span></h2>
+  <p class="bloque-nota">Figuras: negra, dos corcheas y silencio de negra. Cada compás tiene 4 tiempos.</p>
+  <div id="bloque1"></div>
+
+  <!-- BLOQUE 2 -->
+  <h2 class="bloque">Bloque 2 <span class="compas">· compás 3/4</span></h2>
+  <p class="bloque-nota">Ahora con la blanca (vale 2 tiempos). Cada compás tiene 3 tiempos.</p>
+  <div id="bloque2"></div>
+
+  <div class="pie">
+    <button class="btn-reset" onclick="resetTodo()">Reiniciar progreso</button>
+    <p class="recordatorio">Cierre de sesión: repasad juntos solo las que André marcó "A repasar".</p>
+  </div>
+
+</div>
+
+<script>
+/* ===================== AUDIO ===================== */
+let audioCtx = null;
+function getCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function blip(time, freq, dur, gainVal, tipo){
+  const ctx = getCtx();
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.type = tipo || 'sine';
+  osc.frequency.value = freq;
+  osc.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.linearRampToValueAtTime(gainVal, time + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+  osc.start(time);
+  osc.stop(time + dur + 0.03);
+}
+
+/* cada token -> lista de onsets {on, d(en tiempos)} */
+const TOKEN_AUDIO = {
+  negra:    [{on:true,  d:1}],
+  corcheas: [{on:true,  d:0.5},{on:true, d:0.5}],
+  silencio: [{on:false, d:1}],
+  blanca:   [{on:true,  d:2}]
+};
+
+let TEMPO = 69;
+function setTempo(btn, bpm){
+  TEMPO = bpm;
+  document.querySelectorAll('.tempo-btn').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+}
+
+function tocarCelda(tokens, tiemposPorCompas){
+  const ctx = getCtx();
+  if(ctx.state === 'suspended') ctx.resume();
+  const beat = 60 / TEMPO;
+  const inicio = ctx.currentTime + 0.18;
+
+  // cuenta de entrada (un compás de clics; acento en el 1)
+  for(let i=0;i<tiemposPorCompas;i++){
+    blip(inicio + i*beat, i===0 ? 1000 : 760, 0.05, 0.22, 'square');
+  }
+
+  // el ritmo empieza un compás después
+  let onset = inicio + tiemposPorCompas*beat;
+  tokens.forEach(tok=>{
+    TOKEN_AUDIO[tok].forEach(ev=>{
+      if(ev.on){ blip(onset, 580, 0.13, 0.34, 'sine'); }
+      onset += ev.d * beat;
+    });
+  });
+}
+
+/* ===================== NOTACIÓN (SVG) ===================== */
+function svgNegra(){
+  return `<svg class="fig-svg" width="34" height="58" viewBox="0 0 34 58">
+    <ellipse cx="13" cy="40" rx="7.5" ry="5.3" transform="rotate(-22 13 40)" fill="#1a1a1a"/>
+    <line x1="20" y1="38" x2="20" y2="10" stroke="#1a1a1a" stroke-width="2.2"/>
+  </svg>`;
+}
+function svgBlanca(){
+  return `<svg class="fig-svg" width="34" height="58" viewBox="0 0 34 58">
+    <ellipse cx="13" cy="40" rx="7.5" ry="5.3" transform="rotate(-22 13 40)" fill="#fff" stroke="#1a1a1a" stroke-width="2.4"/>
+    <line x1="20" y1="38" x2="20" y2="10" stroke="#1a1a1a" stroke-width="2.2"/>
+  </svg>`;
+}
+function svgCorcheas(){
+  return `<svg class="fig-svg" width="48" height="58" viewBox="0 0 48 58">
+    <ellipse cx="11" cy="40" rx="7" ry="5" transform="rotate(-22 11 40)" fill="#1a1a1a"/>
+    <ellipse cx="33" cy="40" rx="7" ry="5" transform="rotate(-22 33 40)" fill="#1a1a1a"/>
+    <line x1="17.6" y1="38" x2="17.6" y2="11" stroke="#1a1a1a" stroke-width="2.2"/>
+    <line x1="39.6" y1="38" x2="39.6" y2="11" stroke="#1a1a1a" stroke-width="2.2"/>
+    <rect x="17" y="9" width="23.5" height="5" fill="#1a1a1a"/>
+  </svg>`;
+}
+function svgSilencio(){
+  return `<svg class="fig-svg" width="34" height="58" viewBox="0 0 34 58">
+    <path d="M11,14 L20,24 L12,31 Q21,33 17,45" fill="none" stroke="#1a1a1a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M17,45 q-3,-5 -8,-2 q5,0 5,6 z" fill="#1a1a1a"/>
+  </svg>`;
+}
+const TOKEN_SVG = {negra:svgNegra, blanca:svgBlanca, corcheas:svgCorcheas, silencio:svgSilencio};
+const TOKEN_NOMBRE = {negra:'negra', blanca:'blanca', corcheas:'dos corcheas', silencio:'silencio de negra'};
+
+function dibujaRitmo(tokens){
+  return tokens.map(t=>TOKEN_SVG[t]()).join('');
+}
+function nombresRitmo(tokens){
+  return tokens.map(t=>TOKEN_NOMBRE[t]).join('  ·  ');
+}
+
+/* ===================== DATOS ===================== */
+const EJEMPLO_1 = {tokens:['negra','negra','corcheas','negra'], compas:4,
+  conteo:'Cuenta: <strong>1 — 2 — 3 y — 4</strong>. En el tiempo 3 suenan dos golpes juntos (las dos corcheas).'};
+const BLOQUE_1 = [
+  ['negra','negra','negra','negra'],
+  ['corcheas','negra','negra','negra'],
+  ['negra','silencio','negra','negra'],
+  ['corcheas','corcheas','negra','negra'],
+  ['negra','corcheas','silencio','negra']
+];
+
+const EJEMPLO_2 = {tokens:['blanca','negra'], compas:3,
+  conteo:'Cuenta: <strong>1 — 2 — 3</strong>. La blanca ocupa los tiempos 1 y 2 (un solo golpe que dura 2); la negra es el tiempo 3.'};
+const BLOQUE_2 = [
+  ['negra','negra','negra'],
+  ['corcheas','negra','negra'],
+  ['negra','blanca'],
+  ['negra','corcheas','negra']
+];
+
+/* ===================== ESTADO (localStorage) ===================== */
+const LS_KEY = 'andre_dictado_ritmico_v1';
+let estado = cargar();
+function cargar(){
+  try{ return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function guardar(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(estado)); }catch(e){}
+}
+
+/* ===================== RENDER ===================== */
+function leyenda(){
+  const items = ['negra','corcheas','silencio','blanca'];
+  const valores = {negra:'1 tiempo', corcheas:'½ + ½ tiempo', silencio:'1 tiempo (callado)', blanca:'2 tiempos'};
+  document.getElementById('leyenda').innerHTML = items.map(t=>`
+    <div class="ley-item">
+      ${TOKEN_SVG[t]()}
+      <span class="nombre">${TOKEN_NOMBRE[t]}</span>
+      <span class="valor">${valores[t]}</span>
+    </div>`).join('');
+}
+
+function tarjetaEjemplo(ej, etiqueta){
+  return `
+  <div class="celda ejemplo">
+    <div class="celda-cab">
+      <span class="celda-num">${etiqueta} — Ejemplo resuelto</span>
+      <button class="btn btn-oir" onclick='tocarCelda(${JSON.stringify(ej.tokens)}, ${ej.compas})'>▶ Escuchar ejemplo</button>
+    </div>
+    <div class="solucion visible">
+      <div class="pentagrama-rit">${dibujaRitmo(ej.tokens)}</div>
+      <div class="sol-nombres">${nombresRitmo(ej.tokens)}</div>
+      <div class="sol-conteo">${ej.conteo}</div>
+    </div>
+  </div>`;
+}
+
+function tarjetaCelda(tokens, compas, id){
+  const marca = estado[id] || null;
+  return `
+  <div class="celda" id="card-${id}">
+    <div class="celda-cab">
+      <span class="celda-num">Nº ${id.split('-')[1]}</span>
+      <button class="btn btn-oir" onclick='tocarCelda(${JSON.stringify(tokens)}, ${compas})'>▶ Escuchar</button>
+    </div>
+    <p class="escribe">Escribe el ritmo en tu papel. Cuando termines, pulsa "Ver solución".</p>
+    <button class="btn btn-sol" style="margin-top:10px" onclick="verSolucion('${id}')">Ver solución</button>
+    <div class="solucion" id="sol-${id}">
+      <div class="pentagrama-rit">${dibujaRitmo(tokens)}</div>
+      <div class="sol-nombres">${nombresRitmo(tokens)}</div>
+      <div class="marcar">
+        <button class="btn-marca bien ${marca==='bien'?'activo':''}" onclick="marcar('${id}','bien')">✓ Lo tuve bien</button>
+        <button class="btn-marca repasar ${marca==='repasar'?'activo':''}" onclick="marcar('${id}','repasar')">✗ A repasar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function pintar(){
+  leyenda();
+  let html1 = tarjetaEjemplo(EJEMPLO_1, 'Bloque 1');
+  BLOQUE_1.forEach((tk,i)=>{ html1 += tarjetaCelda(tk, 4, 'b1-'+(i+1)); });
+  document.getElementById('bloque1').innerHTML = html1;
+
+  let html2 = tarjetaEjemplo(EJEMPLO_2, 'Bloque 2');
+  BLOQUE_2.forEach((tk,i)=>{ html2 += tarjetaCelda(tk, 3, 'b2-'+(i+1)); });
+  document.getElementById('bloque2').innerHTML = html2;
+
+  // si una celda ya estaba marcada en sesión previa, mostrar su solución
+  Object.keys(estado).forEach(id=>{
+    const sol = document.getElementById('sol-'+id);
+    if(sol) sol.classList.add('visible');
+  });
+  actualizaProgreso();
+}
+
+function verSolucion(id){
+  const sol = document.getElementById('sol-'+id);
+  if(sol) sol.classList.add('visible');
+}
+
+function marcar(id, valor){
+  estado[id] = (estado[id]===valor) ? null : valor;  // volver a pulsar = desmarcar
+  if(estado[id]===null) delete estado[id];
+  guardar();
+  // refrescar botones de esa tarjeta
+  const card = document.getElementById('card-'+id);
+  card.querySelectorAll('.btn-marca').forEach(b=>b.classList.remove('activo'));
+  if(estado[id]==='bien') card.querySelector('.btn-marca.bien').classList.add('activo');
+  if(estado[id]==='repasar') card.querySelector('.btn-marca.repasar').classList.add('activo');
+  actualizaProgreso();
+}
+
+function actualizaProgreso(){
+  const total = BLOQUE_1.length + BLOQUE_2.length; // 9
+  const hechos = Object.keys(estado).filter(k=>estado[k]).length;
+  document.getElementById('progresoTxt').textContent = `Marcados: ${hechos} / ${total}`;
+  document.getElementById('progresoRelleno').style.width = (hechos/total*100)+'%';
+}
+
+function resetTodo(){
+  if(confirm('¿Borrar todas las marcas y empezar de nuevo?')){
+    estado = {}; guardar(); pintar();
+  }
+}
+
+pintar();
+</script>
+</body>
+</html>

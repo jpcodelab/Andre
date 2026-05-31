@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dictado rítmico · André · Sesión 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinta:#1a1a1a; --acento:#1d6e6e; --acento-suave:#e7f1f0;
+    --gris:#6b6b6b; --linea:#d8d8d8; --ok:#2e7d32; --rep:#b25b00;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Lora',Georgia,serif; color:var(--tinta); background:#fff; margin:0; line-height:1.55; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:760px; margin:0 auto; padding:32px 22px 80px;}
+  header h1{font-size:1.9rem; margin:0 0 4px; font-weight:700;}
+  header .sub{color:var(--gris); font-size:1rem; margin:0 0 6px; font-style:italic;}
+  .meta{font-size:.92rem; color:var(--gris); border-left:3px solid var(--acento); padding:6px 0 6px 12px; margin:14px 0 6px;}
+  .foco{font-size:.92rem; background:var(--acento-suave); border-radius:10px; padding:12px 14px; margin:12px 0;}
+  .foco strong{color:var(--acento);}
+
+  .barra-control{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:18px 0 6px; padding:12px 14px; background:var(--acento-suave); border-radius:10px;}
+  .barra-control span{font-weight:600;}
+  .tempo-btn{font-family:inherit; font-size:.95rem; cursor:pointer; border:1.5px solid var(--acento); background:#fff; color:var(--acento); padding:6px 16px; border-radius:20px; transition:all .15s;}
+  .tempo-btn.activo{background:var(--acento); color:#fff;}
+
+  .progreso-caja{margin:8px 0 22px;}
+  .progreso-txt{font-size:.92rem; color:var(--gris); margin-bottom:6px;}
+  .progreso-pista{height:10px; background:#eee; border-radius:6px; overflow:hidden;}
+  .progreso-relleno{height:100%; width:0%; background:var(--acento); transition:width .35s;}
+
+  h2.bloque{font-size:1.35rem; margin:38px 0 2px; padding-bottom:6px; border-bottom:2px solid var(--tinta);}
+  h2.bloque .compas{color:var(--acento); font-size:1.05rem; font-weight:600;}
+  .bloque-nota{font-size:.92rem; color:var(--gris); margin:4px 0 18px; font-style:italic;}
+
+  .leyenda{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 8px;}
+  .ley-item{display:flex; flex-direction:column; align-items:center; border:1px solid var(--linea); border-radius:10px; padding:8px 14px; min-width:96px;}
+  .ley-item .nombre{font-size:.82rem; margin-top:2px;}
+  .ley-item .valor{font-size:.74rem; color:var(--gris);}
+
+  .celda{border:1px solid var(--linea); border-radius:12px; padding:16px 18px; margin:14px 0;}
+  .celda.ejemplo{background:var(--acento-suave); border-color:var(--acento);}
+  .celda-cab{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .celda-num{font-weight:700; font-size:1.05rem;}
+  .celda.ejemplo .celda-num{color:var(--acento);}
+  .btn{font-family:inherit; font-size:.95rem; cursor:pointer; border:none; border-radius:22px; padding:9px 20px; transition:transform .1s, background .15s;}
+  .btn:active{transform:scale(.97);}
+  .btn-oir{background:var(--acento); color:#fff;}
+  .btn-oir:hover{background:#175757;}
+  .btn-sol{background:#fff; color:var(--tinta); border:1.5px solid var(--tinta);}
+  .btn-sol:hover{background:#f3f3f3;}
+  .escribe{font-size:.92rem; color:var(--gris); margin:10px 0 0; border-top:1px dashed var(--linea); padding-top:10px;}
+  .solucion{display:none; margin-top:14px;}
+  .solucion.visible{display:block; animation:aparece .25s ease;}
+  @keyframes aparece{from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;}}
+  .pentagrama-rit{display:flex; align-items:flex-end; gap:6px; flex-wrap:wrap; padding:14px 8px 8px; background:#fff; border:1px solid var(--linea); border-radius:8px; min-height:78px;}
+  .fig-svg{display:block;}
+  .sol-nombres{font-size:.85rem; color:var(--gris); margin-top:8px;}
+  .sol-conteo{font-size:.9rem; margin-top:6px;}
+  .marcar{display:flex; gap:10px; margin-top:12px;}
+  .btn-marca{font-family:inherit; font-size:.88rem; cursor:pointer; border-radius:18px; padding:6px 14px; border:1.5px solid var(--linea); background:#fff; color:var(--gris);}
+  .btn-marca.bien.activo{background:var(--ok); color:#fff; border-color:var(--ok);}
+  .btn-marca.repasar.activo{background:var(--rep); color:#fff; border-color:var(--rep);}
+
+  /* resumen final */
+  .resumen{margin-top:46px; border-top:2px solid var(--tinta); padding-top:20px;}
+  .resumen h2{font-size:1.3rem; margin:0 0 6px;}
+  .resumen p{font-size:.92rem; color:var(--gris); margin:0 0 12px;}
+  #resumenTexto{width:100%; min-height:230px; font-family:'Courier New',monospace; font-size:.82rem; line-height:1.45; padding:12px; border:1px solid var(--linea); border-radius:8px; white-space:pre; overflow:auto; background:#fbfbfb;}
+  .resumen-btns{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
+  #avisoCopia{font-size:.85rem; color:var(--ok); margin-left:4px; align-self:center;}
+  .btn-reset{font-family:inherit; font-size:.85rem; background:none; border:1px solid var(--linea); color:var(--gris); border-radius:18px; padding:6px 14px; cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Dictado rítmico</h1>
+    <p class="sub">Lenguaje musical · André · Sesión 2 — repaso de corcheas</p>
+  </header>
+
+  <p class="meta">
+    André pulsa <strong>Escuchar</strong> (las veces que necesite), escribe el ritmo en su papel,
+    y solo después pulsa <strong>Ver solución</strong>. Antes de cada ritmo suena un compás de pulso (clic).
+  </p>
+
+  <div class="foco">
+    <strong>Objetivo de hoy:</strong> mantener el pulso firme cuando <strong>solo un tiempo se dobla</strong> en corcheas.
+    Truco para André: las negras van a "paso normal"; cuando llegan las dos corcheas, ese tiempo se dice
+    <strong>"y"</strong> en medio ("1, <em>2 y</em>, 3, 4"). El resto sigue igual de tranquilo.
+  </div>
+
+  <div class="barra-control">
+    <span>Velocidad:</span>
+    <button class="tempo-btn activo" data-bpm="69" onclick="setTempo(this,69)">Lento</button>
+    <button class="tempo-btn" data-bpm="84" onclick="setTempo(this,84)">Normal</button>
+  </div>
+
+  <div class="progreso-caja">
+    <div class="progreso-txt" id="progresoTxt">Marcados: 0 / 9</div>
+    <div class="progreso-pista"><div class="progreso-relleno" id="progresoRelleno"></div></div>
+  </div>
+
+  <div class="leyenda" id="leyenda"></div>
+
+  <h2 class="bloque">Bloque 1 <span class="compas">· compás 4/4</span></h2>
+  <p class="bloque-nota">La pareja de corcheas cambia de sitio en cada ejercicio. Fíjate en qué tiempo se dobla.</p>
+  <div id="bloque1"></div>
+
+  <h2 class="bloque">Bloque 2 <span class="compas">· compás 3/4</span></h2>
+  <p class="bloque-nota">Lo mismo en 3 tiempos. El último añade un silencio.</p>
+  <div id="bloque2"></div>
+
+  <!-- RESUMEN FINAL -->
+  <div class="resumen">
+    <h2>Resumen de la sesión</h2>
+    <p>Al terminar, pulsa "Generar resumen", luego "Copiar" y pégalo en el chat para planificar la próxima sesión.</p>
+    <div class="resumen-btns">
+      <button class="btn btn-oir" onclick="generarResumen()">Generar resumen</button>
+      <button class="btn btn-sol" onclick="copiarResumen()">Copiar</button>
+      <span id="avisoCopia"></span>
+    </div>
+    <textarea id="resumenTexto" readonly placeholder="El resumen aparecerá aquí…"></textarea>
+    <div style="margin-top:16px"><button class="btn-reset" onclick="resetTodo()">Reiniciar progreso</button></div>
+  </div>
+
+</div>
+
+<script>
+/* ===================== AUDIO ===================== */
+let audioCtx=null;
+function getCtx(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+function blip(time,freq,dur,gainVal,tipo){
+  const ctx=getCtx(); const osc=ctx.createOscillator(); const g=ctx.createGain();
+  osc.type=tipo||'sine'; osc.frequency.value=freq; osc.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(0.0001,time);
+  g.gain.linearRampToValueAtTime(gainVal,time+0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001,time+dur);
+  osc.start(time); osc.stop(time+dur+0.03);
+}
+const TOKEN_AUDIO={negra:[{on:true,d:1}], corcheas:[{on:true,d:0.5},{on:true,d:0.5}], silencio:[{on:false,d:1}], blanca:[{on:true,d:2}]};
+let TEMPO=69;
+function setTempo(btn,bpm){ TEMPO=bpm; document.querySelectorAll('.tempo-btn').forEach(b=>b.classList.remove('activo')); btn.classList.add('activo'); }
+function tocarCelda(tokens,tiemposPorCompas){
+  const ctx=getCtx(); if(ctx.state==='suspended') ctx.resume();
+  const beat=60/TEMPO; const inicio=ctx.currentTime+0.18;
+  for(let i=0;i<tiemposPorCompas;i++){ blip(inicio+i*beat, i===0?1000:760, 0.05, 0.22, 'square'); }
+  let onset=inicio+tiemposPorCompas*beat;
+  tokens.forEach(tok=>{ TOKEN_AUDIO[tok].forEach(ev=>{ if(ev.on) blip(onset,580,0.13,0.34,'sine'); onset+=ev.d*beat; }); });
+}
+
+/* ===================== NOTACIÓN ===================== */
+function svgNegra(){return `<svg class="fig-svg" width="34" height="58" viewBox="0 0 34 58"><ellipse cx="13" cy="40" rx="7.5" ry="5.3" transform="rotate(-22 13 40)" fill="#1a1a1a"/><line x1="20" y1="38" x2="20" y2="10" stroke="#1a1a1a" stroke-width="2.2"/></svg>`;}
+function svgBlanca(){return `<svg class="fig-svg" width="34" height="58" viewBox="0 0 34 58"><ellipse cx="13" cy="40" rx="7.5" ry="5.3" transform="rotate(-22 13 40)" fill="#fff" stroke="#1a1a1a" stroke-width="2.4"/><line x1="20" y1="38" x2="20" y2="10" stroke="#1a1a1a" stroke-width="2.2"/></svg>`;}
+function svgCorcheas(){return `<svg class="fig-svg" width="48" height="58" viewBox="0 0 48 58"><ellipse cx="11" cy="40" rx="7" ry="5" transform="rotate(-22 11 40)" fill="#1a1a1a"/><ellipse cx="33" cy="40" rx="7" ry="5" transform="rotate(-22 33 40)" fill="#1a1a1a"/><line x1="17.6" y1="38" x2="17.6" y2="11" stroke="#1a1a1a" stroke-width="2.2"/><line x1="39.6" y1="38" x2="39.6" y2="11" stroke="#1a1a1a" stroke-width="2.2"/><rect x="17" y="9" width="23.5" height="5" fill="#1a1a1a"/></svg>`;}
+function svgSilencio(){return `<svg class="fig-svg" width="34" height="58" viewBox="0 0 34 58"><path d="M11,14 L20,24 L12,31 Q21,33 17,45" fill="none" stroke="#1a1a1a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17,45 q-3,-5 -8,-2 q5,0 5,6 z" fill="#1a1a1a"/></svg>`;}
+const TOKEN_SVG={negra:svgNegra, blanca:svgBlanca, corcheas:svgCorcheas, silencio:svgSilencio};
+const TOKEN_NOMBRE={negra:'negra', blanca:'blanca', corcheas:'dos corcheas', silencio:'silencio de negra'};
+function dibujaRitmo(t){return t.map(x=>TOKEN_SVG[x]()).join('');}
+function nombresRitmo(t){return t.map(x=>TOKEN_NOMBRE[x]).join('  ·  ');}
+
+/* ===================== DATOS (Sesión 2: una pareja de corcheas rotando posición) ===================== */
+const EJEMPLO_1={tokens:['negra','corcheas','negra','negra'], compas:4,
+  conteo:'Cuenta: <strong>1 — 2 y — 3 — 4</strong>. Solo el tiempo 2 se dobla; los demás siguen a paso normal.'};
+const BLOQUE_1=[
+  ['corcheas','negra','negra','negra'],     /* corcheas en tiempo 1 */
+  ['negra','negra','corcheas','negra'],     /* corcheas en tiempo 3 */
+  ['negra','negra','negra','corcheas'],     /* corcheas en tiempo 4 */
+  ['negra','corcheas','negra','silencio'],  /* corcheas t2 + silencio t4 */
+  ['corcheas','negra','silencio','negra']   /* corcheas t1 + silencio t3 */
+];
+const EJEMPLO_2={tokens:['negra','corcheas','negra'], compas:3,
+  conteo:'Cuenta: <strong>1 — 2 y — 3</strong>. Igual que antes, pero el compás tiene 3 tiempos.'};
+const BLOQUE_2=[
+  ['corcheas','negra','negra'],   /* t1 */
+  ['negra','corcheas','negra'],   /* t2 */
+  ['negra','negra','corcheas'],   /* t3 */
+  ['negra','corcheas','silencio'] /* t2 + silencio t3 */
+];
+
+/* qué tiempo lleva las corcheas (para el resumen) */
+function tiempoCorcheas(tokens){
+  let t=0;
+  for(const tok of tokens){
+    t += (TOKEN_AUDIO[tok][0].d===2?2:1); // avance en tiempos (corcheas/negra/silencio=1, blanca=2)
+    if(tok==='corcheas') return t; // devuelve el nº de tiempo donde están
+  }
+  return null;
+}
+
+/* ===================== ESTADO ===================== */
+const LS_KEY='andre_dictado_ritmico_s2';
+let estado=cargar();
+function cargar(){ try{return JSON.parse(localStorage.getItem(LS_KEY))||{};}catch(e){return {};} }
+function guardar(){ try{localStorage.setItem(LS_KEY,JSON.stringify(estado));}catch(e){} }
+
+/* ===================== RENDER ===================== */
+function leyenda(){
+  const items=['negra','corcheas','silencio','blanca'];
+  const valores={negra:'1 tiempo', corcheas:'½ + ½ tiempo', silencio:'1 tiempo (callado)', blanca:'2 tiempos'};
+  document.getElementById('leyenda').innerHTML=items.map(t=>`<div class="ley-item">${TOKEN_SVG[t]()}<span class="nombre">${TOKEN_NOMBRE[t]}</span><span class="valor">${valores[t]}</span></div>`).join('');
+}
+function tarjetaEjemplo(ej,etq){
+  return `<div class="celda ejemplo"><div class="celda-cab"><span class="celda-num">${etq} — Ejemplo resuelto</span><button class="btn btn-oir" onclick='tocarCelda(${JSON.stringify(ej.tokens)}, ${ej.compas})'>▶ Escuchar ejemplo</button></div><div class="solucion visible"><div class="pentagrama-rit">${dibujaRitmo(ej.tokens)}</div><div class="sol-nombres">${nombresRitmo(ej.tokens)}</div><div class="sol-conteo">${ej.conteo}</div></div></div>`;
+}
+function tarjetaCelda(tokens,compas,id){
+  const marca=estado[id]||null;
+  return `<div class="celda" id="card-${id}"><div class="celda-cab"><span class="celda-num">Nº ${id.split('-')[1]}</span><button class="btn btn-oir" onclick='tocarCelda(${JSON.stringify(tokens)}, ${compas})'>▶ Escuchar</button></div><p class="escribe">Escribe el ritmo en tu papel. Cuando termines, pulsa "Ver solución".</p><button class="btn btn-sol" style="margin-top:10px" onclick="verSolucion('${id}')">Ver solución</button><div class="solucion" id="sol-${id}"><div class="pentagrama-rit">${dibujaRitmo(tokens)}</div><div class="sol-nombres">${nombresRitmo(tokens)}</div><div class="marcar"><button class="btn-marca bien ${marca==='bien'?'activo':''}" onclick="marcar('${id}','bien')">✓ Lo tuve bien</button><button class="btn-marca repasar ${marca==='repasar'?'activo':''}" onclick="marcar('${id}','repasar')">✗ A repasar</button></div></div></div>`;
+}
+function pintar(){
+  leyenda();
+  let h1=tarjetaEjemplo(EJEMPLO_1,'Bloque 1');
+  BLOQUE_1.forEach((tk,i)=>{h1+=tarjetaCelda(tk,4,'b1-'+(i+1));});
+  document.getElementById('bloque1').innerHTML=h1;
+  let h2=tarjetaEjemplo(EJEMPLO_2,'Bloque 2');
+  BLOQUE_2.forEach((tk,i)=>{h2+=tarjetaCelda(tk,3,'b2-'+(i+1));});
+  document.getElementById('bloque2').innerHTML=h2;
+  Object.keys(estado).forEach(id=>{const s=document.getElementById('sol-'+id); if(s) s.classList.add('visible');});
+  actualizaProgreso();
+}
+function verSolucion(id){const s=document.getElementById('sol-'+id); if(s) s.classList.add('visible');}
+function marcar(id,valor){
+  estado[id]=(estado[id]===valor)?null:valor;
+  if(estado[id]===null) delete estado[id];
+  guardar();
+  const card=document.getElementById('card-'+id);
+  card.querySelectorAll('.btn-marca').forEach(b=>b.classList.remove('activo'));
+  if(estado[id]==='bien') card.querySelector('.btn-marca.bien').classList.add('activo');
+  if(estado[id]==='repasar') card.querySelector('.btn-marca.repasar').classList.add('activo');
+  actualizaProgreso();
+}
+function actualizaProgreso(){
+  const total=BLOQUE_1.length+BLOQUE_2.length;
+  const hechos=Object.keys(estado).filter(k=>estado[k]).length;
+  document.getElementById('progresoTxt').textContent=`Marcados: ${hechos} / ${total}`;
+  document.getElementById('progresoRelleno').style.width=(hechos/total*100)+'%';
+}
+function resetTodo(){ if(confirm('¿Borrar todas las marcas y empezar de nuevo?')){ estado={}; guardar(); pintar(); document.getElementById('resumenTexto').value=''; } }
+
+/* ===================== RESUMEN COPIABLE ===================== */
+function lineaCelda(id, tokens, compas){
+  const m=estado[id];
+  const estadoTxt = m==='bien' ? '✓ bien' : (m==='repasar' ? '✗ A REPASAR' : '— (sin marcar)');
+  const tc=tiempoCorcheas(tokens);
+  const hint = tc ? ` [corcheas en tiempo ${tc}]` : (tokens.includes('silencio')?' [con silencio]':'');
+  const num='Nº'+id.split('-')[1];
+  return `  ${num.padEnd(4)} ${nombresRitmo(tokens).padEnd(46)} → ${estadoTxt}${hint}`;
+}
+function generarResumen(){
+  const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const tempoTxt=(TEMPO===69)?'Lento (69)':'Normal (84)';
+  let L=[];
+  L.push('=== DICTADO RÍTMICO · André — Sesión 2 (repaso corcheas) ===');
+  L.push('Fecha: '+fecha+'   |   Velocidad usada: '+tempoTxt);
+  L.push('Objetivo: una pareja de corcheas aislada entre negras (cambio de subdivisión a mitad de compás).');
+  L.push('');
+  L.push('BLOQUE 1 (4/4):');
+  BLOQUE_1.forEach((tk,i)=>L.push(lineaCelda('b1-'+(i+1),tk,4)));
+  L.push('');
+  L.push('BLOQUE 2 (3/4):');
+  BLOQUE_2.forEach((tk,i)=>L.push(lineaCelda('b2-'+(i+1),tk,3)));
+  L.push('');
+  const total=BLOQUE_1.length+BLOQUE_2.length;
+  const bien=Object.keys(estado).filter(k=>estado[k]==='bien').length;
+  const rep=Object.keys(estado).filter(k=>estado[k]==='repasar');
+  L.push('Resultado: '+bien+' / '+total+' correctas.');
+  if(rep.length){
+    const repTxt=rep.map(id=>{
+      const num='Nº'+id.split('-')[1];
+      const bloque=id.startsWith('b1')?'B1':'B2';
+      const tk=(id.startsWith('b1')?BLOQUE_1:BLOQUE_2)[parseInt(id.split('-')[1])-1];
+      const tc=tiempoCorcheas(tk);
+      return `${bloque}-${num}${tc?' (corcheas t'+tc+')':''}`;
+    }).join(', ');
+    L.push('A repasar: '+repTxt);
+  } else {
+    L.push('A repasar: ninguna marcada.');
+  }
+  L.push('Notas del mediador (José Pedro): _______________________________');
+  document.getElementById('resumenTexto').value=L.join('\n');
+  document.getElementById('avisoCopia').textContent='';
+}
+function copiarResumen(){
+  const ta=document.getElementById('resumenTexto');
+  if(!ta.value){ generarResumen(); }
+  ta.select(); ta.setSelectionRange(0,99999);
+  let ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+  if(navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(()=>{}, ()=>{}); ok=true; }
+  document.getElementById('avisoCopia').textContent = ok ? '✓ Copiado' : 'Selecciona el texto y copia con Ctrl+C';
+}
+
+pintar();
+</script>
+</body>
+</html>
