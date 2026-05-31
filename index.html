@@ -64,51 +64,64 @@ body {
 .hero {
   background: var(--white);
   border-bottom: 1px solid var(--border);
-  padding: 44px 24px 36px;
+  padding: 22px 24px 18px;
   text-align: center;
 }
-
 .hero-eyebrow {
   font-size: .65rem; font-weight: 900; letter-spacing: 5px;
-  text-transform: uppercase; color: var(--teal); margin-bottom: 14px;
+  text-transform: uppercase; color: var(--teal); margin-bottom: 10px;
 }
-
-.hero-icon { font-size: 3.2rem; display: block; margin-bottom: 14px; animation: bob 3.5s ease-in-out infinite; }
+.hero-icon { font-size: 2rem; display: block; margin-bottom: 10px; animation: bob 3.5s ease-in-out infinite; }
 @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-
 .hero-title {
   font-family: 'Special Elite', cursive;
   font-size: clamp(1.8rem, 6vw, 3rem);
   color: var(--red); line-height: 1.1; margin-bottom: 8px;
 }
-
 .hero-subtitle {
   font-family: 'Lora', serif; font-style: italic;
   font-size: clamp(.95rem, 2.5vw, 1.15rem);
-  color: var(--mid); margin-bottom: 22px;
+  color: var(--mid); margin-bottom: 16px;
 }
-
 .hero-divider {
   width: 48px; height: 2px; background: var(--red);
-  margin: 0 auto 22px; opacity: .4;
+  margin: 0 auto 16px; opacity: .4;
 }
-
 .hero-desc {
-  max-width: 520px; margin: 0 auto 24px;
+  max-width: 520px; margin: 0 auto 18px;
   font-family: 'Lora', serif;
   font-size: 1rem; line-height: 1.8; color: var(--mid);
 }
-
 .hero-tags {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  justify-content: center; margin-bottom: 8px;
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
 }
 .tag {
   background: var(--panel); border: 1px solid var(--border);
   border-radius: 20px; padding: 4px 14px;
   font-size: .72rem; font-weight: 700; color: var(--dim);
-  letter-spacing: .5px;
+  letter-spacing: .5px; white-space: nowrap;
 }
+
+/* ── SUBJECT NAV ── */
+.subject-nav {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; justify-content: center; gap: 6px;
+  padding: 10px 20px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100;
+}
+.subject-nav a {
+  font-size: .7rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--dim); text-decoration: none;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 14px; transition: all .15s;
+  white-space: nowrap;
+}
+.subject-nav a:hover { background: var(--border); color: var(--text); }
+.subject-nav a.active { color: #fff; border-color: transparent; }
+.subject-nav a[href="#juegos"].active         { background: var(--red); }
+.subject-nav a[href="#musica-teoria"].active  { background: #e65100; }
+.subject-nav a[href="#musica-dictado"].active { background: #1565c0; }
+.subject-nav a[href="#profes"].active         { background: var(--purple); }
+.subject-nav a[href="#como-usar"].active      { background: var(--mid); }
 
 /* ── SECTION HEADER ── */
 .section-hdr {
@@ -125,12 +138,62 @@ body {
   text-transform: uppercase; color: var(--dim);
 }
 
-/* ── GRID ── */
+/* ── SECTION DESCRIPTION ── */
+.section-desc {
+  max-width: 900px; margin: 10px auto 0; padding: 0 20px;
+  font-family: 'Lora', serif; font-size: .9rem;
+  line-height: 1.65; color: var(--dim);
+}
+
+/* ── SUBSECTION HEADER ── */
+.subsection-hdr {
+  max-width: 900px; margin: 32px auto 0; padding: 0 20px 10px;
+  border-bottom: 2px solid var(--border);
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+}
+.subsection-hdr h3 {
+  font-family: 'Special Elite', cursive;
+  font-size: 1.05rem; color: var(--text);
+}
+.subsection-hdr span {
+  font-size: .68rem; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--dim);
+}
+.subsection-hdr.dit { border-bottom-color: #1565c0; }
+.subsection-hdr.dit h3 { color: #1565c0; }
+
+/* ── SUBGROUP HEADER ── */
+.subgroup-hdr {
+  max-width: 900px; margin: 4px auto 0; padding: 16px 20px 0;
+  display: flex; align-items: center; gap: 10px;
+}
+.subgroup-hdr span {
+  font-size: .68rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--dim); background: var(--panel); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 14px; display: inline-block;
+}
+
+/* ── GAMES GRID (unified 2-col for games section) ── */
+.games-grid {
+  max-width: 900px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 8px 20px 48px;
+}
+.games-grid .subgroup-hdr {
+  grid-column: 1 / -1;
+  max-width: none; margin: 4px 0 0; padding: 12px 0 0;
+}
+
+/* ── STANDARD GRID (music section) ── */
 .grid {
   max-width: 900px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px; padding: 24px 20px 48px;
 }
+.grid.tight { padding-bottom: 8px; }
+.grid.grid-2col { grid-template-columns: repeat(2, 1fr); }
 
 /* ── CARD ── */
 .card {
@@ -147,7 +210,6 @@ body {
   box-shadow: var(--shadow-lg);
   border-color: var(--mid);
 }
-
 .card-accent { height: 5px; }
 .card-accent.st  { background: linear-gradient(90deg, var(--red), #ff6b6b); }
 .card-accent.sw  { background: linear-gradient(90deg, #1a3a5c, var(--teal)); }
@@ -155,9 +217,9 @@ body {
 .card-accent.nov { background: linear-gradient(90deg, var(--purple), var(--red)); }
 .card-accent.geo { background: linear-gradient(90deg, #2e7d32, #66bb6a); }
 .card-accent.mus { background: linear-gradient(90deg, #e65100, #ff9800); }
+.card-accent.dit { background: linear-gradient(90deg, #1565c0, #5c9de6); }
 
 .card-body { padding: 20px 20px 16px; flex: 1; }
-
 .card-badge {
   display: inline-flex; align-items: center; gap: 5px;
   border-radius: 6px; padding: 3px 10px; margin-bottom: 12px;
@@ -169,19 +231,17 @@ body {
 .badge-nov { background: var(--pur-bg);  color: var(--purple); }
 .badge-geo { background: #f1f8e9;       color: #2e7d32; }
 .badge-mus { background: #fff3e0;       color: #e65100; }
+.badge-dit { background: #e3f2fd;       color: #1565c0; }
 
 .card-icon { font-size: 2.2rem; display: block; margin-bottom: 10px; }
-
 .card-title {
   font-family: 'Special Elite', cursive;
   font-size: 1.15rem; line-height: 1.25; margin-bottom: 8px; color: var(--text);
 }
-
 .card-desc {
   font-family: 'Lora', serif; font-size: .88rem;
   line-height: 1.65; color: var(--dim); margin-bottom: 14px;
 }
-
 .card-subjects {
   display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px;
 }
@@ -190,7 +250,6 @@ body {
   border-radius: 4px; padding: 2px 8px;
   font-size: .65rem; font-weight: 700; color: var(--dim);
 }
-
 .card-footer {
   padding: 14px 20px;
   border-top: 1px solid var(--border);
@@ -210,18 +269,27 @@ body {
 .card-cta.nov { background: var(--purple); }
 .card-cta.geo { background: #2e7d32; }
 .card-cta.mus { background: #e65100; }
+.card-cta.dit { background: #1565c0; }
 .card-cta:hover { filter: brightness(1.12); }
+
+/* ── AUDIO AVISO ── */
+.audio-aviso-wrap {
+  max-width: 900px; margin: 12px auto 0; padding: 0 20px;
+}
+.audio-aviso {
+  background: #e3f2fd; border: 1px solid #90caf9;
+  border-radius: 10px; padding: 10px 18px;
+  font-size: .88rem; color: #1565c0; font-weight: 700;
+}
 
 /* ── TEACHERS SECTION ── */
 .teachers-wrap {
   max-width: 900px; margin: 0 auto; padding: 0 20px 48px;
 }
-
 .teachers-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 14px; margin-top: 20px;
 }
-
 .teacher-card {
   background: var(--white); border: 1px solid var(--border);
   border-radius: 12px; padding: 18px 16px;
@@ -239,6 +307,10 @@ body {
   font-size: .8rem; font-weight: 900; color: var(--text); display: block; margin-bottom: 2px;
 }
 .teacher-role { font-size: .7rem; color: var(--dim); line-height: 1.4; }
+.teachers-note {
+  text-align: center; font-size: .75rem; color: #888;
+  margin-top: .85rem; font-family: 'Lora', serif; font-style: italic;
+}
 
 /* ── HOW TO USE ── */
 .howto {
@@ -262,69 +334,54 @@ body {
 /* ── FOOTER ── */
 footer {
   background: var(--white); border-top: 1px solid var(--border);
-  padding: 24px 24px; text-align: center;
+  padding: 32px 24px; text-align: center;
   font-size: .75rem; color: var(--dim); line-height: 1.9;
 }
 footer strong { color: var(--mid); }
 footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 
-/* ── SUBJECT NAV ── */
-.subject-nav {
-  background: var(--white); border-bottom: 1px solid var(--border);
-  display: flex; justify-content: center; gap: 6px;
-  padding: 10px 20px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100;
+/* ── FLOATING TOP BUTTON ── */
+#btn-top {
+  position: fixed; bottom: 24px; right: 20px;
+  width: 44px; height: 44px;
+  background: var(--red); color: #fff;
+  border: none; border-radius: 50%;
+  font-size: 1.1rem; font-weight: 900; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  display: none; align-items: center; justify-content: center;
+  z-index: 200; text-decoration: none; line-height: 1;
 }
-.subject-nav a {
-  font-size: .7rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--dim); text-decoration: none;
-  background: var(--panel); border: 1px solid var(--border);
-  border-radius: 20px; padding: 5px 14px; transition: all .15s;
-}
-.subject-nav a:hover { background: var(--border); color: var(--text); }
-.subject-nav a.active { color: #fff; border-color: transparent; }
-.subject-nav a[href="#juegos"].active  { background: var(--red); }
-.subject-nav a[href="#musica"].active  { background: #e65100; }
+#btn-top.visible { display: flex; }
+#btn-top:hover { filter: brightness(1.15); }
 
-/* ── SUBGROUP HEADER ── */
-.subgroup-hdr {
-  max-width: 900px; margin: 4px auto 0; padding: 16px 20px 0;
-  display: flex; align-items: center; gap: 10px;
-}
-.subgroup-hdr span {
-  font-size: .68rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--dim); background: var(--panel); border: 1px solid var(--border);
-  border-radius: 20px; padding: 4px 14px; display: inline-block;
-}
-.grid.tight { padding-bottom: 8px; }
-
-/* ── COMING SOON ── */
-.coming-soon-wrap {
-  max-width: 900px; margin: 0 auto; padding: 0 20px 48px;
-}
-.coming-soon {
-  background: #fff8f0; border: 2px dashed #e65100;
-  border-radius: 16px; padding: 32px 24px; text-align: center;
-}
-.coming-soon-icon { font-size: 2.6rem; display: block; margin-bottom: 10px; }
-.coming-soon-title {
-  font-family: 'Special Elite', cursive; font-size: 1.1rem;
-  color: #e65100; margin-bottom: 8px;
-}
-.coming-soon-text {
-  font-family: 'Lora', serif; font-size: .88rem;
-  color: var(--dim); line-height: 1.6;
-}
-
-/* ── TEACHERS NOTE ── */
-.teachers-note {
-  text-align: center; font-size: .75rem; color: #888;
-  margin-top: .85rem; font-family: 'Lora', serif; font-style: italic;
-}
-
-@media (max-width: 480px) {
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .subject-nav {
+    flex-wrap: nowrap; overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 16px;
+    scrollbar-width: none;
+  }
+  .subject-nav::-webkit-scrollbar { display: none; }
+  .hero-tags {
+    flex-wrap: nowrap; overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .hero-tags::-webkit-scrollbar { display: none; }
+  .hero { padding: 18px 18px 14px; }
+  .games-grid { grid-template-columns: 1fr; }
+  .games-grid .subgroup-hdr { grid-column: 1; }
   .grid { grid-template-columns: 1fr; }
+  .grid.grid-2col { grid-template-columns: 1fr; }
   .teachers-grid, .howto-grid { grid-template-columns: 1fr 1fr; }
-  .hero { padding: 32px 18px 28px; }
+}
+@media (min-width: 601px) and (max-width: 900px) {
+  .games-grid { grid-template-columns: 1fr; max-width: 700px; }
+  .games-grid .subgroup-hdr { grid-column: 1; }
 }
 </style>
 </head>
@@ -358,8 +415,11 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 
 <!-- ── SUBJECT NAV ── -->
 <nav class="subject-nav">
-  <a href="#juegos">🎮 Juegos</a>
-  <a href="#musica">🎺 Lenguaje Musical</a>
+  <a href="#juegos">🎮 Juegos del Cole</a>
+  <a href="#musica-teoria">🎺 Teoría Musical</a>
+  <a href="#musica-dictado">🎧 Dictado Rítmico</a>
+  <a href="#profes">👩‍🏫 Las Profes</a>
+  <a href="#como-usar">ℹ️ Cómo usar</a>
 </nav>
 
 <!-- ── GAMES ── -->
@@ -367,10 +427,12 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
   <h2>Los Juegos</h2>
   <span>5 aventuras · descarga y juega offline</span>
 </div>
+<p class="section-desc">Cinco aventuras temáticas para repasar el temario del cole. Descarga el archivo HTML y juega sin internet, también desde móvil o tablet.</p>
 
-<!-- Subgrupo Matemáticas -->
-<div class="subgroup-hdr"><span>📐 Matemáticas</span></div>
-<div class="grid tight">
+<div class="games-grid">
+
+  <!-- Matemáticas -->
+  <div class="subgroup-hdr"><span>📐 Matemáticas</span></div>
   <a class="card" href="andre-stranger-things.html">
     <div class="card-accent st"></div>
     <div class="card-body">
@@ -394,11 +456,9 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
       <span class="card-cta st">Jugar →</span>
     </div>
   </a>
-</div>
 
-<!-- Subgrupo Lengua Castellana -->
-<div class="subgroup-hdr"><span>✏️ Lengua Castellana</span></div>
-<div class="grid tight">
+  <!-- Lengua Castellana -->
+  <div class="subgroup-hdr"><span>✏️ Lengua Castellana</span></div>
   <a class="card" href="starwars-lengua.html">
     <div class="card-accent sw"></div>
     <div class="card-body">
@@ -423,11 +483,9 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
       <span class="card-cta sw">Jugar →</span>
     </div>
   </a>
-</div>
 
-<!-- Subgrupo Inglés / Social & Natural Science -->
-<div class="subgroup-hdr"><span>🇬🇧 Inglés · Social &amp; Natural Science</span></div>
-<div class="grid tight">
+  <!-- Inglés / Social & Natural Science -->
+  <div class="subgroup-hdr"><span>🇬🇧 Inglés · Social &amp; Natural Science</span></div>
   <a class="card" href="andre-english-upsidedown.html">
     <div class="card-accent en"></div>
     <div class="card-body">
@@ -454,11 +512,9 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
       <span class="card-cta en">Play →</span>
     </div>
   </a>
-</div>
 
-<!-- Subgrupo Geografía -->
-<div class="subgroup-hdr"><span>🗺️ Geografía · Social Science</span></div>
-<div class="grid tight">
+  <!-- Geografía -->
+  <div class="subgroup-hdr"><span>🗺️ Geografía · Social Science</span></div>
   <a class="card" href="provincias_espana_v4.html">
     <div class="card-accent geo"></div>
     <div class="card-body">
@@ -481,11 +537,9 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
       <span class="card-cta geo">Explorar →</span>
     </div>
   </a>
-</div>
 
-<!-- Subgrupo Novela Interactiva -->
-<div class="subgroup-hdr"><span>📖 Novela Interactiva</span></div>
-<div class="grid">
+  <!-- Novela Interactiva -->
+  <div class="subgroup-hdr"><span>📖 Novela Interactiva</span></div>
   <a class="card" href="andre-novela-v4.html">
     <div class="card-accent nov"></div>
     <div class="card-body">
@@ -511,10 +565,11 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
       <span class="card-cta nov">Leer →</span>
     </div>
   </a>
+
 </div>
 
-<!-- ── TEACHERS ── -->
-<div class="section-hdr">
+<!-- ── LAS PROFES ── -->
+<div class="section-hdr" id="profes">
   <h2>Las Profes</h2>
   <span>Tutoras de André · personajes de la novela</span>
 </div>
@@ -542,17 +597,23 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 <!-- ── LENGUAJE MUSICAL ── -->
 <div class="section-hdr" id="musica">
   <h2>Lenguaje Musical 🎺</h2>
-  <span>3 mapas imprimibles + 7 repasos interactivos</span>
+  <span>3 mapas imprimibles + 7 repasos interactivos + 2 dictados</span>
+</div>
+<p class="section-desc">Todo el material de repaso para la escuela de música. Los mapas son para imprimir; los repasos son tests adaptativos que guardan tu progreso. El dictado necesita sonido.</p>
+
+<!-- ── SUBSECCIÓN A: TEORÍA MUSICAL ── -->
+<div class="subsection-hdr" id="musica-teoria">
+  <h3>🎵 Teoría Musical</h3>
+  <span>Mapas imprimibles + Repasos interactivos</span>
 </div>
 
-<!-- Sub-grupo: Mapas de repaso -->
+<!-- Mapas de repaso -->
 <div class="subgroup-hdr">
   <span>🖨️ Mapas de repaso · abre e imprime</span>
 </div>
 
 <div class="grid tight">
 
-  <!-- MAPA GRADOS Y TONALIDADES -->
   <a class="card" href="teoria-musica/mapa_repaso_grados_tonalidades.html" target="_blank">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -575,7 +636,6 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- MAPA COMPÁS -->
   <a class="card" href="teoria-musica/mapa_repaso_compas.html" target="_blank">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -598,7 +658,6 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- MAPA TEORÍA GENERAL -->
   <a class="card" href="teoria-musica/mapa_repaso_resto.html" target="_blank">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -624,14 +683,13 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 
 </div>
 
-<!-- Sub-grupo: Repasos interactivos -->
+<!-- Repasos interactivos -->
 <div class="subgroup-hdr">
   <span>🎯 Repasos interactivos · test con feedback inmediato</span>
 </div>
 
 <div class="grid">
 
-  <!-- REPASO NIVEL 1 -->
   <a class="card" href="teoria-musica/examen_musica_andre.html">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -653,7 +711,6 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- REPASO NIVEL 2 -->
   <a class="card" href="teoria-musica/examen_musica_andre_nivel2.html">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -676,7 +733,6 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- REPASO NIVEL 3 -->
   <a class="card" href="teoria-musica/examen_musica_andre_nivel3.html">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -699,7 +755,6 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- REPASO FINAL -->
   <a class="card" href="teoria-musica/repaso_final_musica_andre.html">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -722,7 +777,6 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- REPASO 2 COMPÁS -->
   <a class="card" href="teoria-musica/repaso2_compas_musica_andre.html">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -745,7 +799,6 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- GRAN REPASO 1 -->
   <a class="card" href="teoria-musica/repaso_completo_musica_andre.html">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -768,7 +821,6 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- GRAN REPASO 2 -->
   <a class="card" href="teoria-musica/repaso_completo2_musica_andre.html">
     <div class="card-accent mus"></div>
     <div class="card-body">
@@ -791,11 +843,24 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
   </a>
 
-  <!-- DICTADO RÍTMICO S1 -->
+</div>
+
+<!-- ── SUBSECCIÓN B: DICTADO RÍTMICO ── -->
+<div class="subsection-hdr dit" id="musica-dictado">
+  <h3>🎧 Dictado Rítmico</h3>
+  <span>Requiere audio · Chrome/Edge recomendado</span>
+</div>
+
+<div class="audio-aviso-wrap">
+  <div class="audio-aviso">🔊 Activa el sonido antes de empezar</div>
+</div>
+
+<div class="grid grid-2col">
+
   <a class="card" href="teoria-musica/dictado_ritmico_andre.html">
-    <div class="card-accent mus"></div>
+    <div class="card-accent dit"></div>
     <div class="card-body">
-      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <div class="card-badge badge-dit">🎧 Dictado Rítmico</div>
       <span class="card-icon">🎧</span>
       <div class="card-title">Dictado rítmico · Sesión 1</div>
       <p class="card-desc">
@@ -814,15 +879,14 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
     <div class="card-footer">
       <span class="card-footer-meta">🔊 Requiere audio · Chrome/Edge</span>
-      <span class="card-cta mus">Escuchar →</span>
+      <span class="card-cta dit">Escuchar →</span>
     </div>
   </a>
 
-  <!-- DICTADO RÍTMICO S2 -->
   <a class="card" href="teoria-musica/dictado_ritmico_andre_s2.html">
-    <div class="card-accent mus"></div>
+    <div class="card-accent dit"></div>
     <div class="card-body">
-      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <div class="card-badge badge-dit">🎧 Dictado Rítmico</div>
       <span class="card-icon">🥁</span>
       <div class="card-title">Dictado rítmico · Sesión 2</div>
       <p class="card-desc">
@@ -838,14 +902,14 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     </div>
     <div class="card-footer">
       <span class="card-footer-meta">🔊 Requiere audio · Chrome/Edge</span>
-      <span class="card-cta mus">Escuchar →</span>
+      <span class="card-cta dit">Escuchar →</span>
     </div>
   </a>
 
 </div>
 
-<!-- ── HOW TO USE ── -->
-<div class="section-hdr">
+<!-- ── CÓMO USAR ── -->
+<div class="section-hdr" id="como-usar">
   <h2>¿Cómo usar la biblioteca?</h2>
   <span>Para tutoras, padres y compañeros</span>
 </div>
@@ -879,15 +943,30 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
   <span style="color:#bbb;">Los personajes de Stranger Things y Star Wars pertenecen a sus respectivos creadores. Uso educativo sin ánimo de lucro.</span>
 </footer>
 
+<!-- ── FLOATING TOP BUTTON ── -->
+<a href="#" id="btn-top" title="Volver al inicio">↑</a>
+
 <script>
 (function () {
-  const sections = document.querySelectorAll('.section-hdr[id]');
+  /* ── Nav active state ── */
+  const idToHref = {
+    'juegos':          '#juegos',
+    'profes':          '#profes',
+    'musica':          '#musica-teoria',
+    'musica-teoria':   '#musica-teoria',
+    'musica-dictado':  '#musica-dictado',
+    'como-usar':       '#como-usar',
+  };
+
+  const ids = Object.keys(idToHref);
+  const sections = ids.map(id => document.getElementById(id)).filter(Boolean);
   const links    = document.querySelectorAll('.subject-nav a');
-  if (!sections.length || !links.length) return;
 
   const activate = (id) => {
+    const href = idToHref[id];
+    if (!href) return;
     links.forEach(a => a.classList.remove('active'));
-    const match = document.querySelector(`.subject-nav a[href="#${id}"]`);
+    const match = document.querySelector(`.subject-nav a[href="${href}"]`);
     if (match) match.classList.add('active');
   };
 
@@ -896,8 +975,19 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
   }, { rootMargin: '-10% 0px -80% 0px' });
 
   sections.forEach(s => obs.observe(s));
-  /* Activate first section on load */
   if (sections[0]) activate(sections[0].id);
+
+  /* ── Scroll-to-top button ── */
+  const btnTop = document.getElementById('btn-top');
+  if (btnTop) {
+    window.addEventListener('scroll', () => {
+      btnTop.classList.toggle('visible', window.scrollY > 400);
+    }, { passive: true });
+    btnTop.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 })();
 </script>
 </body>
