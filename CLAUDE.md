@@ -1,13 +1,13 @@
 # CLAUDE.md — Proyecto André: Biblioteca de Juegos Educativos
 
 > Documento de contexto para Claude Code. Leer antes de cualquier sesión de trabajo.
-> Última actualización: abril 2025
+> Última actualización: mayo 2026
 
 ---
 
 ## 1. Descripción del proyecto
 
-Biblioteca de juegos educativos interactivos publicada en GitHub Pages,
+Biblioteca de recursos educativos interactivos publicada en GitHub Pages,
 diseñada específicamente para André, alumno de 5º de Primaria del
 CEIP Rosa Luxemburgo (Madrid, Comunidad de Madrid).
 
@@ -69,21 +69,43 @@ CEIP Rosa Luxemburgo (Madrid, Comunidad de Madrid).
 - Contenidos alineados con Social Sciences y Natural Sciences en inglés.
 - Foco en: past simple, comparatives, reading comprehension, vocabulary.
 
+### Lenguaje Musical
+- Teoría musical de 5º de Primaria (LOMLOE).
+- Los repasos usan test adaptativo: hasta 3 intentos por tema, feedback inmediato,
+  progreso guardado en localStorage, registro de sesión copiable al final.
+- Los mapas son fichas de una o dos páginas para imprimir — no son juegos interactivos.
+- Secuencia natural de los repasos: Nivel 1 → Nivel 2 → Nivel 3 → Final → Compás → Gran Repaso 1 → Gran Repaso 2.
+
 ---
 
 ## 4. Estructura de archivos del proyecto
 
 ```
 Andre/
-├── index.html                    # Página de inicio / biblioteca personalizada
-├── andre-novela-v4.html          # Novela interactiva (~45 min, 11 desafíos)
-│                                 # Universo: Stranger Things
-│                                 # Guarda progreso con localStorage
-├── andre-stranger-things.html    # Juego de medidas (Stranger Things)
-├── starwars-lengua.html          # Juego de lengua castellana (Star Wars)
-├── andre-english-upsidedown.html # Juego de inglés (Stranger Things)
-├── CLAUDE.md                     # Este fichero — contexto para Claude Code
-└── README.md                     # Descripción pública del repositorio
+├── index.html                         # Biblioteca: portal con nav por secciones
+│                                      # Secciones: Juegos · Lenguaje Musical
+│                                      # Para añadir sección: nuevo id= + entrada en <nav.subject-nav>
+├── andre-novela-v4.html               # Novela interactiva (~45 min, 11 desafíos)
+│                                      # Universo: Stranger Things · localStorage
+├── andre-stranger-things.html         # Juego de medidas (Stranger Things)
+├── starwars-lengua.html               # Juego de lengua castellana (Star Wars)
+├── andre-english-upsidedown.html      # Juego de inglés (Stranger Things)
+├── provincias_espana_v4.html          # Juego de geografía — 50 provincias, 5 modos
+│
+├── teoria-musica/                     # Lenguaje Musical 5º Primaria
+│   ├── mapa_repaso_grados_tonalidades.html   # Mapa imprimible: grados y tonalidades
+│   ├── mapa_repaso_compas.html               # Mapa imprimible: el compás
+│   ├── mapa_repaso_resto.html                # Mapa imprimible: teoría general
+│   ├── examen_musica_andre.html              # Repaso nivel 1 · 26 temas
+│   ├── examen_musica_andre_nivel2.html       # Repaso nivel 2 · 23 temas · partituras SVG
+│   ├── examen_musica_andre_nivel3.html       # Repaso nivel 3 · 19 temas
+│   ├── repaso_final_musica_andre.html        # Repaso final · 26 temas
+│   ├── repaso2_compas_musica_andre.html      # Repaso compás · 22 temas
+│   ├── repaso_completo_musica_andre.html     # Gran repaso 1 · 40 temas
+│   └── repaso_completo2_musica_andre.html    # Gran repaso 2 · 40 temas (por unidad)
+│
+├── CLAUDE.md                          # Este fichero — contexto para Claude Code
+└── README.md                          # Descripción pública del repositorio
 ```
 
 ---
@@ -95,13 +117,29 @@ Andre/
 - CSS inline o en `<style>` dentro del mismo fichero HTML — no ficheros .css externos.
 - JavaScript vanilla en `<script>` dentro del mismo fichero HTML.
 - Sin dependencias externas salvo Google Fonts (cargadas vía `<link>`).
-- Un juego = un fichero HTML — cada juego es autocontenido.
+- Un recurso = un fichero HTML — cada fichero es autocontenido.
+- Subcarpetas por asignatura cuando hay varios ficheros relacionados (ej: `teoria-musica/`).
+  Los nombres de carpeta usan guión, nunca espacio (URLs limpias en GitHub Pages).
 
 ### Persistencia
-- Se usa localStorage para guardar progreso entre sesiones (solo en la novela).
-- Las claves siguen el patrón: `andre_[nombre-juego]_[dato]`.
+- Se usa localStorage para guardar progreso entre sesiones.
+- La novela usa claves `andre_[nombre-juego]_[dato]`.
+- Los repasos de música guardan progreso y registro de sesión por fichero.
 
-### Diseño visual
+### Diseño visual — index.html
+- Fondo crema `#fafaf8`, tarjetas blancas, tipografía serif roja (Special Elite).
+- Cada categoría temática tiene su color de acento definido en CSS:
+  - `.nov` — púrpura/rojo (Novela)
+  - `.st`  — rojo (Stranger Things)
+  - `.sw`  — teal (Star Wars)
+  - `.en`  — azul (English)
+  - `.geo` — verde `#2e7d32` (Geografía)
+  - `.mus` — naranja `#e65100` (Lenguaje Musical)
+- Para añadir un color nuevo: definir `.card-accent.X`, `.badge-X` y `.card-cta.X`.
+- La barra `<nav class="subject-nav">` enlaza secciones por `id`; añadir entrada al agregar sección.
+- Los sub-encabezados `.subgroup-hdr` separan tipos dentro de una sección (ej: mapas vs. repasos).
+
+### Diseño visual — juegos individuales
 - Fondo blanco (`#ffffff`).
 - Google Fonts: preferentemente Nunito o Poppins.
 - Diseño responsive con max-width y unidades relativas. Apto para móvil.
@@ -130,12 +168,12 @@ Andre/
 - [ ] Juego de ortografía: interferencias portugués-castellano
 - [ ] Juego de inglés: past simple irregular verbs (universo Harry Potter)
 - [ ] Ampliación de la novela: capítulo 2, más desafíos de matemáticas
+- [ ] Añadir sección "Natural Sciences" o "Matemáticas" al index.html con su carpeta propia
 
 ### Mejoras técnicas
 - [ ] index.html — mostrar progreso de la novela directamente en la portada
 - [ ] Sistema de insignias global entre juegos (localStorage compartido)
 - [ ] Modo oscuro opcional (toggle en la portada)
-- [ ] README.md — actualizar con capturas de pantalla y descripción por juego
 
 ### Mejoras pedagógicas
 - [ ] Pistas progresivas (hint 1, hint 2) antes de revelar la respuesta
@@ -150,8 +188,14 @@ Cuando empieces una sesión nueva en este proyecto:
 
 1. Claude Code leerá este fichero automáticamente si está en la raíz.
 2. Puedes pedir: "Crea un nuevo juego de [materia] con universo [temático]"
-   y Claude Code tendrá todo el contexto necesario.
-3. Tras cada sesión: `git add . && git commit -m "descripción" && git push`
+   o "Añade los ficheros de [asignatura] a la biblioteca" y Claude Code
+   tendrá todo el contexto necesario.
+3. Para añadir una nueva sección al index.html:
+   - Crear carpeta `nombre-asignatura/` (sin espacios)
+   - Añadir entrada en `<nav class="subject-nav">` con `href="#id-seccion"`
+   - Añadir bloque `<div class="section-hdr" id="id-seccion">` + grid de tarjetas
+   - Definir color `.X` en CSS si es una categoría nueva
+4. Tras cada sesión: `git add . && git commit -m "descripción" && git push`
    para publicar los cambios en GitHub Pages.
 
 ---

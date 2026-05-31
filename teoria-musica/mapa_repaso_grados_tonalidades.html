@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de repaso — Grados y tonalidades — André</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--tinta:#1a1a1a;--linea:#cfcfcf;--azul:#1f4e79;--azul-bg:#eaf1f8;--verde:#1f7a37;--verde-bg:#eef7f0;--foco:#7a4a00;--foco-bg:#fdf4e3;--suave:#666;}
+  *{box-sizing:border-box;}
+  body{font-family:'Lora',Georgia,serif;color:var(--tinta);background:#f3f3f3;margin:0;line-height:1.45;}
+  .hoja{max-width:800px;margin:18px auto;background:#fff;padding:30px 34px 36px;box-shadow:0 1px 6px rgba(0,0,0,.12);}
+  h1{font-size:24px;margin:0 0 2px;text-align:center;}
+  .sub{text-align:center;color:var(--suave);font-size:14px;margin:0 0 18px;}
+  h2{font-size:18px;color:var(--azul);border-bottom:2px solid var(--azul);padding-bottom:4px;margin:22px 0 12px;}
+  .fila{display:flex;gap:20px;flex-wrap:wrap;}
+  .col{flex:1;min-width:260px;}
+  /* escalera de grados */
+  .escalera{display:flex;flex-direction:column-reverse;gap:5px;margin:6px 0;}
+  .grado{display:flex;align-items:center;border:1.5px solid var(--linea);border-radius:8px;padding:7px 10px;background:#fafafa;}
+  .grado .num{font-weight:700;width:42px;font-size:17px;}
+  .grado .nom{font-weight:700;width:140px;}
+  .grado .rol{color:var(--suave);font-size:13.5px;}
+  .grado.tonal{border-color:var(--verde);background:var(--verde-bg);}
+  .grado.tonal .num{color:var(--verde);}
+  .leyenda{font-size:13px;color:var(--suave);margin-top:6px;}
+  .pildora{display:inline-block;border-radius:6px;padding:1px 7px;font-size:12.5px;font-weight:700;}
+  .p-tonal{background:var(--verde-bg);color:var(--verde);border:1px solid var(--verde);}
+  .p-modal{background:#f0eafc;color:#5a3a9a;border:1px solid #7a5ac0;}
+  table{width:100%;border-collapse:collapse;margin:6px 0;font-size:15px;}
+  th,td{border:1px solid var(--linea);padding:8px 10px;text-align:center;}
+  th{background:var(--azul-bg);color:var(--azul);font-size:13.5px;}
+  td.may{font-weight:700;}
+  td.men{font-weight:700;color:var(--azul);}
+  .regla{background:var(--azul-bg);border-left:5px solid var(--azul);border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0;font-size:15px;}
+  .trucos{background:var(--foco-bg);border:2px solid var(--foco);border-radius:10px;padding:12px 16px;margin-top:8px;}
+  .trucos h3{margin:0 0 6px;color:var(--foco);font-size:16px;}
+  .trucos ul{margin:0;padding-left:20px;} .trucos li{margin-bottom:7px;}
+  .mini{font-size:13px;color:var(--suave);text-align:center;margin-top:22px;border-top:1px solid var(--linea);padding-top:10px;}
+  @media print{body{background:#fff;} .hoja{box-shadow:none;margin:0;max-width:100%;padding:0 8mm;} h2{page-break-after:avoid;} .trucos,table,.escalera{page-break-inside:avoid;}}
+</style>
+</head>
+<body>
+<div class="hoja">
+  <h1>🗺️ Mapa de repaso: la escala, los grados y las tonalidades</h1>
+  <p class="sub">André · 5º de Primaria — para mirar antes del repaso y antes del examen</p>
+
+  <h2>1 · La escala y sus 7 grados</h2>
+  <div class="fila">
+    <div class="col">
+      <div class="escalera">
+        <div class="grado tonal"><span class="num">I</span><span class="nom">Tónica</span><span class="rol">la nota principal, da el nombre</span></div>
+        <div class="grado"><span class="num">II</span><span class="nom">Supertónica</span><span class="rol">justo encima de la tónica</span></div>
+        <div class="grado"><span class="num">III</span><span class="nom">Mediante</span><span class="rol">en medio · decide el modo</span></div>
+        <div class="grado tonal"><span class="num">IV</span><span class="nom">Subdominante</span><span class="rol">pilar</span></div>
+        <div class="grado tonal"><span class="num">V</span><span class="nom">Dominante</span><span class="rol">la más importante tras la tónica</span></div>
+        <div class="grado"><span class="num">VI</span><span class="nom">Superdominante</span><span class="rol">justo encima de la dominante</span></div>
+        <div class="grado"><span class="num">VII</span><span class="nom">Sensible</span><span class="rol">"quiere subir" a la tónica</span></div>
+      </div>
+      <p class="leyenda">Se lee de abajo (I) hacia arriba (VII), como sube la escala.</p>
+    </div>
+    <div class="col">
+      <p style="margin-top:4px"><span class="pildora p-tonal">TONALES</span> &nbsp;→ &nbsp;<strong>I, IV y V</strong><br>Son los <strong>pilares</strong> de la tonalidad.</p>
+      <p><span class="pildora p-modal">MODALES</span> &nbsp;→ &nbsp;<strong>III, VI y VII</strong><br>Cambian según el modo.</p>
+      <div class="regla" style="background:#f0eafc;border-color:#7a5ac0">El <strong>III grado (Mediante)</strong> es el que <strong>decide si el modo es Mayor o menor</strong>.</div>
+    </div>
+  </div>
+
+  <h2>2 · Tonalidades relativas (Mayor ↔ menor)</h2>
+  <div class="regla"><strong>Regla:</strong> la relativa menor está <strong>una 3.ª menor por debajo</strong> (baja 3 notas) de la Mayor, y <strong>comparten la misma armadura</strong>.</div>
+  <table>
+    <thead><tr><th>Tonalidad Mayor</th><th>Armadura</th><th>Baja 3 notas…</th><th>Relativa menor</th></tr></thead>
+    <tbody>
+      <tr><td class="may">DO Mayor</td><td>sin alteraciones</td><td>DO → SI → LA</td><td class="men">LA menor</td></tr>
+      <tr><td class="may">SOL Mayor</td><td>1 sostenido (FA♯)</td><td>SOL → FA → MI</td><td class="men">MI menor</td></tr>
+      <tr><td class="may">FA Mayor</td><td>1 bemol (SI♭)</td><td>FA → MI → RE</td><td class="men">RE menor</td></tr>
+    </tbody>
+  </table>
+  <p class="leyenda">La menor y su Mayor relativa tienen <strong>exactamente la misma armadura</strong> (las mismas alteraciones).</p>
+
+  <h2>3 · Trucos para no liarte</h2>
+  <div class="trucos">
+    <ul>
+      <li><strong>SOL Mayor → MI menor</strong> (baja 3 notas: SOL-FA-MI). <em>No</em> es SI menor.</li>
+      <li><strong>1 sostenido</strong> = SOL Mayor <em>o</em> MI menor. &nbsp; <strong>1 bemol</strong> = FA Mayor <em>o</em> RE menor.</li>
+      <li><strong>MI menor lleva sostenido</strong> (FA♯), no bemol. &nbsp; <strong>RE menor lleva bemol</strong> (SI♭).</li>
+      <li>Los <strong>pilares</strong> (tonales) son <strong>I, IV, V</strong>. El <strong>III</strong> manda en el modo.</li>
+      <li>Para hallar el grado de una nota: cuenta desde la tónica (I) por la escala hasta llegar a ella.</li>
+    </ul>
+  </div>
+
+  <p class="mini">Hecho para André. Basado en su libro de lenguaje musical (repaso de las Unidades 1 a 5).</p>
+</div>
+</body>
+</html>

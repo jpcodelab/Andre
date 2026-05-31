@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de repaso — Resto del temario — André</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--tinta:#1a1a1a;--linea:#cfcfcf;--azul:#1f4e79;--azul-bg:#eaf1f8;--verde:#1f7a37;--verde-bg:#eef7f0;--foco:#7a4a00;--foco-bg:#fdf4e3;--suave:#666;--lila:#5a3a9a;--lila-bg:#f0eafc;}
+  *{box-sizing:border-box;}
+  body{font-family:'Lora',Georgia,serif;color:var(--tinta);background:#f3f3f3;margin:0;line-height:1.4;}
+  .hoja{max-width:820px;margin:18px auto;background:#fff;padding:28px 32px 34px;box-shadow:0 1px 6px rgba(0,0,0,.12);}
+  h1{font-size:23px;margin:0 0 2px;text-align:center;}
+  .sub{text-align:center;color:var(--suave);font-size:13.5px;margin:0 0 16px;}
+  h2{font-size:17px;color:var(--azul);border-bottom:2px solid var(--azul);padding-bottom:3px;margin:20px 0 10px;}
+  .fila{display:flex;gap:18px;flex-wrap:wrap;}
+  .col{flex:1;min-width:240px;}
+  table{width:100%;border-collapse:collapse;margin:4px 0;font-size:14px;}
+  th,td{border:1px solid var(--linea);padding:6px 9px;text-align:left;vertical-align:top;}
+  th{background:var(--azul-bg);color:var(--azul);font-size:13px;}
+  td.k{font-weight:700;white-space:nowrap;}
+  .regla{background:var(--azul-bg);border-left:5px solid var(--azul);border-radius:0 8px 8px 0;padding:8px 12px;margin:8px 0;font-size:14px;}
+  .foco{background:var(--foco-bg);border-left-color:var(--foco);}
+  ul{margin:4px 0;padding-left:18px;} li{margin-bottom:4px;font-size:14px;}
+  .mini{font-size:12.5px;color:var(--suave);text-align:center;margin-top:18px;border-top:1px solid var(--linea);padding-top:8px;}
+  .pagebreak{page-break-before:always;}
+  @media print{body{background:#fff;} .hoja{box-shadow:none;margin:0;max-width:100%;padding:0 8mm;} h2{page-break-after:avoid;} table,.regla{page-break-inside:avoid;}}
+</style>
+</head>
+<body>
+<div class="hoja">
+  <h1>🗺️ Mapa de repaso: el resto del temario</h1>
+  <p class="sub">André · 5º de Primaria — figuras y ritmo · intervalos · expresión (úsalo con los otros dos mapas)</p>
+
+  <h2>1 · Figuras y silencios: cuánto vale cada una</h2>
+  <div class="fila">
+    <div class="col">
+      <table>
+        <thead><tr><th>Figura</th><th>Vale…</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Redonda</td><td>4 negras</td></tr>
+          <tr><td class="k">Blanca</td><td>2 negras</td></tr>
+          <tr><td class="k">Negra</td><td>1 (la referencia)</td></tr>
+          <tr><td class="k">Corchea</td><td>media negra (2 = 1 negra)</td></tr>
+          <tr><td class="k">Semicorchea</td><td>un cuarto de negra (4 = 1 negra)</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:13px;color:var(--suave);margin:4px 0">Cada figura tiene su <strong>silencio</strong>, que dura lo mismo pero en silencio.</p>
+    </div>
+    <div class="col">
+      <div class="regla"><strong>El puntillo</strong> añade a la figura <strong>la mitad</strong> de su valor.<br>· Negra con puntillo = 3 corcheas.<br>· Blanca con puntillo = 3 negras.</div>
+      <div class="regla foco"><strong>El tresillo</strong> = 3 figuras que valen <strong>2</strong> de su misma especie. Se marca con un <strong>3</strong> encima.<br>· 3 corcheas (tresillo) suenan como 2 corcheas.<br>· 3 negras (tresillo) suenan como 2 negras.</div>
+    </div>
+  </div>
+
+  <h2>2 · Ritmos especiales</h2>
+  <table>
+    <tbody>
+      <tr><td class="k">Síncopa</td><td>empieza en parte <strong>débil</strong>, <strong>SE PROLONGA</strong> y acaba en parte fuerte.</td></tr>
+      <tr><td class="k">Contratiempo</td><td>empieza en parte débil, <strong>NO se prolonga</strong> y lleva un <strong>silencio delante</strong>.</td></tr>
+      <tr><td class="k">Anacrusa</td><td>notas <strong>sin acento</strong> antes del primer tiempo fuerte (van antes de la barra de compás).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3 · Intervalos (recordatorio)</h2>
+  <ul>
+    <li><strong>Número de orden:</strong> cuenta TODAS las notas, incluidas las dos de los extremos (DO a SOL = DO-RE-MI-FA-SOL = 5.ª).</li>
+    <li><strong>Especie:</strong> Mayor, menor, Justo, Aumentado o Disminuido (según tonos y semitonos).</li>
+    <li><strong>Trampas:</strong> <strong>FA-SI</strong> = única <strong>4.ª aumentada</strong>; <strong>SI-FA</strong> = única <strong>5.ª disminuida</strong>. Las demás 4.ª y 5.ª naturales son <strong>Justas</strong>.</li>
+  </ul>
+
+  <h2>4 · Alteraciones y semitonos</h2>
+  <div class="fila">
+    <div class="col">
+      <table>
+        <tbody>
+          <tr><td class="k">Sostenido ♯</td><td>SUBE 1 semitono</td></tr>
+          <tr><td class="k">Bemol ♭</td><td>BAJA 1 semitono</td></tr>
+          <tr><td class="k">Becuadro ♮</td><td>anula la alteración</td></tr>
+          <tr><td class="k">Doble ♯ (x)</td><td>sube 2 semitonos</td></tr>
+          <tr><td class="k">Doble ♭ (♭♭)</td><td>baja 2 semitonos</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <ul>
+        <li><strong>Semitono diatónico:</strong> distinto nombre (MI–FA).</li>
+        <li><strong>Semitono cromático:</strong> mismo nombre (DO–DO♯).</li>
+        <li><strong>Enarmónicas:</strong> distinto nombre, igual sonido (DO♯ = RE♭).</li>
+        <li><strong>Unísono:</strong> igual nombre y sonido a la vez.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="mini">Página 1 de 2 · Sigue al dorso →</p>
+</div>
+
+<div class="hoja pagebreak">
+  <h1>🗺️ Mapa de repaso: el resto del temario (2)</h1>
+  <p class="sub">Expresión: articulación · dinámica · tempo · agógica · repeticiones</p>
+
+  <h2>5 · Signos de articulación</h2>
+  <table>
+    <thead><tr><th>Signo</th><th>Cómo es</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Picado (staccato)</td><td>un punto</td><td>acorta la nota <strong>a la mitad</strong> (corta y separada)</td></tr>
+      <tr><td class="k">Tenuto</td><td>una rayita</td><td>respeta <strong>todo su valor</strong>, con más tensión</td></tr>
+      <tr><td class="k">Acento (&gt;)</td><td>un ángulo</td><td>más <strong>intensidad</strong> al inicio (no cambia la duración)</td></tr>
+    </tbody>
+  </table>
+  <div class="regla foco">Lo que más confunde: <strong>picado</strong> cambia la DURACIÓN (acorta); <strong>acento</strong> cambia la INTENSIDAD (no la duración).</div>
+
+  <h2>6 · Matices (intensidad) y reguladores</h2>
+  <div class="fila">
+    <div class="col">
+      <div class="regla">De más SUAVE a más FUERTE:<br><strong>pp · p · mp · mf · f · ff</strong><br><span style="font-size:13px;color:var(--suave)">(cuantas más “p”, más flojo; cuantas más “f”, más fuerte)</span></div>
+    </div>
+    <div class="col">
+      <ul>
+        <li><strong>Crescendo</strong> (regulador que se abre &lt;): ir <strong>aumentando</strong> la intensidad.</li>
+        <li><strong>Diminuendo</strong> (se cierra &gt;): ir <strong>bajando</strong> la intensidad.</li>
+        <li>Se llaman <strong>reguladores</strong>. Hablan de intensidad, <strong>no</strong> de velocidad.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>7 · Tempo (velocidad) y agógica (cambios de velocidad)</h2>
+  <div class="fila">
+    <div class="col">
+      <div class="regla">De más LENTO a más RÁPIDO:<br><strong>Largo · Adagio · Andante · Moderato · Allegro · Presto</strong></div>
+      <p style="font-size:13px;color:var(--suave);margin:4px 0">El tempo se mide con el <strong>metrónomo</strong> (Maelzel, 1816). ♩ = 100 → 100 negras por minuto.</p>
+    </div>
+    <div class="col">
+      <ul>
+        <li><strong>Ritardando / rallentando:</strong> ir frenando.</li>
+        <li><strong>Accelerando:</strong> ir acelerando.</li>
+        <li><strong>A Tempo:</strong> volver a la velocidad de antes.</li>
+        <li><strong>Calderón:</strong> alargar la nota un tiempo a voluntad.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>8 · Signos de repetición</h2>
+  <table>
+    <tbody>
+      <tr><td class="k">Barra de repetición</td><td>(doble barra con 2 puntos) repite un fragmento.</td></tr>
+      <tr><td class="k">Casillas 1.ª / 2.ª vez</td><td>qué compases se tocan en la 1.ª vuelta y cuáles en la 2.ª.</td></tr>
+      <tr><td class="k">D.C. (Da Capo)</td><td>“desde el principio”: volver al inicio (D.C. al Fine = hasta la palabra <em>Fine</em>).</td></tr>
+    </tbody>
+  </table>
+
+  <p class="mini">Hecho para André. Basado en su libro de lenguaje musical (Unidades 10–13 y repaso de las Unidades 1–5). Página 2 de 2.</p>
+</div>
+</body>
+</html>

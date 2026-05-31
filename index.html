@@ -153,6 +153,8 @@ body {
 .card-accent.sw  { background: linear-gradient(90deg, #1a3a5c, var(--teal)); }
 .card-accent.en  { background: linear-gradient(90deg, var(--blue), #5dade2); }
 .card-accent.nov { background: linear-gradient(90deg, var(--purple), var(--red)); }
+.card-accent.geo { background: linear-gradient(90deg, #2e7d32, #66bb6a); }
+.card-accent.mus { background: linear-gradient(90deg, #e65100, #ff9800); }
 
 .card-body { padding: 20px 20px 16px; flex: 1; }
 
@@ -165,6 +167,8 @@ body {
 .badge-sw  { background: var(--teal-bg); color: var(--teal); }
 .badge-en  { background: var(--blue-bg); color: var(--blue); }
 .badge-nov { background: var(--pur-bg);  color: var(--purple); }
+.badge-geo { background: #f1f8e9;       color: #2e7d32; }
+.badge-mus { background: #fff3e0;       color: #e65100; }
 
 .card-icon { font-size: 2.2rem; display: block; margin-bottom: 10px; }
 
@@ -204,6 +208,8 @@ body {
 .card-cta.sw  { background: var(--teal); }
 .card-cta.en  { background: var(--blue); }
 .card-cta.nov { background: var(--purple); }
+.card-cta.geo { background: #2e7d32; }
+.card-cta.mus { background: #e65100; }
 .card-cta:hover { filter: brightness(1.12); }
 
 /* ── TEACHERS SECTION ── */
@@ -262,6 +268,32 @@ footer {
 footer strong { color: var(--mid); }
 footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 
+/* ── SUBJECT NAV ── */
+.subject-nav {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; justify-content: center; gap: 6px;
+  padding: 10px 20px; flex-wrap: wrap; position: sticky; top: 0; z-index: 10;
+}
+.subject-nav a {
+  font-size: .7rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--dim); text-decoration: none;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 14px; transition: all .15s;
+}
+.subject-nav a:hover { background: var(--border); color: var(--text); }
+
+/* ── SUBGROUP HEADER ── */
+.subgroup-hdr {
+  max-width: 900px; margin: 4px auto 0; padding: 16px 20px 0;
+  display: flex; align-items: center; gap: 10px;
+}
+.subgroup-hdr span {
+  font-size: .68rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--dim); background: var(--panel); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 14px; display: inline-block;
+}
+.grid.tight { padding-bottom: 8px; }
+
 @media (max-width: 480px) {
   .grid { grid-template-columns: 1fr; }
   .teachers-grid, .howto-grid { grid-template-columns: 1fr 1fr; }
@@ -291,15 +323,23 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     <span class="tag">📐 Método Singapur</span>
     <span class="tag">✏️ Lengua Castellana</span>
     <span class="tag">🇬🇧 English</span>
+    <span class="tag">🗺️ Geografía</span>
+    <span class="tag">🎵 Lenguaje Musical</span>
     <span class="tag">📱 Funciona sin internet</span>
     <span class="tag">🏫 Rosa Luxemburgo · Madrid</span>
   </div>
 </div>
 
+<!-- ── SUBJECT NAV ── -->
+<nav class="subject-nav">
+  <a href="#juegos">🎮 Juegos</a>
+  <a href="#musica">🎺 Lenguaje Musical</a>
+</nav>
+
 <!-- ── GAMES ── -->
-<div class="section-hdr">
+<div class="section-hdr" id="juegos">
   <h2>Los Juegos</h2>
-  <span>4 aventuras · descarga y juega offline</span>
+  <span>5 aventuras · descarga y juega offline</span>
 </div>
 
 <div class="grid">
@@ -405,6 +445,285 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     <div class="card-footer">
       <span class="card-footer-meta">🇬🇧 English · 10 missions · ~15 min</span>
       <span class="card-cta en">Play →</span>
+    </div>
+  </a>
+
+
+  <!-- PROVINCIAS DE ESPAÑA -->
+  <a class="card" href="provincias_espana_v4.html">
+    <div class="card-accent geo"></div>
+    <div class="card-body">
+      <div class="card-badge badge-geo">🗺️ Social Science · Geografía</div>
+      <span class="card-icon">🗺️</span>
+      <div class="card-title">Provincias de España</div>
+      <p class="card-desc">
+        Juego infinito de geografía — localiza en el mapa, escribe nombres, aprende
+        capitales y comunidades autónomas. 50 provincias, 5 modos, sistema de maestría.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Provincias</span>
+        <span class="subj">Capitales</span>
+        <span class="subj">CCAA</span>
+        <span class="subj">Mapa</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🌍 Geografía · 50 provincias · 5 modos</span>
+      <span class="card-cta geo">Explorar →</span>
+    </div>
+  </a>
+
+</div>
+
+<!-- ── LENGUAJE MUSICAL ── -->
+<div class="section-hdr" id="musica">
+  <h2>Lenguaje Musical 🎺</h2>
+  <span>3 mapas imprimibles + 7 repasos interactivos</span>
+</div>
+
+<!-- Sub-grupo: Mapas de repaso -->
+<div class="subgroup-hdr">
+  <span>🖨️ Mapas de repaso · abre e imprime</span>
+</div>
+
+<div class="grid tight">
+
+  <!-- MAPA GRADOS Y TONALIDADES -->
+  <a class="card" href="teoria-musica/mapa_repaso_grados_tonalidades.html" target="_blank">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🖨️ Mapa Imprimible</div>
+      <span class="card-icon">🎼</span>
+      <div class="card-title">Grados y Tonalidades</div>
+      <p class="card-desc">
+        1 página. Grados de la escala (I–VII, nombres, tonales y modales)
+        y tonalidades relativas: DO/LA m, SOL/MI m, FA/RE m.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Grados</span>
+        <span class="subj">Tonalidades</span>
+        <span class="subj">Escala</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Lenguaje Musical · 1 página</span>
+      <span class="card-cta mus">Ver →</span>
+    </div>
+  </a>
+
+  <!-- MAPA COMPÁS -->
+  <a class="card" href="teoria-musica/mapa_repaso_compas.html" target="_blank">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🖨️ Mapa Imprimible</div>
+      <span class="card-icon">🥁</span>
+      <div class="card-title">El Compás</div>
+      <p class="card-desc">
+        1 página. Compás simple vs. compuesto, cómo contar los tiempos,
+        unidad de tiempo. Bonus: trampas FA–SI / SI–FA.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Compás simple</span>
+        <span class="subj">Compuesto</span>
+        <span class="subj">Tiempos</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Lenguaje Musical · 1 página</span>
+      <span class="card-cta mus">Ver →</span>
+    </div>
+  </a>
+
+  <!-- MAPA TEORÍA GENERAL -->
+  <a class="card" href="teoria-musica/mapa_repaso_resto.html" target="_blank">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🖨️ Mapa Imprimible</div>
+      <span class="card-icon">📋</span>
+      <div class="card-title">Teoría General</div>
+      <p class="card-desc">
+        2 páginas. Figuras y valores, puntillo, tresillo, semitonos,
+        articulación, matices, tempo, agógica y repeticiones.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Figuras</span>
+        <span class="subj">Matices</span>
+        <span class="subj">Semitonos</span>
+        <span class="subj">Articulación</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Lenguaje Musical · 2 páginas</span>
+      <span class="card-cta mus">Ver →</span>
+    </div>
+  </a>
+
+</div>
+
+<!-- Sub-grupo: Repasos interactivos -->
+<div class="subgroup-hdr">
+  <span>🎯 Repasos interactivos · test con feedback inmediato</span>
+</div>
+
+<div class="grid">
+
+  <!-- REPASO NIVEL 1 -->
+  <a class="card" href="teoria-musica/examen_musica_andre.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <span class="card-icon">1️⃣</span>
+      <div class="card-title">Repaso Nivel 1</div>
+      <p class="card-desc">
+        26 temas. Teoría general sin partituras. Hasta 3 intentos por
+        pregunta con feedback inmediato. Progreso guardado entre sesiones.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Teoría general</span>
+        <span class="subj">26 temas</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Test adaptativo · guarda progreso</span>
+      <span class="card-cta mus">Repasar →</span>
+    </div>
+  </a>
+
+  <!-- REPASO NIVEL 2 -->
+  <a class="card" href="teoria-musica/examen_musica_andre_nivel2.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <span class="card-icon">2️⃣</span>
+      <div class="card-title">Repaso Nivel 2</div>
+      <p class="card-desc">
+        23 temas. Incluye partituras SVG: lectura de notas, armaduras
+        e intervalos. Más exigente que el nivel 1.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Partituras</span>
+        <span class="subj">Armaduras</span>
+        <span class="subj">Intervalos</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Test adaptativo · 23 temas</span>
+      <span class="card-cta mus">Repasar →</span>
+    </div>
+  </a>
+
+  <!-- REPASO NIVEL 3 -->
+  <a class="card" href="teoria-musica/examen_musica_andre_nivel3.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <span class="card-icon">3️⃣</span>
+      <div class="card-title">Repaso Nivel 3</div>
+      <p class="card-desc">
+        19 temas. Foco en compases especiales y tonalidades.
+        El nivel más avanzado de la serie de exámenes.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Compases</span>
+        <span class="subj">Tonalidades</span>
+        <span class="subj">19 temas</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Test adaptativo · nivel avanzado</span>
+      <span class="card-cta mus">Repasar →</span>
+    </div>
+  </a>
+
+  <!-- REPASO FINAL -->
+  <a class="card" href="teoria-musica/repaso_final_musica_andre.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <span class="card-icon">🏁</span>
+      <div class="card-title">Repaso Final</div>
+      <p class="card-desc">
+        26 temas. Bloques de grados, tonalidades y confianza general.
+        Ideal para repasar la noche antes del examen.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Grados</span>
+        <span class="subj">Tonalidades</span>
+        <span class="subj">Confianza</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Test adaptativo · 26 temas</span>
+      <span class="card-cta mus">Repasar →</span>
+    </div>
+  </a>
+
+  <!-- REPASO 2 COMPÁS -->
+  <a class="card" href="teoria-musica/repaso2_compas_musica_andre.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <span class="card-icon">🥁</span>
+      <div class="card-title">Repaso Compás</div>
+      <p class="card-desc">
+        22 temas. Foco intensivo en compás simple y compuesto.
+        Para dominar la parte que más se atasca.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Compás simple</span>
+        <span class="subj">Compuesto</span>
+        <span class="subj">22 temas</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Test adaptativo · foco en compás</span>
+      <span class="card-cta mus">Repasar →</span>
+    </div>
+  </a>
+
+  <!-- GRAN REPASO 1 -->
+  <a class="card" href="teoria-musica/repaso_completo_musica_andre.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <span class="card-icon">⭐</span>
+      <div class="card-title">Gran Repaso 1</div>
+      <p class="card-desc">
+        40 temas. Barrido completo del temario con partituras.
+        El repaso más largo y completo disponible.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Temario completo</span>
+        <span class="subj">Partituras</span>
+        <span class="subj">40 temas</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Test adaptativo · 40 temas · ~40 min</span>
+      <span class="card-cta mus">Repasar →</span>
+    </div>
+  </a>
+
+  <!-- GRAN REPASO 2 -->
+  <a class="card" href="teoria-musica/repaso_completo2_musica_andre.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">🎵 Lenguaje Musical</div>
+      <span class="card-icon">🌟</span>
+      <div class="card-title">Gran Repaso 2</div>
+      <p class="card-desc">
+        40 preguntas completamente nuevas, organizadas por unidad del
+        libro (U10–U15 + repaso U1–5). Ideal para el repaso definitivo.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">U10–U15</span>
+        <span class="subj">Repaso U1–5</span>
+        <span class="subj">40 temas</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🎵 Test adaptativo · 40 temas · ~40 min</span>
+      <span class="card-cta mus">Repasar →</span>
     </div>
   </a>
 

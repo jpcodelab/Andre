@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repaso 2 de Música — El compás — André</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--tinta:#1a1a1a;--linea:#d8d8d8;--bien:#1f7a37;--bien-bg:#eef7f0;--mal:#b22222;--mal-bg:#fbeeee;--suave:#666;--azul:#1f4e79;--foco:#7a4a00;--foco-bg:#fdf4e3;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Lora',Georgia,serif;color:var(--tinta);background:#fff;line-height:1.5;font-size:18px;}
+  .envoltorio{max-width:760px;margin:0 auto;padding:24px 20px 80px;}
+  header{border-bottom:2px solid var(--tinta);padding-bottom:14px;margin-bottom:8px;}
+  h1{font-size:25px;margin:0 0 4px;font-weight:700;}
+  .subtitulo{color:var(--suave);font-size:15px;margin:0;}
+  .barra-info{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0 6px;font-size:15px;flex-wrap:wrap;}
+  .barra-info span{white-space:nowrap;}
+  .progreso-ext{height:12px;background:#eee;border:1px solid var(--linea);border-radius:8px;overflow:hidden;margin-bottom:22px;}
+  .progreso-int{height:100%;width:0;background:var(--tinta);transition:width .35s ease;}
+  .tema-etiqueta{font-size:14px;color:var(--suave);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .tema-etiqueta .bloque{color:var(--azul);font-weight:700;}
+  .tema-etiqueta.foco .bloque{color:var(--foco);}
+  .intentos{font-size:14px;color:var(--suave);margin-bottom:14px;}
+  .punto{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--tinta);margin-right:4px;vertical-align:middle;}
+  .punto.usado{background:var(--tinta);}
+  .figura{margin:0 auto 16px;max-width:380px;padding:12px;border:1px solid var(--linea);border-radius:12px;background:#fff;}
+  .pregunta{font-size:21px;font-weight:600;margin:0 0 20px;line-height:1.45;}
+  .opciones{display:flex;flex-direction:column;gap:12px;margin-bottom:8px;}
+  button.opcion{font-family:inherit;font-size:18px;text-align:left;background:#fff;color:var(--tinta);border:2px solid var(--tinta);border-radius:12px;padding:14px 16px;cursor:pointer;line-height:1.4;transition:background .12s ease;}
+  button.opcion:hover:not(:disabled){background:#f3f3f3;}
+  button.opcion:disabled{cursor:default;}
+  button.opcion.correcta{background:var(--bien-bg);border-color:var(--bien);color:var(--bien);font-weight:600;}
+  button.opcion.incorrecta{background:var(--mal-bg);border-color:var(--mal);color:var(--mal);}
+  button.opcion .marca{float:right;font-weight:700;}
+  .explicacion{border-left:5px solid var(--tinta);background:#f7f7f7;padding:14px 18px;border-radius:0 10px 10px 0;margin:18px 0 6px;font-size:17px;}
+  .explicacion.bien{border-color:var(--bien);background:var(--bien-bg);}
+  .explicacion.mal{border-color:var(--mal);background:var(--mal-bg);}
+  .explicacion .titulo{font-weight:700;margin:0 0 6px;}
+  .acciones{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;}
+  button.principal{font-family:inherit;font-size:18px;font-weight:600;background:var(--tinta);color:#fff;border:2px solid var(--tinta);border-radius:12px;padding:13px 26px;cursor:pointer;}
+  button.principal:hover{background:#000;}
+  button.secundaria{font-family:inherit;font-size:16px;background:#fff;color:var(--tinta);border:2px solid var(--linea);border-radius:12px;padding:13px 22px;cursor:pointer;}
+  button.secundaria:hover{background:#f3f3f3;}
+  .intro p{font-size:18px;} .intro ul{padding-left:22px;} .intro li{margin-bottom:8px;}
+  .aviso-mapa{background:var(--foco-bg);border:2px solid var(--foco);border-radius:12px;padding:14px 18px;margin:16px 0;font-size:17px;}
+  .resumen h2{font-size:22px;border-bottom:2px solid var(--tinta);padding-bottom:8px;margin-top:30px;}
+  .seccion-et{font-size:14px;color:var(--suave);text-transform:uppercase;letter-spacing:1.5px;margin:22px 0 4px;font-weight:700;}
+  .marcador{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 6px;}
+  .caja{flex:1;min-width:130px;border:2px solid var(--tinta);border-radius:12px;padding:14px;text-align:center;}
+  .caja .num{font-size:34px;font-weight:700;display:block;line-height:1.1;}
+  .caja .et{font-size:14px;color:var(--suave);}
+  .mensaje-andre{font-size:19px;background:var(--bien-bg);border:2px solid var(--bien);border-radius:12px;padding:14px 18px;margin:14px 0;}
+  table.res{width:100%;border-collapse:collapse;margin-top:14px;font-size:16px;}
+  table.res th,table.res td{border-bottom:1px solid var(--linea);padding:9px 8px;text-align:left;vertical-align:top;}
+  table.res th{font-size:14px;color:var(--suave);text-transform:uppercase;letter-spacing:.5px;}
+  .estado{font-weight:700;white-space:nowrap;}
+  .e-dom{color:var(--bien);} .e-casi{color:#9a7400;} .e-rep{color:var(--mal);}
+  .bloque-consejo{border:2px solid var(--tinta);border-radius:12px;padding:16px 18px;margin-top:14px;background:#fafafa;}
+  .bloque-consejo h3{margin:0 0 8px;font-size:18px;} .bloque-consejo ul{margin:0;padding-left:20px;}
+  .registro-caja{border:2px solid var(--azul);border-radius:12px;padding:14px;background:#f4f8fc;margin-top:8px;}
+  textarea#registroTexto{width:100%;min-height:240px;font-family:'Courier New',monospace;font-size:13px;line-height:1.45;border:1px solid var(--linea);border-radius:8px;padding:10px;color:var(--tinta);background:#fff;resize:vertical;}
+  .nota-pie{color:var(--suave);font-size:14px;margin-top:30px;border-top:1px solid var(--linea);padding-top:12px;}
+  .oculto{display:none;}
+  @media print{button,textarea{display:none;}}
+</style>
+</head>
+<body>
+<div class="envoltorio">
+  <header>
+    <h1>Repaso 2 de Música · El compás 🎺</h1>
+    <p class="subtitulo">Lenguaje musical — André · 5º de Primaria</p>
+  </header>
+
+  <div class="barra-info" id="barraInfo">
+    <span id="contadorTema">Tema 0 de 0</span>
+    <span id="reloj">⏱ 00:00</span>
+    <span id="aciertos">Bien a la primera: 0</span>
+  </div>
+  <div class="progreso-ext"><div class="progreso-int" id="progreso"></div></div>
+
+  <section id="pantallaInicio" class="intro">
+    <p><strong>¡Segunda vuelta, André!</strong> Preguntas nuevas, sin nada que no hayas visto ya. Esta vez nos centramos en <strong>el compás</strong> (lo que más se resistió) y en los intervalos.</p>
+    <div class="aviso-mapa">🗺️ <strong>Antes de empezar:</strong> ten al lado el <em>Mapa del compás</em> (simple/compuesto, cómo contar los tiempos y la unidad de tiempo). Es lo que más conviene mirar una vez antes de jugar.</div>
+    <p>Cómo funciona:</p>
+    <ul>
+      <li>Una pregunta por tema; algunas con partitura en clave de Sol.</li>
+      <li>Si aciertas, avanzas. Si fallas, te explico el porqué y te doy otra (hasta 3 intentos).</li>
+      <li>Es un repaso largo: si te cansas, puedes parar y luego pulsar <strong>"Continuar donde lo dejé"</strong>. Se guarda solo.</li>
+    </ul>
+    <div class="acciones">
+      <button class="principal" onclick="empezar()">Empezar el repaso</button>
+      <button class="secundaria oculto" id="btnReanudar" onclick="reanudar()">Continuar donde lo dejé</button>
+    </div>
+  </section>
+
+  <section id="pantallaPregunta" class="oculto">
+    <div class="tema-etiqueta" id="etiquetaTema"></div>
+    <div class="intentos" id="intentos"></div>
+    <div class="figura oculto" id="zonaFigura"></div>
+    <p class="pregunta" id="textoPregunta"></p>
+    <div class="opciones" id="opciones"></div>
+    <div id="zonaExplicacion"></div>
+    <div class="acciones" id="zonaAcciones"></div>
+  </section>
+
+  <section id="pantallaFinal" class="oculto resumen">
+    <h2>¡Repaso terminado! 🎉</h2>
+    <div class="seccion-et">Para André</div>
+    <div class="marcador">
+      <div class="caja"><span class="num e-dom" id="nDom">0</span><span class="et">Dominados<br>(a la primera)</span></div>
+      <div class="caja"><span class="num e-casi" id="nCasi">0</span><span class="et">Conseguidos<br>(2.º o 3.er intento)</span></div>
+      <div class="caja"><span class="num e-rep" id="nRep">0</span><span class="et">Para repasar<br>(sin acertar)</span></div>
+    </div>
+    <div class="mensaje-andre" id="mensajeAndre"></div>
+    <div class="bloque-consejo" id="bloqueProfundizar">
+      <h3>📌 Lo último que conviene mirar antes del examen</h3>
+      <ul id="listaProfundizar"></ul>
+    </div>
+
+    <h2>Para papá — registro de la sesión 📋</h2>
+    <p class="subtitulo" style="margin-bottom:8px">Copia el registro y pégamelo en el chat: veré qué ha contestado y cómo llega al examen.</p>
+    <div class="registro-caja">
+      <textarea id="registroTexto" readonly></textarea>
+      <div class="acciones">
+        <button class="principal" id="btnCopiar" onclick="copiarRegistro()">Copiar registro</button>
+        <button class="secundaria" onclick="window.print()">Imprimir resumen</button>
+      </div>
+    </div>
+
+    <h2>Resultado tema a tema</h2>
+    <table class="res"><thead><tr><th>Tema</th><th>Intentos</th><th>Estado</th></tr></thead><tbody id="tablaResumen"></tbody></table>
+    <div class="acciones"><button class="secundaria" onclick="reiniciarTodo()">Volver a empezar</button></div>
+    <p class="nota-pie">Hecho para André. Contenidos basados en su libro de lenguaje musical (Unidades 10 a 16 y repaso de las Unidades 1 a 5).</p>
+  </section>
+</div>
+
+<script>
+/* ===== Helpers de notación musical en SVG (clave de Sol) ===== */
+const LINEGAP=10, STAFFTOP=40, YBOTTOM=STAFFTOP+4*LINEGAP;
+const LETTER={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
+function noteIndex(n){const m=n.match(/^([A-G])(\d)$/);return parseInt(m[2])*7+LETTER[m[1]];}
+const E4=noteIndex("E4");
+function noteY(n){return YBOTTOM-(noteIndex(n)-E4)*(LINEGAP/2);}
+function staffLines(w){let s="";for(let i=0;i<5;i++){const y=STAFFTOP+i*LINEGAP;s+='<line x1="0" y1="'+y+'" x2="'+w+'" y2="'+y+'" stroke="#1a1a1a" stroke-width="1.2"/>';}return s;}
+function clef(){return '<text x="3" y="80" font-size="52" font-family="Bravura,\'Segoe UI Symbol\',\'Noto Music\',serif" fill="#1a1a1a">\uD834\uDD1E</text>';}
+function staff(w){return staffLines(w)+clef();}
+function ledgerLine(x,y){return '<line x1="'+(x-12)+'" y1="'+y+'" x2="'+(x+12)+'" y2="'+y+'" stroke="#1a1a1a" stroke-width="1.2"/>';}
+function ledgers(x,name){const idx=noteIndex(name);let s="";if(idx<30){for(let i=28;i>=idx;i-=2){s+=ledgerLine(x,YBOTTOM-(i-E4)*(LINEGAP/2));}}if(idx>38){for(let i=40;i<=idx;i+=2){s+=ledgerLine(x,YBOTTOM-(i-E4)*(LINEGAP/2));}}return s;}
+function accidental(x,y,t){const map={"#":"\u266F","b":"\u266D","n":"\u266E"};return '<text x="'+x+'" y="'+(y+5)+'" font-size="19" font-family="\'Segoe UI Symbol\',\'Noto Music\',serif" fill="#1a1a1a" text-anchor="middle">'+(map[t]||t)+'</text>';}
+function nota(x,name,opt){opt=opt||{};const y=noteY(name);let s=ledgers(x,name);
+  s+='<ellipse cx="'+x+'" cy="'+y+'" rx="7.2" ry="5.2" fill="'+(opt.filled?"#1a1a1a":"none")+'" stroke="#1a1a1a" stroke-width="1.7" transform="rotate(-18 '+x+' '+y+')"/>';
+  if(opt.stem){const up=noteIndex(name)<noteIndex("B4");if(up)s+='<line x1="'+(x+6.8)+'" y1="'+(y-1)+'" x2="'+(x+6.8)+'" y2="'+(y-32)+'" stroke="#1a1a1a" stroke-width="1.7"/>';else s+='<line x1="'+(x-6.8)+'" y1="'+(y+1)+'" x2="'+(x-6.8)+'" y2="'+(y+32)+'" stroke="#1a1a1a" stroke-width="1.7"/>';}
+  if(opt.acc)s+=accidental(x-14,y,opt.acc);return s;}
+function wrap(inner,w,h){return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="max-width:'+Math.round(w*1.9)+'px;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg"><rect width="'+w+'" height="'+h+'" fill="#fff"/>'+inner+'</svg>';}
+function unaNota(name,opt){return wrap(staff(130)+nota(82,name,opt),130,118);}
+function intervalo(n1,n2,o1,o2){return wrap(staff(150)+nota(78,n1,o1||{})+nota(106,n2,o2||{}),150,118);}
+function armadura(type,count){const sharps=["F5","C5","G5","D5","A4","E5","B4"],flats=["B4","E5","A4","D5","G4","C5","F4"];const arr=type==="#"?sharps:flats;const w=64+count*12;let s=staff(w);for(let i=0;i<count;i++){s+=accidental(40+i*11,noteY(arr[i]),type);}return wrap(s,w+8,118);}
+function compas(num,den){let s=staff(112);s+='<text x="60" y="60" font-size="25" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#1a1a1a">'+num+'</text>';s+='<text x="60" y="81" font-size="25" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#1a1a1a">'+den+'</text>';return wrap(s,112,118);}
+function signoArtic(x,y,t){const my=y-24;if(t==="picado")return '<circle cx="'+x+'" cy="'+my+'" r="2.8" fill="#1a1a1a"/>';if(t==="tenuto")return '<line x1="'+(x-7)+'" y1="'+my+'" x2="'+(x+7)+'" y2="'+my+'" stroke="#1a1a1a" stroke-width="2.6"/>';if(t==="acento")return '<path d="M '+(x-8)+' '+(my-5)+' L '+(x+8)+' '+my+' L '+(x-8)+' '+(my+5)+'" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linejoin="round"/>';return "";}
+function articTriple(order){const xs=[48,98,148],labels=["A","B","C"],name="G4",y=noteY(name);let s=staff(190);order.forEach(function(t,i){const x=xs[i];s+=nota(x,name,{filled:true,stem:true});s+=signoArtic(x,y,t);s+='<text x="'+x+'" y="108" font-size="13" text-anchor="middle" font-family="Arial" fill="#777">'+labels[i]+'</text>';});return wrap(s,190,118);}
+function figuraPuntillo(tipo){const x=64,y=58,filled=(tipo==="negra");let inner='<ellipse cx="'+x+'" cy="'+y+'" rx="9" ry="6.5" fill="'+(filled?"#1a1a1a":"none")+'" stroke="#1a1a1a" stroke-width="2.2" transform="rotate(-18 '+x+' '+y+')"/>';inner+='<line x1="'+(x+8.5)+'" y1="'+(y-2)+'" x2="'+(x+8.5)+'" y2="'+(y-46)+'" stroke="#1a1a1a" stroke-width="2.2"/>';inner+='<circle cx="'+(x+19)+'" cy="'+y+'" r="3" fill="#1a1a1a"/>';return wrap(inner,120,86);}
+
+/* ===== BANCO DE PREGUNTAS — REPASO FINAL =====
+   bloque "foco" = el punto débil (grados y tonalidades) ; "repaso" = barrido de confianza */
+const TEMAS=[
+ /* ===== FOCO: EL COMPÁS ===== */
+ {id:"simple_comp",bloque:"FOCO: El compás",nombre:"Simple o compuesto, y su subdivisión",preguntas:[
+  {q:"¿Qué numeradores indican un compás COMPUESTO?",o:["2, 3 ó 4","6, 9 ó 12","solo el 8","cualquier número par"],c:1,exp:"Compuesto: numerador 6, 9 ó 12. Simple: 2, 3 ó 4."},
+  {q:"En un compás COMPUESTO, cada tiempo se divide en…",o:["2 mitades","3 tercios","4 partes","no se divide"],c:1,exp:"Compuesto = subdivisión ternaria: cada tiempo se parte en 3."},
+  {q:"En un compás SIMPLE, cada tiempo se divide en…",o:["2 mitades","3 tercios","6 partes","no se divide"],c:0,exp:"Simple = subdivisión binaria: cada tiempo se parte en 2."}
+ ]},
+ {id:"ident_sc",bloque:"FOCO: El compás",nombre:"¿Este compás es simple o compuesto?",preguntas:[
+  {svg:compas(4,4),q:"El compás de 4/4, ¿es simple o compuesto?",o:["simple","compuesto","irregular","los dos"],c:0,exp:"Numerador 4 → simple."},
+  {svg:compas(6,8),q:"El compás de 6/8, ¿es simple o compuesto?",o:["simple","compuesto","irregular","ternario simple"],c:1,exp:"Numerador 6 → compuesto."},
+  {svg:compas(3,4),q:"El compás de 3/4, ¿es simple o compuesto?",o:["simple","compuesto","cuaternario","ninguno"],c:0,exp:"Numerador 3 → simple."}
+ ]},
+ {id:"tiempos_comp",bloque:"FOCO: El compás",nombre:"Contar los tiempos en compases COMPUESTOS",preguntas:[
+  {svg:compas(6,8),q:"¿Cuántos TIEMPOS tiene el compás de 6/8?",o:["6","3","2","4"],c:2,exp:"Compuesto: tiempos = numerador ÷ 3. 6 ÷ 3 = 2 tiempos."},
+  {svg:compas(9,8),q:"¿Cuántos TIEMPOS tiene el compás de 9/8?",o:["9","2","3","4"],c:2,exp:"9 ÷ 3 = 3 tiempos."},
+  {svg:compas(12,8),q:"¿Cuántos TIEMPOS tiene el compás de 12/8?",o:["12","3","4","6"],c:2,exp:"12 ÷ 3 = 4 tiempos."}
+ ]},
+ {id:"tiempos_simp",bloque:"FOCO: El compás",nombre:"Contar los tiempos en compases SIMPLES",preguntas:[
+  {svg:compas(2,4),q:"¿Cuántos TIEMPOS tiene el compás de 2/4?",o:["2","4","8","1"],c:0,exp:"Simple: el nº de tiempos es el numerador. 2/4 → 2 tiempos."},
+  {svg:compas(3,8),q:"¿Cuántos TIEMPOS tiene el compás de 3/8?",o:["8","3","6","2"],c:1,exp:"Simple: numerador = 3 tiempos."},
+  {svg:compas(4,4),q:"¿Cuántos TIEMPOS tiene el compás de 4/4?",o:["2","3","4","8"],c:2,exp:"Simple: numerador = 4 tiempos."}
+ ]},
+ {id:"clasif_8",bloque:"FOCO: El compás",nombre:"Clasificar 3/8, 2/8 y 6/8",preguntas:[
+  {svg:compas(3,8),q:"El compás de 3/8 es…",o:["simple ternario","compuesto ternario","simple binario","compuesto binario"],c:0,exp:"Numerador 3 → simple; 3 tiempos → ternario. (El 8 NO lo hace compuesto.)"},
+  {svg:compas(2,8),q:"El compás de 2/8 es…",o:["compuesto binario","simple binario","simple ternario","simple cuaternario"],c:1,exp:"Numerador 2 → simple; 2 tiempos → binario."},
+  {svg:compas(6,8),q:"El compás de 6/8 es…",o:["simple binario","compuesto binario","compuesto ternario","simple ternario"],c:1,exp:"Numerador 6 → compuesto; 6 ÷ 3 = 2 tiempos → binario."}
+ ]},
+ {id:"ut_simple",bloque:"FOCO: El compás",nombre:"Unidad de tiempo en compases SIMPLES",preguntas:[
+  {q:"En el compás de 3/4, ¿qué figura vale UN tiempo (unidad de tiempo)?",o:["la corchea","la negra","la blanca","la redonda"],c:1,exp:"El denominador 4 indica la negra: vale un tiempo."},
+  {q:"En el compás de 2/8, ¿qué figura vale UN tiempo?",o:["la corchea","la negra","la blanca","la semicorchea"],c:0,exp:"El denominador 8 indica la corchea: vale un tiempo."},
+  {q:"En el compás de 3/2, ¿qué figura vale UN tiempo?",o:["la negra","la blanca","la redonda","la corchea"],c:1,exp:"El denominador 2 indica la blanca: vale un tiempo."}
+ ]},
+ {id:"ut_comp",bloque:"FOCO: El compás",nombre:"Unidad de tiempo en compases COMPUESTOS",preguntas:[
+  {svg:compas(6,8),q:"En el compás de 6/8, ¿cuál es la unidad de tiempo?",o:["la corchea","la negra","la negra con puntillo","la blanca"],c:2,exp:"En compuesto la UT es una figura con puntillo: la negra con puntillo (= 3 corcheas)."},
+  {svg:compas(9,8),q:"En el compás de 9/8, ¿cuál es la unidad de tiempo?",o:["la negra con puntillo","la negra","la corchea","la blanca con puntillo"],c:0,exp:"Negra con puntillo (= 3 corcheas)."},
+  {q:"En los compases compuestos (6/8, 9/8, 12/8) la unidad de tiempo es siempre…",o:["una figura simple","una figura con puntillo","una corchea","un silencio"],c:1,exp:"En compuesto la UT es siempre una figura con puntillo (vale 3 subdivisiones)."}
+ ]},
+
+ /* ===== FOCO: INTERVALOS Y ALTERACIONES ===== */
+ {id:"especie_4",bloque:"FOCO: Intervalos y alteraciones",nombre:"La 4.ª: ¿Justa o aumentada?",preguntas:[
+  {svg:intervalo("F4","B4"),q:"De FA a SI, ¿qué intervalo es?",o:["4.ª Justa","4.ª aumentada","5.ª Justa","3.ª Mayor"],c:1,exp:"FA-SI es la ÚNICA 4.ª aumentada entre notas naturales (3 tonos)."},
+  {svg:intervalo("C5","F5"),q:"De DO a FA, ¿qué 4.ª es?",o:["4.ª Justa","4.ª aumentada","4.ª disminuida","5.ª Justa"],c:0,exp:"Todas las 4.ª naturales son Justas salvo FA-SI. DO-FA = 4.ª Justa."},
+  {q:"¿Cuál es la ÚNICA 4.ª aumentada entre notas naturales?",o:["DO-FA","RE-SOL","FA-SI","MI-LA"],c:2,exp:"FA-SI es la única 4.ª aumentada."}
+ ]},
+ {id:"especie_5",bloque:"FOCO: Intervalos y alteraciones",nombre:"La 5.ª: ¿Justa o disminuida?",preguntas:[
+  {svg:intervalo("B4","F5"),q:"De SI a FA, ¿qué intervalo es?",o:["5.ª Justa","5.ª disminuida","4.ª aumentada","6.ª menor"],c:1,exp:"SI-FA es la ÚNICA 5.ª disminuida entre notas naturales."},
+  {svg:intervalo("D5","A5"),q:"De RE a LA, ¿qué 5.ª es?",o:["5.ª Justa","5.ª disminuida","5.ª aumentada","4.ª Justa"],c:0,exp:"Todas las 5.ª naturales son Justas salvo SI-FA. RE-LA = 5.ª Justa."},
+  {q:"¿Cuál es la ÚNICA 5.ª disminuida entre notas naturales?",o:["DO-SOL","RE-LA","SI-FA","MI-SI"],c:2,exp:"SI-FA es la única 5.ª disminuida."}
+ ]},
+ {id:"alteraciones_dir",bloque:"FOCO: Intervalos y alteraciones",nombre:"Las alteraciones: sube o baja",preguntas:[
+  {svg:unaNota("A4",{acc:"#"}),q:"El sostenido (#), ¿qué le hace a la nota?",o:["la sube 1 semitono","la baja 1 semitono","la sube 1 tono","no la cambia"],c:0,exp:"El sostenido SUBE 1 semitono. (El bemol BAJA.) No los confundas."},
+  {svg:unaNota("A4",{acc:"b"}),q:"El bemol (b), ¿qué le hace a la nota?",o:["la sube 1 semitono","la baja 1 semitono","la baja 1 tono","la anula"],c:1,exp:"El bemol BAJA 1 semitono."},
+  {q:"El doble sostenido (x), ¿qué hace?",o:["sube 1 semitono","sube 2 semitonos","baja 2 semitonos","anula"],c:1,exp:"El doble sostenido sube 2 semitonos; el doble bemol baja 2."}
+ ]},
+
+ /* ===== REPASO DE CONFIANZA ===== */
+ {id:"grados",bloque:"Repaso de confianza",nombre:"Grados de la escala",preguntas:[
+  {q:"El VII grado se llama…",o:["Sensible","Dominante","Mediante","Tónica"],c:0,exp:"VII = Sensible (a un semitono de la tónica)."},
+  {q:"Los grados tonales son…",o:["I, IV y V","III, VI y VII","II, IV y VI","I, II y III"],c:0,exp:"Tonales: I, IV y V (los pilares)."},
+  {q:"¿Qué grado decide si el modo es Mayor o menor?",o:["el I","el III","el V","el VII"],c:1,exp:"El III (Mediante) define el modo."}
+ ]},
+ {id:"relativas",bloque:"Repaso de confianza",nombre:"Tonalidades relativas",preguntas:[
+  {q:"La relativa menor de SOL Mayor es…",o:["MI menor","SI menor","LA menor","RE menor"],c:0,exp:"SOL → FA → MI: MI menor, misma armadura (1 sostenido)."},
+  {q:"RE menor comparte armadura con…",o:["FA Mayor","DO Mayor","SOL Mayor","RE Mayor"],c:0,exp:"RE menor y FA Mayor: las dos con 1 bemol (SIb)."},
+  {q:"Entre una tonalidad Mayor y su relativa menor hay…",o:["una 3.ª menor","una 5.ª Justa","una 2.ª","una 8.ª"],c:0,exp:"La relativa menor está una 3.ª menor por debajo."}
+ ]},
+ {id:"arm_mayor",bloque:"Repaso de confianza",nombre:"Armadura → tonalidad Mayor",preguntas:[
+  {svg:armadura("b",1),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["DO Mayor","FA Mayor","SOL Mayor","RE Mayor"],c:1,exp:"1 bemol (SIb) = FA Mayor."},
+  {svg:armadura("#",1),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["SOL Mayor","RE Mayor","DO Mayor","FA Mayor"],c:0,exp:"1 sostenido (FA#) = SOL Mayor."},
+  {svg:armadura("#",2),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["SOL Mayor","RE Mayor","LA Mayor","FA Mayor"],c:1,exp:"2 sostenidos (FA#, DO#) = RE Mayor."}
+ ]},
+ {id:"leer_notas",bloque:"Repaso de confianza",nombre:"Leer notas en el pentagrama",preguntas:[
+  {svg:unaNota("E5"),q:"¿Qué nota es esta? (clave de Sol)",o:["DO","RE","MI","FA"],c:2,exp:"4.º espacio = MI."},
+  {svg:unaNota("A4"),q:"¿Qué nota es esta? (clave de Sol)",o:["SOL","LA","SI","DO"],c:1,exp:"2.º espacio = LA."},
+  {svg:unaNota("D5"),q:"¿Qué nota es esta? (clave de Sol)",o:["DO","RE","MI","FA"],c:1,exp:"4.ª línea = RE."}
+ ]},
+ {id:"int_orden",bloque:"Repaso de confianza",nombre:"Intervalos: número de orden",preguntas:[
+  {svg:intervalo("D5","A5"),q:"¿De qué número de orden es este intervalo?",o:["3.ª","4.ª","5.ª","6.ª"],c:2,exp:"RE-MI-FA-SOL-LA = 5 notas = 5.ª."},
+  {svg:intervalo("C5","F5"),q:"¿De qué número de orden es este intervalo?",o:["3.ª","4.ª","5.ª","6.ª"],c:1,exp:"DO-RE-MI-FA = 4 notas = 4.ª."},
+  {svg:intervalo("G4","E5"),q:"¿De qué número de orden es este intervalo?",o:["5.ª","6.ª","7.ª","8.ª"],c:1,exp:"SOL-LA-SI-DO-RE-MI = 6 notas = 6.ª."}
+ ]},
+ {id:"ritmo_especial",bloque:"Repaso de confianza",nombre:"Síncopa, contratiempo y anacrusa",preguntas:[
+  {q:"¿Qué figura empieza en parte débil, SE PROLONGA y acaba en fuerte?",o:["síncopa","contratiempo","anacrusa","tresillo"],c:0,exp:"Eso es la síncopa."},
+  {q:"¿Y la que empieza en débil, NO se prolonga y lleva un silencio delante?",o:["contratiempo","síncopa","anacrusa","calderón"],c:0,exp:"Eso es el contratiempo."},
+  {q:"Las notas sin acento ANTES del primer tiempo fuerte son…",o:["la anacrusa","la síncopa","la coda","el tresillo"],c:0,exp:"Es la anacrusa."}
+ ]},
+ {id:"tresillo",bloque:"Repaso de confianza",nombre:"El tresillo",preguntas:[
+  {q:"Un tresillo de 3 negras dura lo mismo que…",o:["2 negras","3 negras","4 negras","1 blanca con puntillo"],c:0,exp:"3 figuras que valen 2: 3 negras suenan como 2."},
+  {q:"¿Cómo se reconoce un tresillo en la partitura?",o:["por un 3 encima del grupo","por un punto","por un sostenido","por dos puntos"],c:0,exp:"Por el número 3 sobre el grupo."},
+  {q:"El tresillo mete ritmo… dentro de un compás simple.",o:["ternario","binario","libre","lento"],c:0,exp:"Mete subdivisión ternaria en un compás simple."}
+ ]},
+ {id:"matices",bloque:"Repaso de confianza",nombre:"Matices y reguladores",preguntas:[
+  {q:"¿Qué matiz significa 'medianamente fuerte'?",o:["mp","mf","ff","p"],c:1,exp:"mf = mezzoforte = medianamente fuerte."},
+  {q:"Un regulador que se CIERRA (>) indica…",o:["diminuendo (ir bajando)","crescendo","acento","picado"],c:0,exp:"Se cierra → diminuendo (la intensidad baja)."},
+  {q:"Ordena de MÁS FUERTE a más suave.",o:["ff – f – mf – p","p – mf – f – ff","mf – p – ff – f","f – ff – p – mf"],c:0,exp:"ff > f > mf > p."}
+ ]},
+ {id:"tempo",bloque:"Repaso de confianza",nombre:"Tempo",preguntas:[
+  {q:"'Presto' significa…",o:["muy rápido","muy lento","moderado","tranquilo"],c:0,exp:"Presto = muy rápido."},
+  {q:"¿Cuál es más lento: Adagio o Allegro?",o:["Adagio","Allegro","iguales","depende"],c:0,exp:"Adagio (despacio) es más lento que Allegro (animado)."},
+  {q:"El tempo se refiere a…",o:["la velocidad","la intensidad","la altura del sonido","el timbre"],c:0,exp:"El tempo = velocidad de interpretación."}
+ ]},
+ {id:"agogica_rep",bloque:"Repaso de confianza",nombre:"Agógica y repeticiones",preguntas:[
+  {q:"'Accelerando' indica…",o:["acelerar (ir más rápido)","frenar","repetir","callar"],c:0,exp:"Accelerando = ir aumentando la velocidad."},
+  {q:"Un calderón sobre una nota…",o:["la alarga un tiempo a voluntad","la acorta","la repite","la sube un tono"],c:0,exp:"El calderón alarga la nota una duración indeterminada."},
+  {q:"'D.C. al Fine' significa…",o:["volver al principio y tocar hasta Fine","parar al momento","repetir el último compás","tocar más fuerte"],c:0,exp:"Da Capo = desde el principio; tocas hasta la palabra Fine."}
+ ]},
+ {id:"semitono_enar",bloque:"Repaso de confianza",nombre:"Semitonos y enarmonía",preguntas:[
+  {q:"DO sostenido y RE bemol suenan igual: son…",o:["notas enarmónicas","unísono","cromáticas","un tono"],c:0,exp:"Distinto nombre, igual sonido = enarmónicas."},
+  {q:"De MI a FA (distinto nombre) hay un semitono…",o:["diatónico","cromático","aumentado","doble"],c:0,exp:"Distinto nombre = semitono diatónico."},
+  {q:"De FA a FA sostenido (mismo nombre) hay un semitono…",o:["cromático","diatónico","enarmónico","unísono"],c:0,exp:"Mismo nombre = semitono cromático."}
+ ]},
+ {id:"metronomo",bloque:"Repaso de confianza",nombre:"El metrónomo",preguntas:[
+  {q:"El metrónomo sirve para medir…",o:["la velocidad (el tempo)","la intensidad","la afinación","el compás"],c:0,exp:"Marca pulsos regulares: mide la velocidad."},
+  {q:"La indicación ♩ = 60 significa…",o:["60 negras por minuto","60 compases","60 segundos","60 notas en total"],c:0,exp:"60 negras por minuto."},
+  {q:"El metrónomo se asocia al nombre de… (hacia 1816)",o:["Maelzel","Mozart","Chopin","Verdi"],c:0,exp:"Maelzel: de ahí la sigla M.M. (Metrónomo de Maelzel)."}
+ ]}
+];
+
+/* ===== MOTOR (adaptativo + registro de sesión) ===== */
+const CLAVE="andre_musica_repaso2";
+let estado=null, cronometro=null;
+function nuevoEstado(){return {temaIdx:0,intento:0,resultados:[],log:[],inicio:Date.now(),segundos:0};}
+function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(estado));}catch(e){}}
+function cargar(){try{const s=localStorage.getItem(CLAVE);return s?JSON.parse(s):null;}catch(e){return null;}}
+
+window.addEventListener("DOMContentLoaded",function(){
+  const previo=cargar();
+  if(previo&&previo.temaIdx>0&&previo.temaIdx<TEMAS.length){document.getElementById("btnReanudar").classList.remove("oculto");}
+  actualizarBarra();
+});
+
+function empezar(){estado=nuevoEstado();iniciarCrono();guardar();mostrarPregunta();}
+function reanudar(){estado=cargar()||nuevoEstado();if(!estado.log)estado.log=[];if(!estado.inicio)estado.inicio=Date.now()-(estado.segundos||0)*1000;iniciarCrono();mostrarPregunta();}
+function reiniciarTodo(){try{localStorage.removeItem(CLAVE);}catch(e){}estado=nuevoEstado();document.getElementById("pantallaFinal").classList.add("oculto");document.getElementById("pantallaInicio").classList.remove("oculto");document.getElementById("btnReanudar").classList.add("oculto");detenerCrono();actualizarBarra();}
+
+function iniciarCrono(){detenerCrono();cronometro=setInterval(function(){estado.segundos=Math.floor((Date.now()-estado.inicio)/1000);pintarReloj();},1000);pintarReloj();}
+function detenerCrono(){if(cronometro){clearInterval(cronometro);cronometro=null;}}
+function pintarReloj(){const s=estado?estado.segundos:0;const m=String(Math.floor(s/60)).padStart(2,"0");const ss=String(s%60).padStart(2,"0");document.getElementById("reloj").textContent="⏱ "+m+":"+ss;}
+
+function actualizarBarra(){const total=TEMAS.length;const hechos=estado?estado.resultados.filter(function(r){return r;}).length:0;document.getElementById("contadorTema").textContent="Tema "+Math.min(hechos+(estado&&estado.temaIdx<total?1:0),total)+" de "+total;document.getElementById("progreso").style.width=(hechos/total*100)+"%";const ap=estado?estado.resultados.filter(function(r){return r&&r.acertado&&r.tries===1;}).length:0;document.getElementById("aciertos").textContent="Bien a la primera: "+ap;}
+
+function mostrarPregunta(){
+  document.getElementById("pantallaInicio").classList.add("oculto");
+  document.getElementById("pantallaFinal").classList.add("oculto");
+  document.getElementById("pantallaPregunta").classList.remove("oculto");
+  const tema=TEMAS[estado.temaIdx], preg=tema.preguntas[estado.intento];
+  const et=document.getElementById("etiquetaTema");
+  const foco=(tema.bloque||"").indexOf("FOCO")===0;
+  et.className="tema-etiqueta"+(foco?" foco":"");
+  et.innerHTML='<span class="bloque">'+(tema.bloque||"")+'</span> · '+tema.nombre;
+  let pts="";for(let i=0;i<3;i++){pts+='<span class="punto'+(i<=estado.intento?" usado":"")+'"></span>';}
+  document.getElementById("intentos").innerHTML=pts+" Intento "+(estado.intento+1)+" de 3";
+  const fig=document.getElementById("zonaFigura");
+  if(preg.svg){fig.innerHTML=preg.svg;fig.classList.remove("oculto");}else{fig.innerHTML="";fig.classList.add("oculto");}
+  document.getElementById("textoPregunta").textContent=preg.q;
+  const cont=document.getElementById("opciones");cont.innerHTML="";
+  preg.o.forEach(function(op,i){const b=document.createElement("button");b.className="opcion";b.textContent=op;b.onclick=function(){responder(i);};cont.appendChild(b);});
+  document.getElementById("zonaExplicacion").innerHTML="";
+  document.getElementById("zonaAcciones").innerHTML="";
+  actualizarBarra();
+}
+
+function responder(elegida){
+  const tema=TEMAS[estado.temaIdx],preg=tema.preguntas[estado.intento],correcta=preg.c,acertado=(elegida===correcta);
+  if(!estado.log[estado.temaIdx])estado.log[estado.temaIdx]=[];
+  estado.log[estado.temaIdx].push({elegida:preg.o[elegida],correcta:preg.o[correcta],acertado:acertado});
+  document.querySelectorAll("#opciones .opcion").forEach(function(b,i){b.disabled=true;if(i===correcta){b.classList.add("correcta");b.insertAdjacentHTML("beforeend",' <span class="marca">✓</span>');}if(i===elegida&&!acertado){b.classList.add("incorrecta");b.insertAdjacentHTML("beforeend",' <span class="marca">✗</span>');}});
+  const zonaExp=document.getElementById("zonaExplicacion"),zonaAcc=document.getElementById("zonaAcciones");
+  if(acertado){
+    zonaExp.innerHTML='<div class="explicacion bien"><p class="titulo">¡Correcto! 🎉</p><p>'+preg.exp+'</p></div>';
+    registrar(true,estado.intento+1);
+    const btn=document.createElement("button");btn.className="principal";btn.textContent=(estado.temaIdx+1<TEMAS.length)?"Siguiente tema →":"Ver el resumen final";btn.onclick=siguienteTema;zonaAcc.appendChild(btn);
+  }else{
+    zonaExp.innerHTML='<div class="explicacion mal"><p class="titulo">Casi. Fíjate en esto:</p><p>'+preg.exp+'</p></div>';
+    if(estado.intento<2){
+      const btn=document.createElement("button");btn.className="principal";btn.textContent="Probar otra del mismo tema →";btn.onclick=function(){estado.intento++;guardar();mostrarPregunta();};zonaAcc.appendChild(btn);
+    }else{
+      registrar(false,3);
+      const aviso=document.createElement("div");aviso.className="explicacion";aviso.innerHTML='<p>Tranquilo: marco este tema para echarle un último vistazo en el mapa. ¡Seguimos!</p>';zonaExp.appendChild(aviso);
+      const btn=document.createElement("button");btn.className="principal";btn.textContent=(estado.temaIdx+1<TEMAS.length)?"Siguiente tema →":"Ver el resumen final";btn.onclick=siguienteTema;zonaAcc.appendChild(btn);
+    }
+  }
+  guardar();
+}
+
+function registrar(acertado,tries){estado.resultados[estado.temaIdx]={acertado:acertado,tries:tries};}
+function siguienteTema(){estado.temaIdx++;estado.intento=0;guardar();if(estado.temaIdx>=TEMAS.length){mostrarResumen();}else{mostrarPregunta();}}
+function clasificar(r){if(!r)return {clave:"rep",texto:"Sin hacer"};if(r.acertado&&r.tries===1)return {clave:"dom",texto:"Dominado"};if(r.acertado)return {clave:"casi",texto:"Conseguido ("+r.tries+".º intento)"};return {clave:"rep",texto:"Repasar"};}
+
+function buildLogText(){
+  const m=String(Math.floor(estado.segundos/60)).padStart(2,"0"),s=String(estado.segundos%60).padStart(2,"0");
+  const ap=estado.resultados.filter(function(r){return r&&r.acertado&&r.tries===1;}).length;
+  let L="REGISTRO DE SESIÓN — Repaso final de Música — André\n";
+  L+="Tiempo: "+m+":"+s+"   ·   Bien a la primera: "+ap+"/"+TEMAS.length+"\n";
+  L+="==================================================\n";
+  let bloqueActual="";
+  TEMAS.forEach(function(t,i){
+    if(t.bloque&&t.bloque!==bloqueActual){bloqueActual=t.bloque;L+="\n["+bloqueActual+"]\n";}
+    const r=estado.resultados[i],c=clasificar(r);
+    L+=(i+1)+". "+t.nombre+"  —  "+c.texto.toUpperCase()+"\n";
+    const atts=estado.log[i]||[];
+    atts.forEach(function(a,k){
+      L+="   P"+(k+1)+(a.acertado?" [OK] ":" [X]  ")+"eligió: \""+a.elegida+"\"";
+      if(!a.acertado)L+="  (correcta: \""+a.correcta+"\")";
+      L+="\n";
+    });
+  });
+  L+="==================================================\n";
+  return L;
+}
+
+function copiarRegistro(){
+  const ta=document.getElementById("registroTexto");
+  ta.focus();ta.select();try{ta.setSelectionRange(0,99999);}catch(e){}
+  let hecho=false;
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value).then(avisoCopiado,function(){fallbackCopia();});hecho=true;}}catch(e){}
+  if(!hecho)fallbackCopia();
+}
+function fallbackCopia(){try{document.execCommand("copy");avisoCopiado();}catch(e){}}
+function avisoCopiado(){const b=document.getElementById("btnCopiar");const t=b.getAttribute("data-orig")||b.textContent;b.setAttribute("data-orig",t);b.textContent="¡Copiado! ✓";setTimeout(function(){b.textContent=t;},1800);}
+
+function mostrarResumen(){
+  detenerCrono();
+  document.getElementById("pantallaPregunta").classList.add("oculto");
+  document.getElementById("pantallaFinal").classList.remove("oculto");
+  document.getElementById("progreso").style.width="100%";
+  document.getElementById("contadorTema").textContent="Repaso terminado";
+  let nDom=0,nCasi=0,nRep=0;const cuerpo=document.getElementById("tablaResumen");cuerpo.innerHTML="";const prof=[];
+  TEMAS.forEach(function(t,i){const r=estado.resultados[i],c=clasificar(r);if(c.clave==="dom")nDom++;else if(c.clave==="casi"){nCasi++;prof.push(t.nombre);}else{nRep++;prof.push(t.nombre);}const tr=document.createElement("tr");tr.innerHTML='<td>'+t.nombre+'</td><td>'+(r?r.tries:"-")+'</td><td class="estado e-'+c.clave+'">'+c.texto+'</td>';cuerpo.appendChild(tr);});
+  document.getElementById("nDom").textContent=nDom;document.getElementById("nCasi").textContent=nCasi;document.getElementById("nRep").textContent=nRep;
+  const total=TEMAS.length;const msg=document.getElementById("mensajeAndre");
+  if(nRep===0&&nCasi===0)msg.textContent="¡Espectacular, André! Lo has dominado todo a la primera. Vas al examen con todo aprendido. 🎺🌟";
+  else if(nRep===0)msg.textContent="¡Muy bien, André! Has resuelto todos los temas. Un último vistazo al mapa del compás a los que te costaron y listo.";
+  else msg.textContent="¡Buen trabajo, André! Dominas "+nDom+" de "+total+" temas. Mira en el mapa del compás los "+nRep+" que quedan y los tendrás.";
+  const lista=document.getElementById("listaProfundizar");lista.innerHTML="";
+  if(prof.length===0){document.getElementById("bloqueProfundizar").classList.add("oculto");}
+  else{document.getElementById("bloqueProfundizar").classList.remove("oculto");prof.forEach(function(n){const li=document.createElement("li");li.textContent=n;lista.appendChild(li);});}
+  document.getElementById("registroTexto").value=buildLogText();
+  actualizarBarra();
+}
+</script>
+</body>
+</html>

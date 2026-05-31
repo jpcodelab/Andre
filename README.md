@@ -1,16 +1,42 @@
-# 📚 Biblioteca de André — jpcodelab.github.io
+# 📚 Biblioteca de André — jpcodelab.github.io/Andre
 
-Colección de juegos educativos interactivos para André, alumno de 5º de Primaria del Colegio Rosa Luxemburgo (Comunidad de Madrid).
+Colección de recursos educativos interactivos para André, alumno de 5º de Primaria del Colegio Rosa Luxemburgo (Comunidad de Madrid). Todos los ficheros son HTML autocontenidos: sin frameworks, sin dependencias externas salvo Google Fonts. Funcionan offline.
 
-## 🎮 Juegos incluidos
+---
+
+## 🎮 Juegos
 
 | Archivo | Temática | Materia | Tiempo |
 |---------|----------|---------|--------|
-| `index.html` | Página de inicio | — | — |
 | `andre-novela-v4.html` | Stranger Things | Mates + Lengua + Inglés | ~45 min |
 | `andre-stranger-things.html` | Stranger Things | Matemáticas (medidas) | ~15 min |
 | `starwars-lengua.html` | Star Wars | Lengua Castellana | ~15 min |
 | `andre-english-upsidedown.html` | Stranger Things | English | ~15 min |
+| `provincias_espana_v4.html` | — | Social Science · Geografía | infinito |
+
+## 🎵 Lenguaje Musical
+
+### Mapas de repaso (imprimibles)
+
+| Archivo | Contenido |
+|---------|-----------|
+| `teoria-musica/mapa_repaso_grados_tonalidades.html` | Grados I–VII, tonalidades relativas |
+| `teoria-musica/mapa_repaso_compas.html` | Compás simple/compuesto, trampas FA–SI |
+| `teoria-musica/mapa_repaso_resto.html` | Figuras, matices, articulación, tempo… |
+
+### Repasos interactivos (test adaptativo con localStorage)
+
+| Archivo | Temas | Foco |
+|---------|-------|------|
+| `teoria-musica/examen_musica_andre.html` | 26 | Teoría general, sin partituras |
+| `teoria-musica/examen_musica_andre_nivel2.html` | 23 | Partituras SVG, armaduras, intervalos |
+| `teoria-musica/examen_musica_andre_nivel3.html` | 19 | Compases especiales, tonalidades |
+| `teoria-musica/repaso_final_musica_andre.html` | 26 | Grados, tonalidades, confianza general |
+| `teoria-musica/repaso2_compas_musica_andre.html` | 22 | Foco intensivo en compás |
+| `teoria-musica/repaso_completo_musica_andre.html` | 40 | Barrido completo con partituras |
+| `teoria-musica/repaso_completo2_musica_andre.html` | 40 | Preguntas nuevas por unidad (U10–U15 + U1–5) |
+
+---
 
 ## 🏫 Contenidos curriculares
 
@@ -36,23 +62,30 @@ Colección de juegos educativos interactivos para André, alumno de 5º de Prima
 - Reading comprehension & inference
 - Vocabulary & phrasal verbs
 
-## 🚀 Cómo publicar en GitHub Pages
+**Social Science · Geografía**
+- 50 provincias de España
+- Capitales de provincia
+- Comunidades autónomas
+- 5 modos de juego, sistema de maestría
 
-1. Crea un repositorio llamado exactamente `jpcodelab.github.io`
-2. Sube todos los archivos HTML a la rama `main`
-3. Ve a **Settings → Pages → Source → Deploy from branch → main → / (root)**
-4. En unos minutos estará disponible en `https://jpcodelab.github.io`
+**Lenguaje Musical (5º Primaria)**
+- Grados de la escala (I–VII, tonales/modales)
+- Tonalidades y tonalidades relativas
+- Compás simple y compuesto
+- Figuras y valores, puntillo, tresillo
+- Semitonos, intervalos, armaduras
+- Articulación, matices, tempo, agógica, repeticiones
+
+---
 
 ## 📱 Uso offline
 
-Descarga cualquier archivo `.html` y ábrelo desde el navegador del móvil o tablet. Funciona sin conexión a internet — ideal para avión o tren.
-
-La **novela interactiva** guarda el progreso en el navegador (localStorage). Si se abre desde el mismo navegador y dispositivo, continúa donde se dejó.
+Descarga cualquier archivo `.html` y ábrelo en el navegador del móvil o tablet. Funciona sin conexión — ideal para avión o tren. Los repasos de música guardan el progreso y el registro de sesión en localStorage.
 
 ## 👩‍🏫 Personajes-tutoras
 
-- **Blanca** — Tutora de Matemáticas y Lengua. Aparece misteriosamente en los desafíos de su especialidad.
-- **Rocío** — Tutora de Inglés. Aparece en todos los desafíos en inglés y asegura que llega antes que Blanca. Eso es discutible.
+- **Blanca** — Tutora de Matemáticas y Lengua.
+- **Rocío** — Tutora de Inglés.
 
 ---
 

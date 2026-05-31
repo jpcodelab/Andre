@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repaso de Música — Nivel 3 — André</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--tinta:#1a1a1a;--linea:#d8d8d8;--bien:#1f7a37;--bien-bg:#eef7f0;--mal:#b22222;--mal-bg:#fbeeee;--suave:#666;--azul:#1f4e79;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Lora',Georgia,serif;color:var(--tinta);background:#fff;line-height:1.5;font-size:18px;}
+  .envoltorio{max-width:760px;margin:0 auto;padding:24px 20px 80px;}
+  header{border-bottom:2px solid var(--tinta);padding-bottom:14px;margin-bottom:8px;}
+  h1{font-size:25px;margin:0 0 4px;font-weight:700;}
+  .subtitulo{color:var(--suave);font-size:15px;margin:0;}
+  .barra-info{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0 6px;font-size:15px;flex-wrap:wrap;}
+  .barra-info span{white-space:nowrap;}
+  .progreso-ext{height:12px;background:#eee;border:1px solid var(--linea);border-radius:8px;overflow:hidden;margin-bottom:22px;}
+  .progreso-int{height:100%;width:0;background:var(--tinta);transition:width .35s ease;}
+  .tema-etiqueta{font-size:14px;color:var(--suave);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .intentos{font-size:14px;color:var(--suave);margin-bottom:14px;}
+  .punto{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--tinta);margin-right:4px;vertical-align:middle;}
+  .punto.usado{background:var(--tinta);}
+  .figura{margin:0 auto 16px;max-width:380px;padding:12px;border:1px solid var(--linea);border-radius:12px;background:#fff;}
+  .pregunta{font-size:21px;font-weight:600;margin:0 0 20px;line-height:1.45;}
+  .opciones{display:flex;flex-direction:column;gap:12px;margin-bottom:8px;}
+  button.opcion{font-family:inherit;font-size:18px;text-align:left;background:#fff;color:var(--tinta);border:2px solid var(--tinta);border-radius:12px;padding:14px 16px;cursor:pointer;line-height:1.4;transition:background .12s ease;}
+  button.opcion:hover:not(:disabled){background:#f3f3f3;}
+  button.opcion:disabled{cursor:default;}
+  button.opcion.correcta{background:var(--bien-bg);border-color:var(--bien);color:var(--bien);font-weight:600;}
+  button.opcion.incorrecta{background:var(--mal-bg);border-color:var(--mal);color:var(--mal);}
+  button.opcion .marca{float:right;font-weight:700;}
+  .explicacion{border-left:5px solid var(--tinta);background:#f7f7f7;padding:14px 18px;border-radius:0 10px 10px 0;margin:18px 0 6px;font-size:17px;}
+  .explicacion.bien{border-color:var(--bien);background:var(--bien-bg);}
+  .explicacion.mal{border-color:var(--mal);background:var(--mal-bg);}
+  .explicacion .titulo{font-weight:700;margin:0 0 6px;}
+  .acciones{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;}
+  button.principal{font-family:inherit;font-size:18px;font-weight:600;background:var(--tinta);color:#fff;border:2px solid var(--tinta);border-radius:12px;padding:13px 26px;cursor:pointer;}
+  button.principal:hover{background:#000;}
+  button.secundaria{font-family:inherit;font-size:16px;background:#fff;color:var(--tinta);border:2px solid var(--linea);border-radius:12px;padding:13px 22px;cursor:pointer;}
+  button.secundaria:hover{background:#f3f3f3;}
+  .intro p{font-size:18px;} .intro ul{padding-left:22px;} .intro li{margin-bottom:8px;}
+  .resumen h2{font-size:22px;border-bottom:2px solid var(--tinta);padding-bottom:8px;margin-top:30px;}
+  .seccion-et{font-size:14px;color:var(--suave);text-transform:uppercase;letter-spacing:1.5px;margin:22px 0 4px;font-weight:700;}
+  .marcador{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 6px;}
+  .caja{flex:1;min-width:130px;border:2px solid var(--tinta);border-radius:12px;padding:14px;text-align:center;}
+  .caja .num{font-size:34px;font-weight:700;display:block;line-height:1.1;}
+  .caja .et{font-size:14px;color:var(--suave);}
+  .mensaje-andre{font-size:19px;background:var(--bien-bg);border:2px solid var(--bien);border-radius:12px;padding:14px 18px;margin:14px 0;}
+  table.res{width:100%;border-collapse:collapse;margin-top:14px;font-size:16px;}
+  table.res th,table.res td{border-bottom:1px solid var(--linea);padding:9px 8px;text-align:left;vertical-align:top;}
+  table.res th{font-size:14px;color:var(--suave);text-transform:uppercase;letter-spacing:.5px;}
+  .estado{font-weight:700;white-space:nowrap;}
+  .e-dom{color:var(--bien);} .e-casi{color:#9a7400;} .e-rep{color:var(--mal);}
+  .bloque-consejo{border:2px solid var(--tinta);border-radius:12px;padding:16px 18px;margin-top:14px;background:#fafafa;}
+  .bloque-consejo h3{margin:0 0 8px;font-size:18px;} .bloque-consejo ul{margin:0;padding-left:20px;}
+  .registro-caja{border:2px solid var(--azul);border-radius:12px;padding:14px;background:#f4f8fc;margin-top:8px;}
+  textarea#registroTexto{width:100%;min-height:240px;font-family:'Courier New',monospace;font-size:13px;line-height:1.45;border:1px solid var(--linea);border-radius:8px;padding:10px;color:var(--tinta);background:#fff;resize:vertical;}
+  .nota-pie{color:var(--suave);font-size:14px;margin-top:30px;border-top:1px solid var(--linea);padding-top:12px;}
+  .oculto{display:none;}
+  @media print{button,textarea{display:none;}}
+</style>
+</head>
+<body>
+<div class="envoltorio">
+  <header>
+    <h1>Repaso de Música · Nivel 3 — el más difícil 🎺</h1>
+    <p class="subtitulo">Lenguaje musical — André · 5º de Primaria</p>
+  </header>
+
+  <div class="barra-info" id="barraInfo">
+    <span id="contadorTema">Tema 0 de 0</span>
+    <span id="reloj">⏱ 00:00</span>
+    <span id="aciertos">Bien a la primera: 0</span>
+  </div>
+  <div class="progreso-ext"><div class="progreso-int" id="progreso"></div></div>
+
+  <section id="pantallaInicio" class="intro">
+    <p><strong>¡Vamos a por el Nivel 3, André!</strong> Este es el más completo: trae los temas que aún no habían salido y, sobre todo, repasa a fondo lo que más se resiste — el <strong>picado, el tenuto, el acento y el puntillo</strong>.</p>
+    <p>Funciona como siempre:</p>
+    <ul>
+      <li>Una pregunta por tema. Algunas tienen partitura en <strong>clave de Sol</strong>.</li>
+      <li>Si aciertas, pasas al siguiente.</li>
+      <li>Si fallas, te explico el porqué y te doy otra del mismo tema (hasta <strong>3 intentos</strong>).</li>
+      <li>Al final verás cómo te ha ido.</li>
+    </ul>
+    <div class="acciones">
+      <button class="principal" onclick="empezar()">Empezar el Nivel 3</button>
+      <button class="secundaria oculto" id="btnReanudar" onclick="reanudar()">Continuar donde lo dejé</button>
+    </div>
+  </section>
+
+  <section id="pantallaPregunta" class="oculto">
+    <div class="tema-etiqueta" id="etiquetaTema"></div>
+    <div class="intentos" id="intentos"></div>
+    <div class="figura oculto" id="zonaFigura"></div>
+    <p class="pregunta" id="textoPregunta"></p>
+    <div class="opciones" id="opciones"></div>
+    <div id="zonaExplicacion"></div>
+    <div class="acciones" id="zonaAcciones"></div>
+  </section>
+
+  <section id="pantallaFinal" class="oculto resumen">
+    <h2>¡Has terminado el Nivel 3! 🎉</h2>
+
+    <div class="seccion-et">Para André</div>
+    <div class="marcador">
+      <div class="caja"><span class="num e-dom" id="nDom">0</span><span class="et">Dominados<br>(a la primera)</span></div>
+      <div class="caja"><span class="num e-casi" id="nCasi">0</span><span class="et">Conseguidos<br>(2.º o 3.er intento)</span></div>
+      <div class="caja"><span class="num e-rep" id="nRep">0</span><span class="et">Para repasar<br>(sin acertar)</span></div>
+    </div>
+    <div class="mensaje-andre" id="mensajeAndre"></div>
+    <div class="bloque-consejo" id="bloqueProfundizar">
+      <h3>📌 Temas para practicar un poco más</h3>
+      <ul id="listaProfundizar"></ul>
+    </div>
+
+    <h2>Para papá — registro de la sesión 📋</h2>
+    <p class="subtitulo" style="margin-bottom:8px">Copia este registro y pégamelo en el chat: así veo exactamente qué ha contestado André y preparo mejor la próxima sesión.</p>
+    <div class="registro-caja">
+      <textarea id="registroTexto" readonly></textarea>
+      <div class="acciones">
+        <button class="principal" id="btnCopiar" onclick="copiarRegistro()">Copiar registro</button>
+        <button class="secundaria" onclick="window.print()">Imprimir resumen</button>
+      </div>
+    </div>
+
+    <h2>Resultado tema a tema</h2>
+    <table class="res"><thead><tr><th>Tema</th><th>Intentos</th><th>Estado</th></tr></thead><tbody id="tablaResumen"></tbody></table>
+    <div class="acciones">
+      <button class="secundaria" onclick="reiniciarTodo()">Volver a empezar</button>
+    </div>
+    <p class="nota-pie">Hecho para André. Contenidos basados en su libro de lenguaje musical (Unidades 10 a 16 y repaso de las Unidades 1 a 5).</p>
+  </section>
+</div>
+
+<script>
+/* ===== Helpers de notación musical en SVG (clave de Sol) ===== */
+const LINEGAP=10, STAFFTOP=40, YBOTTOM=STAFFTOP+4*LINEGAP;
+const LETTER={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
+function noteIndex(n){const m=n.match(/^([A-G])(\d)$/);return parseInt(m[2])*7+LETTER[m[1]];}
+const E4=noteIndex("E4");
+function noteY(n){return YBOTTOM-(noteIndex(n)-E4)*(LINEGAP/2);}
+function staffLines(w){let s="";for(let i=0;i<5;i++){const y=STAFFTOP+i*LINEGAP;s+='<line x1="0" y1="'+y+'" x2="'+w+'" y2="'+y+'" stroke="#1a1a1a" stroke-width="1.2"/>';}return s;}
+function clef(){return '<text x="3" y="80" font-size="52" font-family="Bravura,\'Segoe UI Symbol\',\'Noto Music\',serif" fill="#1a1a1a">\uD834\uDD1E</text>';}
+function staff(w){return staffLines(w)+clef();}
+function ledgerLine(x,y){return '<line x1="'+(x-12)+'" y1="'+y+'" x2="'+(x+12)+'" y2="'+y+'" stroke="#1a1a1a" stroke-width="1.2"/>';}
+function ledgers(x,name){const idx=noteIndex(name);let s="";if(idx<30){for(let i=28;i>=idx;i-=2){s+=ledgerLine(x,YBOTTOM-(i-E4)*(LINEGAP/2));}}if(idx>38){for(let i=40;i<=idx;i+=2){s+=ledgerLine(x,YBOTTOM-(i-E4)*(LINEGAP/2));}}return s;}
+function accidental(x,y,t){const map={"#":"\u266F","b":"\u266D","n":"\u266E"};return '<text x="'+x+'" y="'+(y+5)+'" font-size="19" font-family="\'Segoe UI Symbol\',\'Noto Music\',serif" fill="#1a1a1a" text-anchor="middle">'+(map[t]||t)+'</text>';}
+function nota(x,name,opt){opt=opt||{};const y=noteY(name);let s=ledgers(x,name);
+  s+='<ellipse cx="'+x+'" cy="'+y+'" rx="7.2" ry="5.2" fill="'+(opt.filled?"#1a1a1a":"none")+'" stroke="#1a1a1a" stroke-width="1.7" transform="rotate(-18 '+x+' '+y+')"/>';
+  if(opt.stem){const up=noteIndex(name)<noteIndex("B4");if(up)s+='<line x1="'+(x+6.8)+'" y1="'+(y-1)+'" x2="'+(x+6.8)+'" y2="'+(y-32)+'" stroke="#1a1a1a" stroke-width="1.7"/>';else s+='<line x1="'+(x-6.8)+'" y1="'+(y+1)+'" x2="'+(x-6.8)+'" y2="'+(y+32)+'" stroke="#1a1a1a" stroke-width="1.7"/>';}
+  if(opt.acc)s+=accidental(x-14,y,opt.acc);return s;}
+function wrap(inner,w,h){return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="max-width:'+Math.round(w*1.9)+'px;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg"><rect width="'+w+'" height="'+h+'" fill="#fff"/>'+inner+'</svg>';}
+function unaNota(name,opt){return wrap(staff(130)+nota(82,name,opt),130,118);}
+function intervalo(n1,n2,o1,o2){return wrap(staff(150)+nota(78,n1,o1||{})+nota(106,n2,o2||{}),150,118);}
+function armadura(type,count){const sharps=["F5","C5","G5","D5","A4","E5","B4"],flats=["B4","E5","A4","D5","G4","C5","F4"];const arr=type==="#"?sharps:flats;const w=64+count*12;let s=staff(w);for(let i=0;i<count;i++){s+=accidental(40+i*11,noteY(arr[i]),type);}return wrap(s,w+8,118);}
+function compas(num,den){let s=staff(112);s+='<text x="60" y="60" font-size="25" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#1a1a1a">'+num+'</text>';s+='<text x="60" y="81" font-size="25" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#1a1a1a">'+den+'</text>';return wrap(s,112,118);}
+function signoArtic(x,y,t){const my=y-24;if(t==="picado")return '<circle cx="'+x+'" cy="'+my+'" r="2.8" fill="#1a1a1a"/>';if(t==="tenuto")return '<line x1="'+(x-7)+'" y1="'+my+'" x2="'+(x+7)+'" y2="'+my+'" stroke="#1a1a1a" stroke-width="2.6"/>';if(t==="acento")return '<path d="M '+(x-8)+' '+(my-5)+' L '+(x+8)+' '+my+' L '+(x-8)+' '+(my+5)+'" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linejoin="round"/>';return "";}
+function articTriple(order){const xs=[48,98,148],labels=["A","B","C"],name="G4",y=noteY(name);let s=staff(190);order.forEach(function(t,i){const x=xs[i];s+=nota(x,name,{filled:true,stem:true});s+=signoArtic(x,y,t);s+='<text x="'+x+'" y="108" font-size="13" text-anchor="middle" font-family="Arial" fill="#777">'+labels[i]+'</text>';});return wrap(s,190,118);}
+function figuraPuntillo(tipo){const x=64,y=58,filled=(tipo==="negra");let inner='<ellipse cx="'+x+'" cy="'+y+'" rx="9" ry="6.5" fill="'+(filled?"#1a1a1a":"none")+'" stroke="#1a1a1a" stroke-width="2.2" transform="rotate(-18 '+x+' '+y+')"/>';inner+='<line x1="'+(x+8.5)+'" y1="'+(y-2)+'" x2="'+(x+8.5)+'" y2="'+(y-46)+'" stroke="#1a1a1a" stroke-width="2.2"/>';inner+='<circle cx="'+(x+19)+'" cy="'+y+'" r="3" fill="#1a1a1a"/>';return wrap(inner,120,86);}
+
+/* ===== BANCO DE PREGUNTAS — NIVEL 3 ===== */
+const TEMAS=[
+ {id:"orden_sost",nombre:"Orden de los sostenidos",preguntas:[
+  {q:"¿Cuál es el PRIMER sostenido que aparece en una armadura?",o:["DO","FA","SOL","SI"],c:1,exp:"El orden empieza por FA: FA-DO-SOL-RE-LA-MI-SI."},
+  {q:"¿Cuál es el orden correcto de los sostenidos?",o:["FA DO SOL RE LA MI SI","SI MI LA RE SOL DO FA","DO RE MI FA SOL LA SI","FA SOL LA SI DO RE MI"],c:0,exp:"FA-DO-SOL-RE-LA-MI-SI. Cada uno aparece a una 5.ª justa del anterior."},
+  {q:"Después de FA y DO, el tercer sostenido es…",o:["RE","SOL","LA","MI"],c:1,exp:"FA, DO, SOL… El tercero es SOL."}
+ ]},
+ {id:"orden_bem",nombre:"Orden de los bemoles",preguntas:[
+  {q:"¿Cuál es el PRIMER bemol que aparece en una armadura?",o:["FA","SI","MI","DO"],c:1,exp:"El orden de los bemoles empieza por SI: SI-MI-LA-RE-SOL-DO-FA."},
+  {q:"¿Cuál es el orden correcto de los bemoles?",o:["SI MI LA RE SOL DO FA","FA DO SOL RE LA MI SI","DO SI LA SOL FA MI RE","SI DO RE MI FA SOL LA"],c:0,exp:"SI-MI-LA-RE-SOL-DO-FA: es el orden de los sostenidos justo al revés."},
+  {q:"El orden de los bemoles es el de los sostenidos pero…",o:["al revés (inverso)","igual","empezando por DO","sin el SI"],c:0,exp:"Sostenidos: FA…SI. Bemoles: SI…FA. Uno es el inverso del otro."}
+ ]},
+ {id:"grados1",nombre:"Nombres de los grados (I, V, VII)",preguntas:[
+  {q:"El I grado de la escala se llama…",o:["Tónica","Dominante","Mediante","Sensible"],c:0,exp:"El I grado es la Tónica: la nota que da nombre a la tonalidad."},
+  {q:"El V grado se llama…",o:["Subdominante","Dominante","Mediante","Tónica"],c:1,exp:"El V grado es la Dominante, el grado más importante después de la Tónica."},
+  {q:"El VII grado, cuando está a un semitono de la tónica, se llama…",o:["Supertónica","Sensible","Superdominante","Dominante"],c:1,exp:"El VII grado es la Sensible (tiende a resolver en la Tónica). Si está a un tono se llama Subtónica."}
+ ]},
+ {id:"grados2",nombre:"Nombres de los grados (II, III, IV)",preguntas:[
+  {q:"El IV grado se llama…",o:["Subdominante","Superdominante","Dominante","Supertónica"],c:0,exp:"El IV grado es la Subdominante."},
+  {q:"El II grado se llama…",o:["Supertónica","Subdominante","Mediante","Sensible"],c:0,exp:"El II grado es la Supertónica (justo encima de la Tónica)."},
+  {q:"El III grado (el que define el modo) se llama…",o:["Mediante","Dominante","Superdominante","Tónica"],c:0,exp:"El III grado es la Mediante: está a mitad de camino entre Tónica y Dominante y decide si el modo es Mayor o menor."}
+ ]},
+ {id:"tonales_modales",nombre:"Grados tonales y modales",preguntas:[
+  {q:"Los grados TONALES son…",o:["I, IV y V","II, III y VI","I, II y III","III, VI y VII"],c:0,exp:"Tonales: I (Tónica), IV (Subdominante) y V (Dominante). Son los pilares de la tonalidad."},
+  {q:"¿Qué grado decide si el modo es Mayor o menor?",o:["el I (Tónica)","el III (Mediante)","el V (Dominante)","el VII (Sensible)"],c:1,exp:"El III grado (la Mediante) determina el modo: define si la escala es Mayor o menor."},
+  {q:"Los grados MODALES son…",o:["III, VI y VII","I, IV y V","II, IV y VI","I, III y V"],c:0,exp:"Modales: III, VI y VII. Cambian según el modo (Mayor o menor)."}
+ ]},
+ {id:"arm_mayor_dir",nombre:"Armadura → tonalidad Mayor (de memoria)",preguntas:[
+  {svg:armadura("#",1),q:"Esta armadura, ¿qué tonalidad MAYOR es?",o:["DO Mayor","SOL Mayor","RE Mayor","FA Mayor"],c:1,exp:"1 sostenido (FA#) = SOL Mayor. Apréndelo de memoria: 1# → SOL M."},
+  {svg:armadura("b",1),q:"Esta armadura, ¿qué tonalidad MAYOR es?",o:["SI bemol Mayor","FA Mayor","DO Mayor","SOL Mayor"],c:1,exp:"1 bemol (SIb) = FA Mayor. De memoria: 1b → FA M."},
+  {q:"SOL Mayor tiene en su armadura…",o:["ningún sostenido","1 sostenido (FA#)","2 sostenidos","1 bemol"],c:1,exp:"SOL Mayor lleva 1 solo sostenido: FA#."}
+ ]},
+ {id:"menores",nombre:"Mi menor y Re menor",preguntas:[
+  {q:"La relativa menor de SOL Mayor es…",o:["LA menor","MI menor","RE menor","SI menor"],c:1,exp:"MI menor: misma armadura que SOL Mayor (1 sostenido), una 3.ª menor por debajo."},
+  {q:"RE menor comparte armadura con…",o:["DO Mayor","FA Mayor","SOL Mayor","SI bemol Mayor"],c:1,exp:"RE menor es la relativa de FA Mayor: las dos llevan 1 bemol (SIb)."},
+  {q:"MI menor tiene en su armadura…",o:["1 bemol","1 sostenido (FA#)","ninguna alteración","2 sostenidos"],c:1,exp:"MI menor lleva 1 sostenido (FA#), igual que su relativa SOL Mayor."}
+ ]},
+ {id:"grado_nota",nombre:"Grado de una nota en la tonalidad",preguntas:[
+  {svg:unaNota("D5"),q:"En SOL Mayor, ¿qué grado es esta nota (RE) y cómo se llama?",o:["IV (Subdominante)","V (Dominante)","VI (Superdominante)","III (Mediante)"],c:1,exp:"Escala de SOL M: SOL(I) LA(II) SI(III) DO(IV) RE(V). RE es el V grado: la Dominante."},
+  {svg:unaNota("B4"),q:"En SOL Mayor, ¿qué grado es esta nota (SI)?",o:["II (Supertónica)","III (Mediante)","IV (Subdominante)","V (Dominante)"],c:1,exp:"SOL(I) LA(II) SI(III). SI es el III grado: la Mediante."},
+  {svg:unaNota("C5"),q:"En DO Mayor, ¿qué grado es esta nota (DO)?",o:["I (Tónica)","II (Supertónica)","V (Dominante)","VII (Sensible)"],c:0,exp:"En DO Mayor, la nota DO es el I grado: la Tónica."}
+ ]},
+ {id:"compas_8",nombre:"Compases de 3/8 y 2/8",preguntas:[
+  {svg:compas(3,8),q:"El compás de 3/8 es…",o:["simple binario","simple ternario","compuesto ternario","compuesto binario"],c:1,exp:"Numerador 3 → simple. 3 tiempos → ternario. El 8 indica que la unidad de tiempo es la corchea."},
+  {svg:compas(2,8),q:"El compás de 2/8 es…",o:["simple binario","compuesto binario","simple cuaternario","simple ternario"],c:0,exp:"Numerador 2 → simple. 2 tiempos → binario. La unidad de tiempo es la corchea (denominador 8)."},
+  {q:"Un compás con numerador 2, 3 o 4 es siempre…",o:["simple","compuesto","ternario","irregular"],c:0,exp:"2, 3 o 4 en el numerador → compás simple. 6, 9 o 12 → compuesto."}
+ ]},
+ {id:"compas_tiempos",nombre:"¿Cuántos tiempos tiene el compás?",preguntas:[
+  {svg:compas(3,8),q:"¿Cuántos tiempos tiene el compás de 3/8?",o:["2","3","4","6"],c:1,exp:"Es simple: el número de tiempos es el numerador. 3/8 → 3 tiempos."},
+  {svg:compas(6,8),q:"¿Cuántos tiempos tiene el compás de 6/8?",o:["2","3","6","4"],c:0,exp:"Es compuesto: el número de tiempos es el numerador ÷ 3. 6 ÷ 3 = 2 tiempos."},
+  {svg:compas(9,8),q:"¿Cuántos tiempos tiene el compás de 9/8?",o:["2","3","4","9"],c:1,exp:"Compuesto: 9 ÷ 3 = 3 tiempos."}
+ ]},
+ {id:"ut_denominador",nombre:"Unidad de tiempo según el denominador",preguntas:[
+  {q:"En un compás simple, si el denominador es 8, la unidad de tiempo es la…",o:["corchea","negra","blanca","semicorchea"],c:0,exp:"El denominador dice qué figura vale un tiempo: 8 → corchea."},
+  {q:"Si el denominador es 4, la unidad de tiempo es la…",o:["corchea","negra","blanca","redonda"],c:1,exp:"Denominador 4 → la negra vale un tiempo."},
+  {q:"Si el denominador es 2, la unidad de tiempo es la…",o:["negra","corchea","blanca","redonda"],c:2,exp:"Denominador 2 → la blanca vale un tiempo."}
+ ]},
+ {id:"puntillo",nombre:"Figuras con puntillo",preguntas:[
+  {svg:figuraPuntillo("negra"),q:"¿Cuánto vale esta figura (negra con puntillo)?",o:["2 corcheas","3 corcheas","4 corcheas","1 corchea"],c:1,exp:"La negra vale 2 corcheas; el puntillo añade la mitad (1 corchea más): 2 + 1 = 3 corcheas."},
+  {svg:figuraPuntillo("blanca"),q:"¿Cuánto vale esta figura (blanca con puntillo)?",o:["2 negras","3 negras","4 negras","1 negra"],c:1,exp:"La blanca vale 2 negras; con puntillo, 2 + 1 = 3 negras."},
+  {q:"El puntillo añade a la figura…",o:["la mitad de su valor","el doble","un cuarto","nada"],c:0,exp:"El puntillo siempre añade la mitad del valor de la figura a la que acompaña."}
+ ]},
+ {id:"puntillo_inv",nombre:"Puntillo (razonamiento al revés)",preguntas:[
+  {q:"¿Qué figura con puntillo dura lo mismo que 3 negras?",o:["la negra con puntillo","la blanca con puntillo","la redonda con puntillo","la corchea con puntillo"],c:1,exp:"Blanca (2 negras) + mitad (1 negra) = 3 negras. Es la blanca con puntillo."},
+  {q:"¿Qué figura con puntillo equivale a 3 corcheas?",o:["la negra con puntillo","la blanca con puntillo","la corchea con puntillo","la redonda con puntillo"],c:0,exp:"Negra (2 corcheas) + mitad (1 corchea) = 3 corcheas. Es la negra con puntillo."},
+  {q:"En un compás de 4/4, una blanca con puntillo vale…",o:["2 tiempos","3 tiempos","4 tiempos","1 tiempo y medio"],c:1,exp:"En 4/4 la negra es 1 tiempo; la blanca con puntillo = 3 negras = 3 tiempos."}
+ ]},
+ {id:"artic_id",nombre:"Identificar el signo de articulación",preguntas:[
+  {svg:articTriple(["picado","tenuto","acento"]),q:"Mira las tres notas (A, B, C). ¿Cuál lleva el PICADO (staccato)?",o:["A","B","C","Las tres"],c:0,exp:"El picado es el puntito encima de la nota: aquí está en A."},
+  {svg:articTriple(["acento","tenuto","picado"]),q:"¿Cuál de las tres notas lleva el TENUTO?",o:["A","B","C","Ninguna"],c:1,exp:"El tenuto es la rayita corta horizontal: aquí en B."},
+  {svg:articTriple(["tenuto","picado","acento"]),q:"¿Cuál de las tres notas lleva el ACENTO?",o:["A","B","C","Las tres"],c:2,exp:"El acento es el ángulo (>): aquí en C."}
+ ]},
+ {id:"artic_efecto",nombre:"Comparar los efectos de articulación",preguntas:[
+  {svg:articTriple(["picado","tenuto","acento"]),q:"¿Cuál de las tres notas suena MÁS CORTA (la mitad de su valor)?",o:["A","B","C","Las tres igual"],c:0,exp:"El picado (A) acorta la nota a la mitad: suena corta y separada."},
+  {svg:articTriple(["tenuto","acento","picado"]),q:"¿Cuál se toca con MÁS INTENSIDAD al inicio?",o:["A","B","C","Ninguna"],c:1,exp:"El acento (B) pide más intensidad al principio de la nota."},
+  {svg:articTriple(["acento","picado","tenuto"]),q:"¿Cuál mantiene TODO su valor, pero tocada con más tensión?",o:["A","B","C","Las tres"],c:2,exp:"El tenuto (C) respeta el valor completo de la nota, pero con más apoyo/tensión."}
+ ]},
+ {id:"artic_concepto",nombre:"Picado, tenuto y acento comparados",preguntas:[
+  {q:"¿Cuál de estos signos NO cambia la duración de la nota, solo su intensidad?",o:["el picado","el tenuto","el acento","el puntillo"],c:2,exp:"El acento afecta a la fuerza/ataque, no a la duración. El picado sí acorta la nota."},
+  {q:"El picado se diferencia del tenuto en que…",o:["el picado acorta la nota y el tenuto mantiene su valor","los dos la acortan","los dos la alargan","el picado sube el tono"],c:0,exp:"Picado = la mitad del valor (corto y separado). Tenuto = valor completo con más tensión."},
+  {q:"Una negra con picado suena aproximadamente como…",o:["una blanca","una corchea (más un silencio)","una redonda","dos negras"],c:1,exp:"Al acortarse a la mitad, una negra con picado suena como una corchea seguida de un pequeño silencio."}
+ ]},
+ {id:"semitono",nombre:"Semitono diatónico o cromático",preguntas:[
+  {svg:intervalo("C5","C5",{},{acc:"#"}),q:"De DO a DO sostenido, ¿qué tipo de semitono hay?",o:["cromático","diatónico","unísono","un tono"],c:0,exp:"Mismo nombre (DO y DO#) → semitono cromático."},
+  {svg:intervalo("E5","F5"),q:"De MI a FA, ¿qué tipo de semitono hay?",o:["diatónico","cromático","unísono","un tono"],c:0,exp:"Distinto nombre (MI y FA) → semitono diatónico."},
+  {q:"Un semitono entre dos notas de DISTINTO nombre (por ejemplo MI–FA) es…",o:["cromático","diatónico","enarmónico","unísono"],c:1,exp:"Distinto nombre = diatónico. Mismo nombre (DO–DO#) = cromático."}
+ ]},
+ {id:"matices",nombre:"Matices y reguladores",preguntas:[
+  {q:"Ordena de MÁS SUAVE a más fuerte.",o:["pp – p – mf – f","f – mf – p – pp","p – pp – f – mf","mf – f – pp – p"],c:0,exp:"De más débil a más fuerte: pp (pianísimo), p (piano), mf (mezzoforte), f (forte)."},
+  {q:"Un regulador que se ABRE (<) indica…",o:["crescendo: ir aumentando la intensidad","diminuendo: ir bajando","ritardando","picado"],c:0,exp:"El regulador que se abre (<) es un crescendo: el sonido va aumentando poco a poco."},
+  {q:"¿Qué matiz suena más fuerte: mf o f?",o:["mf","f","son iguales","mp"],c:1,exp:"f (forte) es más fuerte que mf (mezzoforte = medio fuerte)."}
+ ]},
+ {id:"metronomo",nombre:"El metrónomo",preguntas:[
+  {q:"¿Para qué sirve el metrónomo?",o:["para medir y marcar la velocidad (el tempo) con exactitud","para afinar las notas","para marcar la intensidad","para contar los compases"],c:0,exp:"El metrónomo marca pulsos regulares: sirve para medir y mantener la velocidad (el tempo)."},
+  {q:"¿Quién dio nombre al metrónomo (hacia 1816)?",o:["Bach","Maelzel","Beethoven","Vivaldi"],c:1,exp:"Maelzel popularizó el metrónomo hacia 1816; por eso se ve la sigla M.M. (Metrónomo de Maelzel)."},
+  {q:"La indicación ♩ = 120 significa…",o:["120 compases por minuto","120 negras por minuto","120 segundos por compás","120 notas en total"],c:1,exp:"Significa 120 negras por minuto: marca a qué velocidad va el pulso."}
+ ]}
+];
+
+/* ===== MOTOR (adaptativo + registro de sesión) ===== */
+const CLAVE="andre_examen_musica_nivel3";
+let estado=null, cronometro=null;
+function nuevoEstado(){return {temaIdx:0,intento:0,resultados:[],log:[],inicio:Date.now(),segundos:0};}
+function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(estado));}catch(e){}}
+function cargar(){try{const s=localStorage.getItem(CLAVE);return s?JSON.parse(s):null;}catch(e){return null;}}
+
+window.addEventListener("DOMContentLoaded",function(){
+  const previo=cargar();
+  if(previo&&previo.temaIdx>0&&previo.temaIdx<TEMAS.length){document.getElementById("btnReanudar").classList.remove("oculto");}
+  actualizarBarra();
+});
+
+function empezar(){estado=nuevoEstado();iniciarCrono();guardar();mostrarPregunta();}
+function reanudar(){estado=cargar()||nuevoEstado();if(!estado.log)estado.log=[];if(!estado.inicio)estado.inicio=Date.now()-(estado.segundos||0)*1000;iniciarCrono();mostrarPregunta();}
+function reiniciarTodo(){try{localStorage.removeItem(CLAVE);}catch(e){}estado=nuevoEstado();document.getElementById("pantallaFinal").classList.add("oculto");document.getElementById("pantallaInicio").classList.remove("oculto");document.getElementById("btnReanudar").classList.add("oculto");detenerCrono();actualizarBarra();}
+
+function iniciarCrono(){detenerCrono();cronometro=setInterval(function(){estado.segundos=Math.floor((Date.now()-estado.inicio)/1000);pintarReloj();},1000);pintarReloj();}
+function detenerCrono(){if(cronometro){clearInterval(cronometro);cronometro=null;}}
+function pintarReloj(){const s=estado?estado.segundos:0;const m=String(Math.floor(s/60)).padStart(2,"0");const ss=String(s%60).padStart(2,"0");document.getElementById("reloj").textContent="⏱ "+m+":"+ss;}
+
+function actualizarBarra(){const total=TEMAS.length;const hechos=estado?estado.resultados.filter(function(r){return r;}).length:0;document.getElementById("contadorTema").textContent="Tema "+Math.min(hechos+(estado&&estado.temaIdx<total?1:0),total)+" de "+total;document.getElementById("progreso").style.width=(hechos/total*100)+"%";const ap=estado?estado.resultados.filter(function(r){return r&&r.acertado&&r.tries===1;}).length:0;document.getElementById("aciertos").textContent="Bien a la primera: "+ap;}
+
+function mostrarPregunta(){
+  document.getElementById("pantallaInicio").classList.add("oculto");
+  document.getElementById("pantallaFinal").classList.add("oculto");
+  document.getElementById("pantallaPregunta").classList.remove("oculto");
+  const tema=TEMAS[estado.temaIdx], preg=tema.preguntas[estado.intento];
+  document.getElementById("etiquetaTema").textContent=tema.nombre;
+  let pts="";for(let i=0;i<3;i++){pts+='<span class="punto'+(i<=estado.intento?" usado":"")+'"></span>';}
+  document.getElementById("intentos").innerHTML=pts+" Intento "+(estado.intento+1)+" de 3";
+  const fig=document.getElementById("zonaFigura");
+  if(preg.svg){fig.innerHTML=preg.svg;fig.classList.remove("oculto");}else{fig.innerHTML="";fig.classList.add("oculto");}
+  document.getElementById("textoPregunta").textContent=preg.q;
+  const cont=document.getElementById("opciones");cont.innerHTML="";
+  preg.o.forEach(function(op,i){const b=document.createElement("button");b.className="opcion";b.textContent=op;b.onclick=function(){responder(i);};cont.appendChild(b);});
+  document.getElementById("zonaExplicacion").innerHTML="";
+  document.getElementById("zonaAcciones").innerHTML="";
+  actualizarBarra();
+}
+
+function responder(elegida){
+  const tema=TEMAS[estado.temaIdx],preg=tema.preguntas[estado.intento],correcta=preg.c,acertado=(elegida===correcta);
+  if(!estado.log[estado.temaIdx])estado.log[estado.temaIdx]=[];
+  estado.log[estado.temaIdx].push({q:preg.q,elegida:preg.o[elegida],correcta:preg.o[correcta],acertado:acertado});
+  document.querySelectorAll("#opciones .opcion").forEach(function(b,i){b.disabled=true;if(i===correcta){b.classList.add("correcta");b.insertAdjacentHTML("beforeend",' <span class="marca">✓</span>');}if(i===elegida&&!acertado){b.classList.add("incorrecta");b.insertAdjacentHTML("beforeend",' <span class="marca">✗</span>');}});
+  const zonaExp=document.getElementById("zonaExplicacion"),zonaAcc=document.getElementById("zonaAcciones");
+  if(acertado){
+    zonaExp.innerHTML='<div class="explicacion bien"><p class="titulo">¡Correcto! 🎉</p><p>'+preg.exp+'</p></div>';
+    registrar(true,estado.intento+1);
+    const btn=document.createElement("button");btn.className="principal";btn.textContent=(estado.temaIdx+1<TEMAS.length)?"Siguiente tema →":"Ver el resumen final";btn.onclick=siguienteTema;zonaAcc.appendChild(btn);
+  }else{
+    zonaExp.innerHTML='<div class="explicacion mal"><p class="titulo">Casi. Fíjate en esto:</p><p>'+preg.exp+'</p></div>';
+    if(estado.intento<2){
+      const btn=document.createElement("button");btn.className="principal";btn.textContent="Probar otra del mismo tema →";btn.onclick=function(){estado.intento++;guardar();mostrarPregunta();};zonaAcc.appendChild(btn);
+    }else{
+      registrar(false,3);
+      const aviso=document.createElement("div");aviso.className="explicacion";aviso.innerHTML='<p>No pasa nada: marco este tema para repasarlo con calma. ¡Seguimos!</p>';zonaExp.appendChild(aviso);
+      const btn=document.createElement("button");btn.className="principal";btn.textContent=(estado.temaIdx+1<TEMAS.length)?"Siguiente tema →":"Ver el resumen final";btn.onclick=siguienteTema;zonaAcc.appendChild(btn);
+    }
+  }
+  guardar();
+}
+
+function registrar(acertado,tries){estado.resultados[estado.temaIdx]={acertado:acertado,tries:tries};}
+function siguienteTema(){estado.temaIdx++;estado.intento=0;guardar();if(estado.temaIdx>=TEMAS.length){mostrarResumen();}else{mostrarPregunta();}}
+function clasificar(r){if(!r)return {clave:"rep",texto:"Sin hacer"};if(r.acertado&&r.tries===1)return {clave:"dom",texto:"Dominado"};if(r.acertado)return {clave:"casi",texto:"Conseguido ("+r.tries+".º intento)"};return {clave:"rep",texto:"Repasar"};}
+
+function buildLogText(){
+  const m=String(Math.floor(estado.segundos/60)).padStart(2,"0"),s=String(estado.segundos%60).padStart(2,"0");
+  const ap=estado.resultados.filter(function(r){return r&&r.acertado&&r.tries===1;}).length;
+  let L="REGISTRO DE SESIÓN — Música Nivel 3 — André\n";
+  L+="Tiempo: "+m+":"+s+"   ·   Bien a la primera: "+ap+"/"+TEMAS.length+"\n";
+  L+="==================================================\n";
+  TEMAS.forEach(function(t,i){
+    const r=estado.resultados[i],c=clasificar(r);
+    L+=(i+1)+". "+t.nombre+"  —  "+c.texto.toUpperCase()+"\n";
+    const atts=estado.log[i]||[];
+    atts.forEach(function(a,k){
+      L+="   P"+(k+1)+(a.acertado?" [OK] ":" [X]  ")+"eligió: \""+a.elegida+"\"";
+      if(!a.acertado)L+="  (correcta: \""+a.correcta+"\")";
+      L+="\n";
+    });
+  });
+  L+="==================================================\n";
+  return L;
+}
+
+function copiarRegistro(){
+  const ta=document.getElementById("registroTexto");
+  ta.focus();ta.select();try{ta.setSelectionRange(0,99999);}catch(e){}
+  let hecho=false;
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value).then(avisoCopiado,function(){fallbackCopia();});hecho=true;}}catch(e){}
+  if(!hecho)fallbackCopia();
+}
+function fallbackCopia(){try{document.execCommand("copy");avisoCopiado();}catch(e){}}
+function avisoCopiado(){const b=document.getElementById("btnCopiar");const t=b.getAttribute("data-orig")||b.textContent;b.setAttribute("data-orig",t);b.textContent="¡Copiado! ✓";setTimeout(function(){b.textContent=t;},1800);}
+
+function mostrarResumen(){
+  detenerCrono();
+  document.getElementById("pantallaPregunta").classList.add("oculto");
+  document.getElementById("pantallaFinal").classList.remove("oculto");
+  document.getElementById("progreso").style.width="100%";
+  document.getElementById("contadorTema").textContent="Nivel 3 terminado";
+  let nDom=0,nCasi=0,nRep=0;const cuerpo=document.getElementById("tablaResumen");cuerpo.innerHTML="";const prof=[];
+  TEMAS.forEach(function(t,i){const r=estado.resultados[i],c=clasificar(r);if(c.clave==="dom")nDom++;else if(c.clave==="casi"){nCasi++;prof.push(t.nombre);}else{nRep++;prof.push(t.nombre);}const tr=document.createElement("tr");tr.innerHTML='<td>'+t.nombre+'</td><td>'+(r?r.tries:"-")+'</td><td class="estado e-'+c.clave+'">'+c.texto+'</td>';cuerpo.appendChild(tr);});
+  document.getElementById("nDom").textContent=nDom;document.getElementById("nCasi").textContent=nCasi;document.getElementById("nRep").textContent=nRep;
+  const total=TEMAS.length;const msg=document.getElementById("mensajeAndre");
+  if(nRep===0&&nCasi===0)msg.textContent="¡Increíble, André! Has dominado los "+total+" temas a la primera, incluido lo más difícil. 🎺🌟";
+  else if(nRep===0)msg.textContent="¡Muy bien, André! Has resuelto todos los temas. Repasa con papá los que te costaron un poco y lo tendrás clavado.";
+  else msg.textContent="¡Buen trabajo, André! Dominas "+nDom+" de "+total+" temas. Repasa con papá los "+nRep+" que quedan y subirás aún más.";
+  const lista=document.getElementById("listaProfundizar");lista.innerHTML="";
+  if(prof.length===0){document.getElementById("bloqueProfundizar").classList.add("oculto");}
+  else{document.getElementById("bloqueProfundizar").classList.remove("oculto");prof.forEach(function(n){const li=document.createElement("li");li.textContent=n;lista.appendChild(li);});}
+  document.getElementById("registroTexto").value=buildLogText();
+  actualizarBarra();
+}
+</script>
+</body>
+</html>

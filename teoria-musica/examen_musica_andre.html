@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repaso para el examen de Música — André</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinta:#1a1a1a;
+    --linea:#d8d8d8;
+    --bien:#1f7a37;
+    --bien-bg:#eef7f0;
+    --mal:#b22222;
+    --mal-bg:#fbeeee;
+    --acento:#1a1a1a;
+    --suave:#666;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Lora',Georgia,serif;
+    color:var(--tinta);
+    background:#ffffff;
+    line-height:1.5;
+    font-size:18px;
+  }
+  .envoltorio{max-width:760px;margin:0 auto;padding:24px 20px 80px;}
+
+  /* Cabecera + progreso */
+  header{border-bottom:2px solid var(--tinta);padding-bottom:14px;margin-bottom:8px;}
+  h1{font-size:26px;margin:0 0 4px;font-weight:700;letter-spacing:.2px;}
+  .subtitulo{color:var(--suave);font-size:15px;margin:0;}
+  .barra-info{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0 6px;font-size:15px;flex-wrap:wrap;}
+  .barra-info span{white-space:nowrap;}
+  .progreso-ext{height:12px;background:#eee;border:1px solid var(--linea);border-radius:8px;overflow:hidden;margin-bottom:22px;}
+  .progreso-int{height:100%;width:0;background:var(--tinta);transition:width .35s ease;}
+
+  /* Tarjeta de pregunta */
+  .tema-etiqueta{font-size:14px;color:var(--suave);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .intentos{font-size:14px;color:var(--suave);margin-bottom:14px;}
+  .punto{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--tinta);margin-right:4px;vertical-align:middle;}
+  .punto.usado{background:var(--tinta);}
+  .pregunta{font-size:21px;font-weight:600;margin:0 0 20px;line-height:1.45;}
+
+  .opciones{display:flex;flex-direction:column;gap:12px;margin-bottom:8px;}
+  button.opcion{
+    font-family:inherit;font-size:18px;text-align:left;
+    background:#fff;color:var(--tinta);
+    border:2px solid var(--tinta);border-radius:12px;
+    padding:14px 16px;cursor:pointer;line-height:1.4;
+    transition:background .12s ease;
+  }
+  button.opcion:hover:not(:disabled){background:#f3f3f3;}
+  button.opcion:disabled{cursor:default;}
+  button.opcion.correcta{background:var(--bien-bg);border-color:var(--bien);color:var(--bien);font-weight:600;}
+  button.opcion.incorrecta{background:var(--mal-bg);border-color:var(--mal);color:var(--mal);}
+  button.opcion .marca{float:right;font-weight:700;}
+
+  /* Explicación */
+  .explicacion{
+    border-left:5px solid var(--tinta);
+    background:#f7f7f7;
+    padding:14px 18px;border-radius:0 10px 10px 0;
+    margin:18px 0 6px;font-size:17px;
+  }
+  .explicacion.bien{border-color:var(--bien);background:var(--bien-bg);}
+  .explicacion.mal{border-color:var(--mal);background:var(--mal-bg);}
+  .explicacion .titulo{font-weight:700;margin:0 0 6px;}
+
+  .acciones{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;}
+  button.principal{
+    font-family:inherit;font-size:18px;font-weight:600;
+    background:var(--tinta);color:#fff;border:2px solid var(--tinta);
+    border-radius:12px;padding:13px 26px;cursor:pointer;
+  }
+  button.principal:hover{background:#000;}
+  button.secundaria{
+    font-family:inherit;font-size:16px;
+    background:#fff;color:var(--tinta);border:2px solid var(--linea);
+    border-radius:12px;padding:13px 22px;cursor:pointer;
+  }
+  button.secundaria:hover{background:#f3f3f3;}
+
+  /* Pantalla inicio */
+  .intro p{font-size:18px;}
+  .intro ul{padding-left:22px;}
+  .intro li{margin-bottom:8px;}
+
+  /* Resumen final */
+  .resumen h2{font-size:22px;border-bottom:2px solid var(--tinta);padding-bottom:8px;margin-top:30px;}
+  .marcador{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0 6px;}
+  .caja{flex:1;min-width:130px;border:2px solid var(--tinta);border-radius:12px;padding:14px;text-align:center;}
+  .caja .num{font-size:34px;font-weight:700;display:block;line-height:1.1;}
+  .caja .et{font-size:14px;color:var(--suave);}
+  table.res{width:100%;border-collapse:collapse;margin-top:14px;font-size:16px;}
+  table.res th,table.res td{border-bottom:1px solid var(--linea);padding:9px 8px;text-align:left;vertical-align:top;}
+  table.res th{font-size:14px;color:var(--suave);text-transform:uppercase;letter-spacing:.5px;}
+  .estado{font-weight:700;white-space:nowrap;}
+  .e-dom{color:var(--bien);}
+  .e-casi{color:#9a7400;}
+  .e-rep{color:var(--mal);}
+  .bloque-consejo{border:2px solid var(--tinta);border-radius:12px;padding:16px 18px;margin-top:18px;background:#fafafa;}
+  .bloque-consejo h3{margin:0 0 8px;font-size:18px;}
+  .bloque-consejo ul{margin:0;padding-left:20px;}
+  .nota-pie{color:var(--suave);font-size:14px;margin-top:30px;border-top:1px solid var(--linea);padding-top:12px;}
+  .oculto{display:none;}
+  @media print{button{display:none;}}
+</style>
+</head>
+<body>
+<div class="envoltorio">
+
+  <header>
+    <h1>Repaso para el examen de Música 🎺</h1>
+    <p class="subtitulo">Lenguaje musical — André · 5º de Primaria</p>
+  </header>
+
+  <div class="barra-info" id="barraInfo">
+    <span id="contadorTema">Tema 0 de 0</span>
+    <span id="reloj">⏱ 00:00</span>
+    <span id="aciertos">Bien a la primera: 0</span>
+  </div>
+  <div class="progreso-ext"><div class="progreso-int" id="progreso"></div></div>
+
+  <!-- PANTALLA DE INICIO -->
+  <section id="pantallaInicio" class="intro">
+    <p><strong>Hola, André.</strong> Vamos a repasar todo lo que entra en el examen de música, paso a paso. No es un examen de verdad: es para entrenar.</p>
+    <p>Cómo funciona:</p>
+    <ul>
+      <li>Te haré una pregunta de cada tema. Pulsa la respuesta que creas correcta.</li>
+      <li>Si aciertas, ¡a por el siguiente tema!</li>
+      <li>Si fallas, te explico el porqué y te doy <strong>otra pregunta del mismo tema</strong> para comprobar que ya lo entiendes. Tienes hasta <strong>3 intentos</strong> por tema.</li>
+      <li>Al final te diré qué temas dominas y cuáles conviene repasar un poco más.</li>
+    </ul>
+    <p>Tómatelo con calma: lo importante es <em>entender el porqué</em>, no ir rápido. Te llevará alrededor de una hora.</p>
+    <div class="acciones">
+      <button class="principal" onclick="empezar()">Empezar el repaso</button>
+      <button class="secundaria oculto" id="btnReanudar" onclick="reanudar()">Continuar donde lo dejé</button>
+    </div>
+  </section>
+
+  <!-- PANTALLA DE PREGUNTA -->
+  <section id="pantallaPregunta" class="oculto">
+    <div class="tema-etiqueta" id="etiquetaTema"></div>
+    <div class="intentos" id="intentos"></div>
+    <p class="pregunta" id="textoPregunta"></p>
+    <div class="opciones" id="opciones"></div>
+    <div id="zonaExplicacion"></div>
+    <div class="acciones" id="zonaAcciones"></div>
+  </section>
+
+  <!-- PANTALLA FINAL -->
+  <section id="pantallaFinal" class="oculto resumen">
+    <h2>Resumen del repaso</h2>
+    <div class="marcador">
+      <div class="caja"><span class="num e-dom" id="nDom">0</span><span class="et">Dominados<br>(a la primera)</span></div>
+      <div class="caja"><span class="num e-casi" id="nCasi">0</span><span class="et">Conseguidos<br>(2.º o 3.er intento)</span></div>
+      <div class="caja"><span class="num e-rep" id="nRep">0</span><span class="et">Para repasar<br>(sin acertar)</span></div>
+    </div>
+
+    <div class="bloque-consejo" id="bloqueProfundizar">
+      <h3>📌 Temas para profundizar o practicar más</h3>
+      <ul id="listaProfundizar"></ul>
+    </div>
+
+    <h2>Resultado tema a tema</h2>
+    <table class="res">
+      <thead><tr><th>Tema</th><th>Intentos</th><th>Estado</th></tr></thead>
+      <tbody id="tablaResumen"></tbody>
+    </table>
+
+    <div class="acciones">
+      <button class="principal" onclick="reiniciarTodo()">Volver a empezar</button>
+      <button class="secundaria" onclick="window.print()">Imprimir / guardar resumen</button>
+    </div>
+    <p class="nota-pie">Hecho para André. Contenido basado en su libro de lenguaje musical (Unidades 10 a 16 y repaso de las Unidades 1 a 5).</p>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   BANCO DE PREGUNTAS
+   Cada tema tiene 3 variantes (para los hasta 3 intentos).
+   "c" = índice de la opción correcta. "exp" = explicación del porqué.
+   ============================================================ */
+const TEMAS = [
+  { id:"matices", nombre:"Matices dinámicos", preguntas:[
+    {q:"¿Qué significa el matiz \u201Cf\u201D (forte)?", o:["Muy débil","Débil","Fuerte","Muy fuerte"], c:2,
+     exp:"forte (f) = fuerte. El orden de intensidad, de menor a mayor, es: pp (muy débil), p (débil), mp (medianamente débil), mf (medianamente fuerte), f (fuerte) y ff (muy fuerte)."},
+    {q:"¿Qué matiz significa \u201Cmuy débil\u201D?", o:["p","pp","mp","mf"], c:1,
+     exp:"pp (pianissimo) = muy débil. Truco: cuantas más \u201Cp\u201D, más débil; cuantas más \u201Cf\u201D, más fuerte."},
+    {q:"¿Cuál de estos matices es el MÁS fuerte?", o:["f","mf","ff","mp"], c:2,
+     exp:"ff (fortissimo) = muy fuerte, el más fuerte de la lista. Recuerda el orden: pp < p < mp < mf < f < ff."}
+  ]},
+  { id:"reguladores", nombre:"Reguladores (crescendo / diminuendo)", preguntas:[
+    {q:"El término \u201Ccrescendo\u201D (cresc.) indica que hay que…", o:["Aumentar la intensidad","Disminuir la intensidad","Ir más rápido","Ir más lento"], c:0,
+     exp:"crescendo = aumentando la intensidad: el sonido se hace cada vez más fuerte. Ojo: habla de intensidad (fuerte/débil), no de velocidad."},
+    {q:"¿Qué significa \u201Cdiminuendo\u201D (dim.)?", o:["Aumentar la velocidad","Disminuir la intensidad","Aumentar la intensidad","Repetir"], c:1,
+     exp:"diminuendo = disminuyendo la intensidad: el sonido se hace cada vez más débil. Es lo contrario de crescendo."},
+    {q:"A los signos de crescendo y diminuendo también se les llama…", o:["Tresillos","Reguladores","Armaduras","Calderones"], c:1,
+     exp:"Se llaman reguladores porque van cambiando poco a poco la intensidad del sonido."}
+  ]},
+  { id:"sincopa", nombre:"La síncopa", preguntas:[
+    {q:"¿Qué es una síncopa?", o:["Un sonido que empieza y acaba en parte fuerte","Un sonido que se inicia en parte (o fracción) débil y acaba en otra fuerte","Un silencio en parte fuerte","Una nota muy rápida"], c:1,
+     exp:"La síncopa es un sonido que se inicia en parte o fracción DÉBIL y acaba en otra FUERTE. La nota se enlaza desde lo débil hacia lo fuerte."},
+    {q:"En la síncopa, el sonido empieza en una parte… y termina en una parte…", o:["fuerte / débil","débil / fuerte","fuerte / fuerte","débil / débil"], c:1,
+     exp:"Empieza en parte DÉBIL y termina en parte FUERTE. Por eso suena \u201Ca contracorriente\u201D del pulso."},
+    {q:"¿En qué se diferencia la síncopa del contratiempo?", o:["La síncopa lleva un silencio delante","La síncopa SÍ se prolonga (se mantiene) hasta la parte fuerte","La síncopa va antes de la barra de compás","Son exactamente lo mismo"], c:1,
+     exp:"La síncopa se prolonga desde lo débil hasta lo fuerte. El contratiempo, en cambio, NO se prolonga y va precedido de un silencio."}
+  ]},
+  { id:"contratiempo", nombre:"Nota a contratiempo", preguntas:[
+    {q:"Una nota a contratiempo se inicia en parte débil, NO se prolonga y va precedida de…", o:["otra nota fuerte","un silencio en parte (o fracción) débil","una síncopa","una anacrusa"], c:1,
+     exp:"La nota a contratiempo va precedida de un silencio en parte débil, empieza en parte débil y NO se prolonga. Esa es la gran diferencia con la síncopa."},
+    {q:"¿Cuál es la diferencia entre síncopa y contratiempo?", o:["No hay ninguna","La síncopa se prolonga a la parte fuerte; el contratiempo no se prolonga y lleva silencio delante","El contratiempo va antes del compás","La síncopa lleva siempre tresillo"], c:1,
+     exp:"Síncopa = se prolonga de débil a fuerte. Contratiempo = NO se prolonga y va precedido de un silencio en parte débil."},
+    {q:"¿Qué tiene SIEMPRE delante una nota a contratiempo?", o:["Un tresillo","Una barra de repetición","Un silencio","Un sostenido"], c:2,
+     exp:"La nota a contratiempo va siempre precedida de un silencio en parte o fracción débil."}
+  ]},
+  { id:"anacrusa", nombre:"La anacrusa", preguntas:[
+    {q:"¿Qué es la anacrusa?", o:["Una nota muy fuerte al final","Una nota o grupo de notas sin acento que preceden al primer tiempo fuerte de una frase","Un silencio largo","Un tipo de compás"], c:1,
+     exp:"La anacrusa es la nota o grupo de notas SIN acento que van antes del primer tiempo fuerte de la frase; por eso se colocan antes de la barra de compás."},
+    {q:"¿Dónde se colocan las notas de la anacrusa?", o:["Después de la doble barra final","Antes de la barra de compás","En el centro del compás","Encima del pentagrama"], c:1,
+     exp:"La anacrusa va antes de la barra de compás, porque son notas sin acento que \u201Cpreparan\u201D la entrada en el primer tiempo fuerte."},
+    {q:"Las notas de la anacrusa son notas…", o:["con mucho acento","sin acento","siempre agudas","siempre largas"], c:1,
+     exp:"Son notas SIN acento que preceden al primer tiempo fuerte de la frase."}
+  ]},
+  { id:"tresillo", nombre:"El tresillo", preguntas:[
+    {q:"¿Qué es un tresillo?", o:["3 figuras que valen 4","3 figuras que equivalen a 2 de su misma especie","2 figuras que valen 3","Un grupo de 3 silencios"], c:1,
+     exp:"El tresillo es un grupo irregular de 3 figuras que equivalen a 2 de su misma especie. Se indica con un 3 encima de las figuras."},
+    {q:"¿Cómo se indica un tresillo en la partitura?", o:["Con un sostenido","Con un número 3 encima de las figuras","Con dos puntos","Con un calderón"], c:1,
+     exp:"Se indica con un número 3 sobre las figuras del grupo."},
+    {q:"Un tresillo de 3 corcheas dura lo mismo que…", o:["3 corcheas normales","2 corcheas normales","4 corcheas","1 negra con puntillo"], c:1,
+     exp:"El tresillo de 3 corcheas vale lo mismo que 2 corcheas normales (3 figuras que equivalen a 2 de su misma especie)."}
+  ]},
+  { id:"repeticion", nombre:"Signos de repetición", preguntas:[
+    {q:"La barra de repetición (con dos puntos) sirve para…", o:["cambiar de tonalidad","indicar qué fragmento se va a repetir","acabar siempre la obra","marcar un silencio"], c:1,
+     exp:"La barra de repetición es como la doble barra final pero con 2 puntos; indica que un fragmento se va a repetir (desde el principio o entre dos barras de repetición)."},
+    {q:"\u201CDa Capo\u201D (D.C.) significa…", o:["desde el final","desde el principio (volver al inicio)","más fuerte","más rápido"], c:1,
+     exp:"Da Capo (D.C.) es italiano y significa \u201Cdesde el principio\u201D: hay que volver al inicio de la obra. Suele acompañarse de la palabra FIN."},
+    {q:"Las casillas de 1.ª y 2.ª vez sirven para…", o:["indicar la tonalidad","indicar qué compases se tocan en la 1.ª repetición y cuáles en la 2.ª","marcar el tempo","señalar un acento"], c:1,
+     exp:"Las casillas de 1.ª y 2.ª vez nos dicen qué compases se tocan la primera vez y cuáles la segunda al hacer la repetición."}
+  ]},
+  { id:"grados", nombre:"Grados de la escala (nombres)", preguntas:[
+    {q:"¿Cómo se llama el I grado de la escala?", o:["Dominante","Tónica","Sensible","Mediante"], c:1,
+     exp:"I = Tónica. Es la nota más importante, la que da nombre a la escala."},
+    {q:"¿Qué grado es la Dominante?", o:["I","IV","V","VII"], c:2,
+     exp:"La Dominante es el V grado. Los grados tonales son I (Tónica), IV (Subdominante) y V (Dominante)."},
+    {q:"El IV grado se llama…", o:["Supertónica","Subdominante","Superdominante","Sensible"], c:1,
+     exp:"IV = Subdominante. No confundir con la Superdominante, que es el VI grado."}
+  ]},
+  { id:"tonal_modal", nombre:"Grados tonales y modales", preguntas:[
+    {q:"¿Cuáles son los GRADOS TONALES?", o:["II, III, VI","I, IV, V","III, VI, VII","I, II, III"], c:1,
+     exp:"Los grados tonales (los que determinan la tonalidad) son I (Tónica), IV (Subdominante) y V (Dominante)."},
+    {q:"¿Cuáles son los GRADOS MODALES?", o:["I, IV, V","III, VI, VII","II, III, IV","V, VI, VII"], c:1,
+     exp:"Los grados modales (los que determinan el modo, Mayor o menor) son III (Modal o Mediante), VI (Superdominante) y VII (Sensible o Subtónica)."},
+    {q:"¿Qué grado nos dice si una escala está en modo Mayor o menor?", o:["El I","El V","El III","El VII"], c:2,
+     exp:"El III grado define si la escala está en modo Mayor o menor, según el intervalo entre el I y el III sea una 3.ª Mayor o una 3.ª menor."}
+  ]},
+  { id:"orden_sost", nombre:"Orden de los sostenidos", preguntas:[
+    {q:"¿Cuál es el orden de los sostenidos?", o:["SI-MI-LA-RE-SOL-DO-FA","FA-DO-SOL-RE-LA-MI-SI","DO-RE-MI-FA-SOL-LA-SI","FA-SOL-LA-SI-DO-RE-MI"], c:1,
+     exp:"El orden de los sostenidos es FA-DO-SOL-RE-LA-MI-SI. Con 1 sostenido es FA; con 2, FA y DO; y así sucesivamente."},
+    {q:"Si una armadura tiene 2 sostenidos, ¿cuáles son?", o:["FA y SOL","FA y DO","DO y SOL","SI y MI"], c:1,
+     exp:"Siguiendo el orden FA-DO-SOL…, los 2 primeros sostenidos son FA y DO."},
+    {q:"Si una armadura tiene 3 sostenidos, ¿cuáles son?", o:["FA, DO, RE","FA, DO, SOL","FA, SOL, LA","DO, SOL, RE"], c:1,
+     exp:"Siguiendo el orden FA-DO-SOL-RE…, los 3 primeros sostenidos son FA, DO y SOL."}
+  ]},
+  { id:"sol_mayor", nombre:"Tonalidad de Sol Mayor", preguntas:[
+    {q:"¿Cuántos sostenidos tiene SOL Mayor en la armadura?", o:["Ninguno","1 (FA)","2 (FA y DO)","3"], c:1,
+     exp:"SOL Mayor tiene 1 sostenido en la armadura: FA#."},
+    {q:"En la escala de SOL Mayor, ¿entre qué grados están los semitonos?", o:["I-II y IV-V","III-IV y VII-I","II-III y V-VI","solo en VII-I"], c:1,
+     exp:"En SOL Mayor (como en DO Mayor y en todas las escalas Mayores) los semitonos están entre III-IV y VII-I."},
+    {q:"SOL Mayor coloca los semitonos en los mismos sitios que…", o:["LA menor","MI menor","DO Mayor","RE menor"], c:2,
+     exp:"SOL Mayor pone los semitonos entre III-IV y VII-I, igual que DO Mayor y que todas las tonalidades Mayores."}
+  ]},
+  { id:"orden_bem", nombre:"Orden de los bemoles", preguntas:[
+    {q:"¿Cuál es el orden de los bemoles?", o:["FA-DO-SOL-RE-LA-MI-SI","SI-MI-LA-RE-SOL-DO-FA","SI-LA-SOL-FA-MI-RE-DO","DO-RE-MI-FA-SOL-LA-SI"], c:1,
+     exp:"El orden de los bemoles es SI-MI-LA-RE-SOL-DO-FA."},
+    {q:"El orden de los bemoles, respecto al de los sostenidos, es…", o:["el mismo","el inverso (al revés)","parecido pero empieza por FA","sin relación"], c:1,
+     exp:"El orden de los bemoles (SI-MI-LA-RE-SOL-DO-FA) es el inverso al de los sostenidos (FA-DO-SOL-RE-LA-MI-SI)."},
+    {q:"Si una armadura tiene 1 bemol, ¿cuál es?", o:["FA","SI","MI","LA"], c:1,
+     exp:"El primer bemol del orden es SI. Por eso, con 1 bemol, es SI bemol."}
+  ]},
+  { id:"fa_re", nombre:"Fa Mayor y Re menor", preguntas:[
+    {q:"¿Cuántos bemoles tiene la tonalidad de FA Mayor?", o:["Ninguno","1 (SI)","2","3"], c:1,
+     exp:"FA Mayor tiene 1 bemol en la armadura: SI bemol."},
+    {q:"La tonalidad de RE menor tiene… en la armadura.", o:["1 sostenido (FA)","1 bemol (SI)","ninguna alteración","2 bemoles"], c:1,
+     exp:"RE menor tiene 1 bemol (SI), igual que su relativa FA Mayor."},
+    {q:"En la escala de RE menor, ¿entre qué grados están los semitonos?", o:["III-IV y VII-I","II-III y V-VI","I-II y IV-V","solo en II-III"], c:1,
+     exp:"En RE menor (como en todas las escalas menores) los semitonos están entre II-III y V-VI."}
+  ]},
+  { id:"relativas", nombre:"Tonalidades relativas", preguntas:[
+    {q:"¿Qué son dos tonalidades relativas?", o:["Dos tonalidades muy rápidas","Dos tonalidades que comparten la misma armadura","Dos escalas iguales","Dos tonalidades sin alteraciones"], c:1,
+     exp:"Las tonalidades relativas son las dos tonalidades (una Mayor y una menor) que comparten la misma armadura."},
+    {q:"¿Cuál es la relativa menor de FA Mayor?", o:["LA menor","RE menor","SOL menor","MI menor"], c:1,
+     exp:"FA Mayor y RE menor comparten armadura (1 bemol, SI), así que son relativas. La relativa menor está una 3.ª menor por debajo."},
+    {q:"La distancia entre una tonalidad Mayor y su relativa menor es siempre de…", o:["una 2.ª Mayor","una 3.ª menor","una 5.ª Justa","una 8.ª"], c:1,
+     exp:"Entre una tonalidad Mayor y su relativa menor hay siempre una 3.ª menor."}
+  ]},
+  { id:"mi_menor", nombre:"Tonalidad de Mi menor", preguntas:[
+    {q:"¿Cuántos sostenidos tiene MI menor en la armadura?", o:["Ninguno","1 (FA)","2","3"], c:1,
+     exp:"MI menor tiene 1 sostenido (FA), igual que su relativa SOL Mayor."},
+    {q:"Con 1 sostenido en la armadura, la tonalidad puede ser…", o:["DO Mayor o LA menor","SOL Mayor o MI menor","FA Mayor o RE menor","RE Mayor o SI menor"], c:1,
+     exp:"1 sostenido = SOL Mayor (modo Mayor) o MI menor (modo menor). Son tonalidades relativas."},
+    {q:"¿Cuál es la relativa menor de SOL Mayor?", o:["LA menor","RE menor","MI menor","SI menor"], c:2,
+     exp:"SOL Mayor y MI menor comparten armadura (1 sostenido, FA), por lo que son relativas."}
+  ]},
+  { id:"articulacion", nombre:"Signos de articulación (picado, tenuto, acento)", preguntas:[
+    {q:"El picado o staccato es un punto que…", o:["alarga la nota","reduce su valor a la mitad","la repite","cambia la tonalidad"], c:1,
+     exp:"El picado (staccato) es un punto encima o debajo de la nota que reduce su valor a la mitad: suena más corta y separada."},
+    {q:"El tenuto es una rayita que indica tocar la nota…", o:["más corta","con más tensión, respetando su valor","más rápida","más débil"], c:1,
+     exp:"El tenuto (una rayita) indica tocar la nota con más tensión, pero respetando su valor (no se acorta)."},
+    {q:"El acento (un pequeño ángulo) indica tocar la nota…", o:["más larga","con más intensidad al inicio y disminuyendo enseguida","muy corta","muy suave"], c:1,
+     exp:"El acento indica interpretar la nota con más intensidad al principio, disminuyendo inmediatamente después."}
+  ]},
+  { id:"simple_comp", nombre:"Compás simple y compuesto", preguntas:[
+    {q:"Un compás SIMPLE tiene como numerador…", o:["6, 9 ó 12","2, 3 ó 4","cualquier número","siempre 4"], c:1,
+     exp:"Los compases simples tienen por numerador 2, 3 ó 4. Su unidad de tiempo es una figura simple (sin puntillo) y son de subdivisión binaria."},
+    {q:"Un compás COMPUESTO es de subdivisión…", o:["binaria","ternaria","libre","doble"], c:1,
+     exp:"Los compases compuestos son de subdivisión ternaria (cada tiempo se divide en 3 tercios). Su numerador es 6, 9 ó 12."},
+    {q:"En un compás simple, cada tiempo se divide en…", o:["3 partes","2 mitades","4 partes","no se divide"], c:1,
+     exp:"En el compás simple (subdivisión binaria) cada tiempo se divide en 2 mitades. En el compuesto (ternaria), en 3 tercios."}
+  ]},
+  { id:"c_9_8", nombre:"Compás de 9/8", preguntas:[
+    {q:"El compás de 9/8 es un compás…", o:["binario simple","ternario compuesto","cuaternario simple","binario compuesto"], c:1,
+     exp:"El 9/8 es ternario (3 tiempos) y compuesto (subdivisión ternaria): cada tiempo se divide en 3 tercios."},
+    {q:"En 9/8, ¿qué figura es la unidad de tiempo (lo que vale un tiempo)?", o:["una corchea","una negra","una negra con puntillo","una blanca"], c:2,
+     exp:"En 9/8 la unidad de tiempo es la negra con puntillo, que equivale a 3 corcheas."},
+    {q:"En el compás de 9/8, el numerador 9 indica…", o:["9 compases","9 tercios (3 en cada tiempo)","9 negras","9 silencios"], c:1,
+     exp:"El 9 indica 9 tercios en total, 3 en cada uno de los 3 tiempos. El 8 indica que cada tercio es una corchea."}
+  ]},
+  { id:"c_3_8", nombre:"Compases de 3/8 y 2/8", preguntas:[
+    {q:"El compás de 3/8 es un compás…", o:["compuesto","simple","cuaternario","de subdivisión ternaria"], c:1,
+     exp:"El 3/8 es simple (numerador 3) y de subdivisión binaria. Su unidad de tiempo es la corchea (sin puntillo)."},
+    {q:"En el compás de 3/8, ¿qué figura entra en cada tiempo?", o:["una negra","una corchea","una negra con puntillo","una semicorchea"], c:1,
+     exp:"El denominador 8 indica que en cada tiempo entra una corchea. El 3/8 tiene 3 tiempos."},
+    {q:"El 2/8 es un compás binario. ¿Cuántos tiempos tiene?", o:["3","2","4","6"], c:1,
+     exp:"El 2/8 es binario: tiene 2 tiempos. En cada tiempo entra una corchea (denominador 8)."}
+  ]},
+  { id:"c_12_8", nombre:"Compás de 12/8", preguntas:[
+    {q:"El compás de 12/8 es…", o:["binario simple","cuaternario compuesto","ternario simple","binario compuesto"], c:1,
+     exp:"El 12/8 es cuaternario (4 tiempos) y compuesto (subdivisión ternaria)."},
+    {q:"En 12/8, ¿cuál es la unidad de tiempo?", o:["la corchea","la blanca","la negra con puntillo","la redonda"], c:2,
+     exp:"En 12/8 la unidad de tiempo es la negra con puntillo (equivale a 3 corcheas). Tiene 4 tiempos."},
+    {q:"En 12/8, el numerador 12 indica…", o:["12 compases","12 tercios (3 en cada uno de los 4 tiempos)","12 negras","12 tiempos"], c:1,
+     exp:"El 12 indica 12 tercios, repartidos 3 en cada uno de los 4 tiempos. El 8 indica que cada tercio es una corchea."}
+  ]},
+  { id:"interv_orden", nombre:"Intervalos: número de orden", preguntas:[
+    {q:"¿Qué es un intervalo?", o:["Un tipo de compás","La distancia que hay entre dos sonidos distintos","Un signo de repetición","Una alteración"], c:1,
+     exp:"Un intervalo es la distancia entre dos sonidos distintos."},
+    {q:"El número de orden de un intervalo se cuenta…", o:["solo las notas del medio","contando todas las notas desde la 1.ª hasta la última, incluyendo ambas","restando las notas","solo las negras"], c:1,
+     exp:"Se cuentan todas las notas entre la primera y la última, incluyendo las dos. Ejemplo: DO-RE-MI-FA-SOL = 5 notas = 5.ª."},
+    {q:"El intervalo de DO a MI, ¿de qué número de orden es?", o:["2.ª","3.ª","4.ª","5.ª"], c:1,
+     exp:"DO-RE-MI = 3 notas, así que es una 3.ª. Se cuentan también las notas de los extremos."}
+  ]},
+  { id:"interv_especie", nombre:"Intervalos: especie", preguntas:[
+    {q:"Según su especie, los intervalos pueden ser…", o:["largos o cortos","Mayores, menores, Justos, Aumentados o Disminuidos","fuertes o débiles","simples o dobles"], c:1,
+     exp:"La especie depende del número de tonos y semitonos. Pueden ser Mayores, menores, Justos, Aumentados o Disminuidos."},
+    {q:"La 5.ª con sonidos naturales es Justa, salvo una excepción. ¿Cuál?", o:["DO-SOL","SI-FA (5.ª disminuida)","RE-LA","MI-SI"], c:1,
+     exp:"La 5.ª natural es Justa (3T+1ST), salvo SI-FA, que es 5.ª disminuida (2T+2ST)."},
+    {q:"La 4.ª con sonidos naturales es Justa, salvo…", o:["DO-FA","RE-SOL","FA-SI (4.ª aumentada)","MI-LA"], c:2,
+     exp:"La 4.ª natural es Justa (2T+1ST), salvo FA-SI, que es 4.ª aumentada (3T)."}
+  ]},
+  { id:"alteraciones", nombre:"Las alteraciones", preguntas:[
+    {q:"El sostenido (#) hace que el sonido…", o:["baje 1 semitono","suba 1 semitono","no cambie","suba 1 tono"], c:1,
+     exp:"El sostenido (#) sube el sonido 1 semitono. El bemol (b) lo baja 1 semitono."},
+    {q:"¿Qué alteración anula (quita) cualquier otra alteración?", o:["el sostenido","el bemol","el becuadro","el doble bemol"], c:2,
+     exp:"El becuadro anula cualquier alteración anterior y devuelve la nota a su sonido natural."},
+    {q:"El doble bemol (bb) hace que el sonido…", o:["baje 1 semitono","baje 2 semitonos","suba 2 semitonos","no cambie"], c:1,
+     exp:"El doble bemol baja el sonido 2 semitonos. El doble sostenido (x) lo sube 2 semitonos."}
+  ]},
+  { id:"semitonos", nombre:"Semitono, unísono y enarmonía", preguntas:[
+    {q:"El semitono cromático se produce entre 2 notas…", o:["de distinto nombre","del mismo nombre y diferente sonido","iguales","muy lejanas"], c:1,
+     exp:"Cromático = mismo nombre, distinto sonido (ej. DO y DO#). Diatónico = distinto nombre, distinto sonido (ej. MI y FA)."},
+    {q:"Dos notas enarmónicas son…", o:["iguales en todo","de distinto nombre pero igual sonido","de igual nombre y sonido","muy diferentes"], c:1,
+     exp:"Las notas enarmónicas tienen distinto nombre pero suenan igual (ej. DO# y REb)."},
+    {q:"El unísono está formado por 2 notas…", o:["de distinto sonido","de igual nombre y sonido, que suenan a la vez","muy separadas","enarmónicas"], c:1,
+     exp:"El unísono son 2 notas de igual nombre y sonido sonando a la vez."}
+  ]},
+  { id:"tempo", nombre:"Tempo (términos italianos)", preguntas:[
+    {q:"¿Qué es el \u201Ctempo\u201D (aire o movimiento)?", o:["La intensidad del sonido","La velocidad con la que se interpreta una obra","La tonalidad","El compás"], c:1,
+     exp:"El tempo (aire o movimiento) es la velocidad con la que interpretamos una obra musical. No confundir con los matices, que son la intensidad."},
+    {q:"El término italiano \u201CAllegro\u201D significa…", o:["muy lento","despacio","animado","tranquilo"], c:2,
+     exp:"Allegro = animado. De más lento a más rápido: Largo, Adagio, Andante, Moderato, Allegro, Presto."},
+    {q:"¿Cuál de estos términos indica el movimiento MÁS lento?", o:["Allegro","Andante","Largo","Moderato"], c:2,
+     exp:"Largo = muy lento. Andante es tranquilo, Moderato moderado y Allegro animado."}
+  ]},
+  { id:"agogica", nombre:"La agógica", preguntas:[
+    {q:"¿Qué estudia la agógica?", o:["las alteraciones","los cambios de velocidad en una obra","las tonalidades","los matices de intensidad"], c:1,
+     exp:"La agógica estudia los cambios de velocidad dentro de una obra musical."},
+    {q:"El término \u201Critardando\u201D (rit.) indica…", o:["aumentar la velocidad","disminuir la velocidad","aumentar la intensidad","repetir"], c:1,
+     exp:"Ritardando (o rallentando) = ir disminuyendo la velocidad. Accelerando es lo contrario: aumentar la velocidad."},
+    {q:"La indicación \u201CA Tempo\u201D sirve para…", o:["ir más rápido","restablecer el movimiento (volver a la velocidad de antes)","parar la obra","subir el volumen"], c:1,
+     exp:"A Tempo restablece el movimiento después de haberlo cambiado (por ejemplo, tras un ritardando o un accelerando)."}
+  ]}
+];
+
+/* ============================================================
+   MOTOR DEL REPASO
+   ============================================================ */
+const CLAVE = "andre_examen_musica_progreso";
+let estado = null; // {temaIdx, intento, resultados:[{tries,acertado}], inicio, segundos}
+let cronometro = null;
+
+function nuevoEstado(){
+  return { temaIdx:0, intento:0, resultados:[], inicio:Date.now(), segundos:0 };
+}
+
+function guardar(){
+  try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(e){}
+}
+function cargar(){
+  try{ const s=localStorage.getItem(CLAVE); return s?JSON.parse(s):null; }catch(e){ return null; }
+}
+
+window.addEventListener("DOMContentLoaded", ()=>{
+  const previo = cargar();
+  if(previo && previo.temaIdx>0 && previo.temaIdx < TEMAS.length){
+    document.getElementById("btnReanudar").classList.remove("oculto");
+  }
+  actualizarBarra();
+});
+
+function empezar(){
+  estado = nuevoEstado();
+  iniciarCrono();
+  guardar();
+  mostrarPregunta();
+}
+function reanudar(){
+  estado = cargar() || nuevoEstado();
+  if(!estado.inicio) estado.inicio = Date.now() - (estado.segundos||0)*1000;
+  iniciarCrono();
+  mostrarPregunta();
+}
+function reiniciarTodo(){
+  try{ localStorage.removeItem(CLAVE); }catch(e){}
+  estado = nuevoEstado();
+  document.getElementById("pantallaFinal").classList.add("oculto");
+  document.getElementById("pantallaInicio").classList.remove("oculto");
+  document.getElementById("btnReanudar").classList.add("oculto");
+  detenerCrono();
+  actualizarBarra();
+}
+
+function iniciarCrono(){
+  detenerCrono();
+  cronometro = setInterval(()=>{
+    estado.segundos = Math.floor((Date.now()-estado.inicio)/1000);
+    pintarReloj();
+  },1000);
+  pintarReloj();
+}
+function detenerCrono(){ if(cronometro){clearInterval(cronometro);cronometro=null;} }
+function pintarReloj(){
+  const s=estado?estado.segundos:0;
+  const m=String(Math.floor(s/60)).padStart(2,"0");
+  const ss=String(s%60).padStart(2,"0");
+  document.getElementById("reloj").textContent="⏱ "+m+":"+ss;
+}
+
+function actualizarBarra(){
+  const total=TEMAS.length;
+  const hechos=estado?estado.resultados.length:0;
+  document.getElementById("contadorTema").textContent="Tema "+Math.min(hechos+ (estado&&estado.temaIdx<total?1:0),total)+" de "+total;
+  document.getElementById("progreso").style.width=(hechos/total*100)+"%";
+  const aprimera=estado?estado.resultados.filter(r=>r.acertado&&r.tries===1).length:0;
+  document.getElementById("aciertos").textContent="Bien a la primera: "+aprimera;
+}
+
+function mostrarPregunta(){
+  document.getElementById("pantallaInicio").classList.add("oculto");
+  document.getElementById("pantallaFinal").classList.add("oculto");
+  document.getElementById("pantallaPregunta").classList.remove("oculto");
+
+  const tema=TEMAS[estado.temaIdx];
+  const preg=tema.preguntas[estado.intento];
+
+  document.getElementById("etiquetaTema").textContent=tema.nombre;
+
+  // puntos de intento
+  let pts="";
+  for(let i=0;i<3;i++){ pts+='<span class="punto'+(i<=estado.intento?" usado":"")+'"></span>'; }
+  document.getElementById("intentos").innerHTML=pts+" Intento "+(estado.intento+1)+" de 3";
+
+  document.getElementById("textoPregunta").textContent=preg.q;
+
+  const cont=document.getElementById("opciones");
+  cont.innerHTML="";
+  preg.o.forEach((op,i)=>{
+    const b=document.createElement("button");
+    b.className="opcion";
+    b.textContent=op;
+    b.onclick=()=>responder(i);
+    cont.appendChild(b);
+  });
+  document.getElementById("zonaExplicacion").innerHTML="";
+  document.getElementById("zonaAcciones").innerHTML="";
+  actualizarBarra();
+}
+
+function responder(elegida){
+  const tema=TEMAS[estado.temaIdx];
+  const preg=tema.preguntas[estado.intento];
+  const correcta=preg.c;
+  const acertado=(elegida===correcta);
+
+  // marcar botones
+  const botones=document.querySelectorAll("#opciones .opcion");
+  botones.forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correcta){ b.classList.add("correcta"); b.querySelector(".marca")||b.insertAdjacentHTML("beforeend",' <span class="marca">✓</span>'); }
+    if(i===elegida && !acertado){ b.classList.add("incorrecta"); b.insertAdjacentHTML("beforeend",' <span class="marca">✗</span>'); }
+  });
+
+  const zonaExp=document.getElementById("zonaExplicacion");
+  const zonaAcc=document.getElementById("zonaAcciones");
+
+  if(acertado){
+    zonaExp.innerHTML='<div class="explicacion bien"><p class="titulo">¡Correcto! 🎉</p><p>'+preg.exp+'</p></div>';
+    registrar(true, estado.intento+1);
+    const btn=document.createElement("button");
+    btn.className="principal";
+    btn.textContent = (estado.temaIdx+1<TEMAS.length) ? "Siguiente tema →" : "Ver mi resumen final";
+    btn.onclick=siguienteTema;
+    zonaAcc.appendChild(btn);
+  } else {
+    zonaExp.innerHTML='<div class="explicacion mal"><p class="titulo">Casi. Fíjate en esto:</p><p>'+preg.exp+'</p></div>';
+    if(estado.intento < 2){
+      const btn=document.createElement("button");
+      btn.className="principal";
+      btn.textContent="Probar otra del mismo tema →";
+      btn.onclick=()=>{ estado.intento++; guardar(); mostrarPregunta(); };
+      zonaAcc.appendChild(btn);
+    } else {
+      // agotados los 3 intentos
+      registrar(false, 3);
+      const aviso=document.createElement("div");
+      aviso.className="explicacion";
+      aviso.innerHTML='<p>No pasa nada: marco este tema para repasarlo con calma más tarde. Sigamos.</p>';
+      zonaExp.appendChild(aviso);
+      const btn=document.createElement("button");
+      btn.className="principal";
+      btn.textContent = (estado.temaIdx+1<TEMAS.length) ? "Siguiente tema →" : "Ver mi resumen final";
+      btn.onclick=siguienteTema;
+      zonaAcc.appendChild(btn);
+    }
+  }
+  guardar();
+}
+
+function registrar(acertado, tries){
+  estado.resultados[estado.temaIdx]={acertado:acertado, tries:tries};
+}
+
+function siguienteTema(){
+  estado.temaIdx++;
+  estado.intento=0;
+  guardar();
+  if(estado.temaIdx>=TEMAS.length){ mostrarResumen(); }
+  else { mostrarPregunta(); }
+}
+
+function clasificar(r){
+  if(!r) return {clave:"rep", texto:"Sin hacer"};
+  if(r.acertado && r.tries===1) return {clave:"dom", texto:"Dominado"};
+  if(r.acertado) return {clave:"casi", texto:"Conseguido ("+r.tries+".º intento)"};
+  return {clave:"rep", texto:"Repasar"};
+}
+
+function mostrarResumen(){
+  detenerCrono();
+  document.getElementById("pantallaPregunta").classList.add("oculto");
+  document.getElementById("pantallaFinal").classList.remove("oculto");
+  document.getElementById("progreso").style.width="100%";
+  document.getElementById("contadorTema").textContent="Repaso terminado";
+
+  let nDom=0,nCasi=0,nRep=0;
+  const cuerpo=document.getElementById("tablaResumen");
+  cuerpo.innerHTML="";
+  const profundizar=[];
+
+  TEMAS.forEach((t,i)=>{
+    const r=estado.resultados[i];
+    const c=clasificar(r);
+    if(c.clave==="dom")nDom++; else if(c.clave==="casi"){nCasi++;profundizar.push(t.nombre);} else {nRep++;profundizar.push(t.nombre);}
+    const tr=document.createElement("tr");
+    tr.innerHTML='<td>'+t.nombre+'</td><td>'+(r?r.tries:"-")+'</td><td class="estado e-'+c.clave+'">'+c.texto+'</td>';
+    cuerpo.appendChild(tr);
+  });
+
+  document.getElementById("nDom").textContent=nDom;
+  document.getElementById("nCasi").textContent=nCasi;
+  document.getElementById("nRep").textContent=nRep;
+
+  const lista=document.getElementById("listaProfundizar");
+  lista.innerHTML="";
+  if(profundizar.length===0){
+    document.getElementById("bloqueProfundizar").innerHTML='<h3>🌟 ¡Enhorabuena!</h3><p>Has dominado todos los temas a la primera. Estás listo para el examen.</p>';
+  } else {
+    profundizar.forEach(n=>{ const li=document.createElement("li"); li.textContent=n; lista.appendChild(li); });
+  }
+  actualizarBarra();
+}
+</script>
+</body>
+</html>
