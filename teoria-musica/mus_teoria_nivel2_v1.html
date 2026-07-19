@@ -91,6 +91,26 @@
     </div>
   </section>
 
+  <!-- PANTALLA DEMO -->
+  <section id="pantallaDemo" class="oculto">
+    <div class="tema-etiqueta">DEMO — no puntúa</div>
+    <p class="pregunta">¿Cuántos tiempos tiene un compás de 4/4?</p>
+    <div class="opciones">
+      <button class="opcion" disabled>2 tiempos</button>
+      <button class="opcion" disabled>3 tiempos</button>
+      <button class="opcion correcta" disabled>4 tiempos <span class="marca">✓</span></button>
+      <button class="opcion" disabled>6 tiempos</button>
+    </div>
+    <div class="explicacion bien">
+      <p class="titulo">¡Correcto! 🎉</p>
+      <p>El compás de 4/4 tiene 4 tiempos. El numerador (4) indica cuántos tiempos tiene cada compás.</p>
+    </div>
+    <p style="color:var(--suave);font-size:15px;margin-top:14px;">Así funciona el repaso: ves la pregunta, pulsas tu respuesta y te explico el porqué. ¡Empezamos!</p>
+    <div class="acciones">
+      <button class="principal" onclick="iniciarTrasDemo()">Empezar el Nivel 2 →</button>
+    </div>
+  </section>
+
   <section id="pantallaPregunta" class="oculto">
     <div class="tema-etiqueta" id="etiquetaTema"></div>
     <div class="intentos" id="intentos"></div>
@@ -114,6 +134,17 @@
     </div>
     <h2>Resultado tema a tema</h2>
     <table class="res"><thead><tr><th>Tema</th><th>Intentos</th><th>Estado</th></tr></thead><tbody id="tablaResumen"></tbody></table>
+    <div id="mood-section" style="text-align:center;margin:24px 0;">
+      <p style="font-weight:700;margin-bottom:12px;">¿Cómo te has sentido?</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="finalizarConMood(1)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;cursor:pointer;">😓 Difícil</button>
+        <button onclick="finalizarConMood(2)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;cursor:pointer;">😐 Normal</button>
+        <button onclick="finalizarConMood(3)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;cursor:pointer;">😊 Fácil</button>
+      </div>
+      <button onclick="finalizarConMood(null)" style="margin-top:8px;font-size:.85rem;color:#999;border:none;background:none;cursor:pointer;text-decoration:underline;">Saltar</button>
+    </div>
+    <div id="registro-final"></div>
+
     <div class="acciones">
       <button class="principal" onclick="reiniciarTodo()">Volver a empezar</button>
       <button class="secundaria" onclick="window.print()">Imprimir / guardar resumen</button>
@@ -135,6 +166,19 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+function isoLocal(d) {
+  const pad = n => String(n).padStart(2, '0');
+  const off = -d.getTimezoneOffset();
+  const sign = off >= 0 ? '+' : '-';
+  const abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+
+let sessionStart = null;
+let topicStartTime = 0;
+
 /* ===== Helpers de notación musical en SVG (clave de Sol) ===== */
 const LINEGAP=10, STAFFTOP=40, YBOTTOM=STAFFTOP+4*LINEGAP;
 const LETTER={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
@@ -293,9 +337,10 @@ window.addEventListener("DOMContentLoaded",function(){
   actualizarBarra();
 });
 
-function empezar(){estado=nuevoEstado();iniciarCrono();guardar();mostrarPregunta();}
-function reanudar(){estado=cargar()||nuevoEstado();if(!estado.inicio)estado.inicio=Date.now()-(estado.segundos||0)*1000;iniciarCrono();mostrarPregunta();}
-function reiniciarTodo(){try{localStorage.removeItem(CLAVE);}catch(e){}estado=nuevoEstado();document.getElementById("pantallaFinal").classList.add("oculto");document.getElementById("pantallaInicio").classList.remove("oculto");document.getElementById("btnReanudar").classList.add("oculto");detenerCrono();actualizarBarra();}
+function empezar(){estado=nuevoEstado();sessionStart=new Date();iniciarCrono();guardar();document.getElementById("pantallaInicio").classList.add("oculto");document.getElementById("pantallaDemo").classList.remove("oculto");}
+function iniciarTrasDemo(){document.getElementById("pantallaDemo").classList.add("oculto");mostrarPregunta();}
+function reanudar(){estado=cargar()||nuevoEstado();if(!estado.inicio)estado.inicio=Date.now()-(estado.segundos||0)*1000;sessionStart=new Date(estado.inicio);iniciarCrono();mostrarPregunta();}
+function reiniciarTodo(){try{localStorage.removeItem(CLAVE);}catch(e){}estado=nuevoEstado();sessionStart=null;topicStartTime=0;document.getElementById("pantallaFinal").classList.add("oculto");document.getElementById("pantallaDemo").classList.add("oculto");document.getElementById("pantallaInicio").classList.remove("oculto");document.getElementById("btnReanudar").classList.add("oculto");var me=document.getElementById("mood-section");if(me)me.style.display='';document.getElementById("registro-final").innerHTML='';detenerCrono();actualizarBarra();}
 
 function iniciarCrono(){detenerCrono();cronometro=setInterval(function(){estado.segundos=Math.floor((Date.now()-estado.inicio)/1000);pintarReloj();},1000);pintarReloj();}
 function detenerCrono(){if(cronometro){clearInterval(cronometro);cronometro=null;}}
@@ -308,6 +353,7 @@ function mostrarPregunta(){
   document.getElementById("pantallaFinal").classList.add("oculto");
   document.getElementById("pantallaPregunta").classList.remove("oculto");
   const tema=TEMAS[estado.temaIdx], preg=tema.preguntas[estado.intento];
+  if(estado.intento===0) topicStartTime=Date.now();
   document.getElementById("etiquetaTema").textContent=tema.nombre;
   let pts="";for(let i=0;i<3;i++){pts+='<span class="punto'+(i<=estado.intento?" usado":"")+'"></span>';}
   document.getElementById("intentos").innerHTML=pts+" Intento "+(estado.intento+1)+" de 3";
@@ -327,14 +373,14 @@ function responder(elegida){
   const zonaExp=document.getElementById("zonaExplicacion"),zonaAcc=document.getElementById("zonaAcciones");
   if(acertado){
     zonaExp.innerHTML='<div class="explicacion bien"><p class="titulo">¡Correcto! 🎉</p><p>'+preg.exp+'</p></div>';
-    registrar(true,estado.intento+1);
+    registrar(true,estado.intento+1,preg.o[correcta],preg.o[elegida]);
     const btn=document.createElement("button");btn.className="principal";btn.textContent=(estado.temaIdx+1<TEMAS.length)?"Siguiente tema →":"Ver mi resumen final";btn.onclick=siguienteTema;zonaAcc.appendChild(btn);
   }else{
     zonaExp.innerHTML='<div class="explicacion mal"><p class="titulo">Casi. Fíjate en esto:</p><p>'+preg.exp+'</p></div>';
     if(estado.intento<2){
       const btn=document.createElement("button");btn.className="principal";btn.textContent="Probar otra del mismo tema →";btn.onclick=function(){estado.intento++;guardar();mostrarPregunta();};zonaAcc.appendChild(btn);
     }else{
-      registrar(false,3);
+      registrar(false,3,preg.o[correcta],preg.o[elegida]);
       const aviso=document.createElement("div");aviso.className="explicacion";aviso.innerHTML='<p>No pasa nada: marco este tema para repasarlo con calma más tarde. Sigamos.</p>';zonaExp.appendChild(aviso);
       const btn=document.createElement("button");btn.className="principal";btn.textContent=(estado.temaIdx+1<TEMAS.length)?"Siguiente tema →":"Ver mi resumen final";btn.onclick=siguienteTema;zonaAcc.appendChild(btn);
     }
@@ -342,7 +388,7 @@ function responder(elegida){
   guardar();
 }
 
-function registrar(acertado,tries){estado.resultados[estado.temaIdx]={acertado:acertado,tries:tries};}
+function registrar(acertado,tries,expectedText,answeredText){estado.resultados[estado.temaIdx]={acertado:acertado,tries:tries,expected:expectedText,answered:answeredText,time_sec:Math.round((Date.now()-topicStartTime)/1000)};}
 function siguienteTema(){estado.temaIdx++;estado.intento=0;guardar();if(estado.temaIdx>=TEMAS.length){mostrarResumen();}else{mostrarPregunta();}}
 function clasificar(r){if(!r)return {clave:"rep",texto:"Sin hacer"};if(r.acertado&&r.tries===1)return {clave:"dom",texto:"Dominado"};if(r.acertado)return {clave:"casi",texto:"Conseguido ("+r.tries+".º intento)"};return {clave:"rep",texto:"Repasar"};}
 
@@ -360,6 +406,26 @@ function mostrarResumen(){
   else{prof.forEach(function(n){const li=document.createElement("li");li.textContent=n;lista.appendChild(li);});}
   actualizarBarra();
 }
+
+function buildSessionData(moodVal){
+  var now=new Date();var startDate=sessionStart||now;var durationSec=Math.round((now-startDate)/1000);
+  var correct=estado.resultados.filter(function(r){return r&&r.acertado;}).length;
+  var total=TEMAS.length;var pct=total>0?Math.round(correct/total*1000)/10:0;
+  var sessionItems=TEMAS.map(function(t,i){var r=estado.resultados[i];return {n:i+1,block:'',topic:t.id,expected:r?r.expected:'',answered:r?r.answered:'',correct:r?r.acertado:false,attempts:r?r.tries:0,time_sec:r?(r.time_sec||0):0};});
+  return {schema:'andre-music-log/v1',tool:'mus_teoria_nivel2_v1',category:'teoria',session:{start:isoLocal(startDate),end:isoLocal(now),duration_sec:durationSec},score:{correct:correct,total:total,pct:pct},blocks:[],items:sessionItems,mood:moodVal};
+}
+function buildDualText(sd){
+  var d=new Date(sd.session.end);var fechaLocal=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  return 'Repaso Música Nivel 2 · '+fechaLocal+'\nResultado: '+sd.score.correct+' de '+sd.score.total+' ('+sd.score.pct+'%)\nBloques: Sin bloques\n---JSON---\n'+JSON.stringify(sd);
+}
+function finalizarConMood(moodVal){
+  var moodEl=document.getElementById('mood-section');if(moodEl)moodEl.style.display='none';
+  var sessionData=buildSessionData(moodVal);var dualText=buildDualText(sessionData);
+  var regEl=document.getElementById('registro-final');
+  regEl.innerHTML='<h2 style="font-size:19px;margin:16px 0 8px;">📋 Registro de sesión</h2><textarea id="registroTexto" readonly style="width:100%;height:240px;font-family:monospace;font-size:13px;padding:10px;border:1px solid #000;border-radius:6px;">'+dualText.replace(/</g,'&lt;')+'</textarea><br><button class="secundaria" onclick="copiarRegistro()" style="margin-top:8px;">Copiar registro</button>';
+  try{var hist=JSON.parse(localStorage.getItem('andre_music_history')||'[]');hist.push(sessionData);localStorage.setItem('andre_music_history',JSON.stringify(hist));}catch(e){}
+}
+function copiarRegistro(){var ta=document.getElementById('registroTexto');ta.select();document.execCommand('copy');}
 </script>
 </body>
 </html>

@@ -126,10 +126,17 @@
 <div class="box hidden" id="finalBox">
   <h2>Resumen para André</h2>
   <p id="summaryText"></p>
-  <h2>Registro detallado (para copiar y pegar)</h2>
-  <textarea id="logArea" readonly></textarea>
+  <div id="mood-section" style="text-align:center;margin:24px 0;">
+    <p style="font-weight:700;margin-bottom:12px;">¿Cómo te has sentido?</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="finalizarConMood(1)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😓 Difícil</button>
+      <button onclick="finalizarConMood(2)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😐 Normal</button>
+      <button onclick="finalizarConMood(3)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😊 Fácil</button>
+    </div>
+    <button onclick="finalizarConMood(null)" style="margin-top:8px;font-size:.85rem;color:#999;border:none;background:none;cursor:pointer;text-decoration:underline;">Saltar</button>
+  </div>
+  <div id="registro-final"></div>
   <br>
-  <button onclick="copyLog()">Copiar registro</button>
   <button onclick="location.reload()">Repetir sesión</button>
 </div>
 
@@ -146,6 +153,19 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+function isoLocal(d) {
+  const pad = n => String(n).padStart(2, '0');
+  const off = -d.getTimezoneOffset();
+  const sign = off >= 0 ? '+' : '-';
+  const abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+
+let sessionStart = null;
+let itemStartTime = 0;
+
 // ============ AUDIO ============
 let audioCtx = null;
 function ensureAudio() {
@@ -264,6 +284,7 @@ function playDemo(type) {
 }
 
 function startPhase(p) {
+  if (!sessionStart) sessionStart = new Date();
   phase = p;
   items = shuffle(p === 1 ? PHASE1_POOL : PHASE2_POOL);
   idx = 0;
@@ -297,6 +318,7 @@ function buildChoices() {
 
 function loadItem() {
   answered = false;
+  itemStartTime = Date.now();
   document.getElementById('feedback').className = '';
   document.getElementById('feedback').style.display = 'none';
   document.getElementById('nextBtn').classList.add('hidden');
@@ -349,11 +371,13 @@ function answer(choice) {
   if (correct) { if (phase === 1) scoreP1++; else scoreP2++; }
 
   log.push({
-    phase: 'Fase ' + phase,
+    phase: phase,
     n: idx + 1,
-    correctType: TYPE_LABEL[item.type],
-    chosen: TYPE_LABEL[choice],
-    result: correct ? 'Correcto' : 'Incorrecto'
+    topic: item.type === 'normal' ? 'ritmo_normal' : item.type,
+    expected: item.type,
+    chosen: choice,
+    correct: correct,
+    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
   });
 
   document.querySelectorAll('#choices button').forEach(b => b.disabled = true);
@@ -398,28 +422,75 @@ function showFinal() {
     'Fase 1 (normal vs contratiempo): ' + scoreP1 + ' de ' + PHASE1_POOL.length + '.<br>' +
     'Fase 2 (con síncopa): ' + scoreP2 + ' de ' + PHASE2_POOL.length + '.';
 
-  let lines = [];
-  lines.push('Puente síncopa/contratiempo — Registro de sesión');
-  lines.push('Fase 1 (normal vs contratiempo): ' + scoreP1 + '/' + PHASE1_POOL.length);
-  lines.push('Fase 2 (con síncopa): ' + scoreP2 + '/' + PHASE2_POOL.length);
-  lines.push('');
-  log.forEach(e => {
-    lines.push(e.phase + ' · Pregunta ' + e.n + ' · Correcto: ' + e.correctType +
-      ' · Elegido: ' + e.chosen + ' · ' + e.result);
-  });
-  document.getElementById('logArea').value = lines.join('\n');
-
   try {
     localStorage.setItem('andre_mus_audicion_puente-sincopa_v1', JSON.stringify({
-      date: new Date().toISOString(),
+      date: isoLocal(new Date()),
       fase1: { ok: scoreP1, total: PHASE1_POOL.length },
       fase2: { ok: scoreP2, total: PHASE2_POOL.length }
     }));
   } catch (e) { /* not critical */ }
 }
 
-function copyLog() {
-  const ta = document.getElementById('logArea');
+function buildSessionData(moodVal) {
+  var now = new Date();
+  var startDate = sessionStart || now;
+  var durationSec = Math.round((now - startDate) / 1000);
+  var totalCorrect = scoreP1 + scoreP2;
+  var totalItems = PHASE1_POOL.length + PHASE2_POOL.length;
+  var pct = totalItems > 0 ? Math.round(totalCorrect / totalItems * 1000) / 10 : 0;
+  var blocks = [
+    {id: 'fase_1', label: 'Fase 1: Normal vs Contratiempo', correct: scoreP1, total: PHASE1_POOL.length},
+    {id: 'fase_2', label: 'Fase 2: Normal vs Contratiempo vs Síncopa', correct: scoreP2, total: PHASE2_POOL.length}
+  ];
+  var items = log.map(function(e, i) {
+    return {
+      n: i + 1,
+      block: 'fase_' + e.phase,
+      topic: e.topic,
+      expected: e.expected,
+      answered: e.chosen,
+      correct: e.correct,
+      attempts: 1,
+      time_sec: e.time_sec || 0
+    };
+  });
+  return {
+    schema: 'andre-music-log/v1', tool: 'mus_audicion_puente-sincopa_v1', category: 'audicion',
+    session: {start: isoLocal(startDate), end: isoLocal(now), duration_sec: durationSec},
+    score: {correct: totalCorrect, total: totalItems, pct: pct},
+    blocks: blocks, items: items, mood: moodVal
+  };
+}
+
+function buildDualText(sd) {
+  var d = new Date(sd.session.end);
+  var fechaLocal = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  var blockLine = sd.blocks.map(function(b) { return b.label + ' ' + b.correct + '/' + b.total; }).join(' · ');
+  return '¿Con el fuerte o en el hueco? · ' + fechaLocal + '\n'
+    + 'Resultado: ' + sd.score.correct + ' de ' + sd.score.total + ' (' + sd.score.pct + '%)\n'
+    + 'Bloques: ' + blockLine + '\n'
+    + '---JSON---\n' + JSON.stringify(sd);
+}
+
+function finalizarConMood(moodVal) {
+  var moodEl = document.getElementById('mood-section');
+  if (moodEl) moodEl.style.display = 'none';
+  var sessionData = buildSessionData(moodVal);
+  var dualText = buildDualText(sessionData);
+  var regEl = document.getElementById('registro-final');
+  regEl.innerHTML = '<h2 style="font-size:19px;margin:16px 0 8px;">📋 Registro de sesión</h2>'
+    + '<textarea id="registroTexto" readonly style="width:100%;height:240px;font-family:monospace;font-size:13px;padding:10px;border:1px solid #000;border-radius:6px;">'
+    + dualText.replace(/</g,'&lt;') + '</textarea>'
+    + '<br><button onclick="copiarRegistro()">Copiar registro</button>';
+  try {
+    var hist = JSON.parse(localStorage.getItem('andre_music_history') || '[]');
+    hist.push(sessionData);
+    localStorage.setItem('andre_music_history', JSON.stringify(hist));
+  } catch(e) {}
+}
+
+function copiarRegistro() {
+  var ta = document.getElementById('registroTexto');
   ta.select();
   document.execCommand('copy');
 }

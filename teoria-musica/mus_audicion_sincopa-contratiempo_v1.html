@@ -149,11 +149,17 @@
     <span><span class="swatch" style="background:#cfcfcf"></span>Nota</span>
     <span><span class="swatch" style="background:#fff"></span>Silencio</span>
   </div>
-
-  <h2>Registro detallado (para copiar y pegar)</h2>
-  <textarea id="logArea" readonly></textarea>
+  <div id="mood-section" style="text-align:center;margin:24px 0;">
+    <p style="font-weight:700;margin-bottom:12px;">¿Cómo te has sentido?</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="finalizarConMood(1)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😓 Difícil</button>
+      <button onclick="finalizarConMood(2)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😐 Normal</button>
+      <button onclick="finalizarConMood(3)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😊 Fácil</button>
+    </div>
+    <button onclick="finalizarConMood(null)" style="margin-top:8px;font-size:.85rem;color:#999;border:none;background:none;cursor:pointer;text-decoration:underline;">Saltar</button>
+  </div>
+  <div id="registro-final"></div>
   <br>
-  <button onclick="copyLog()">Copiar registro</button>
   <button onclick="location.reload()">Repetir sesión</button>
 </div>
 
@@ -170,6 +176,19 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+function isoLocal(d) {
+  const pad = n => String(n).padStart(2, '0');
+  const off = -d.getTimezoneOffset();
+  const sign = off >= 0 ? '+' : '-';
+  const abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+
+let sessionStart = null;
+let itemStartTime = 0;
+
 // ---------- Pattern definitions ----------
 // Grid: 8 eighth-note slots per measure. Strong beats at index 0,2,4,6.
 // Each item: { type: 'contratiempo'|'sincopa'|'normal', notes: [{start,dur}] }
@@ -218,6 +237,7 @@ let answered = false;
 let audioCtx = null;
 
 function startSession() {
+  sessionStart = new Date();
   items = shuffle(ITEM_POOL);
   currentIndex = 0;
   score = 0;
@@ -238,6 +258,7 @@ function ensureAudio() {
 
 function loadItem() {
   answered = false;
+  itemStartTime = Date.now();
   document.getElementById('feedback').style.display = 'none';
   document.getElementById('feedback').className = '';
   document.getElementById('nextBtn').classList.add('hidden');
@@ -337,9 +358,11 @@ function answer(choice) {
 
   log.push({
     n: currentIndex + 1,
-    correctType: TYPE_LABEL[item.type],
-    chosen: TYPE_LABEL[choice],
-    result: correct ? 'Correcto' : 'Incorrecto'
+    topic: item.type === 'normal' ? 'ritmo_normal' : item.type,
+    expected: item.type,
+    chosen: choice,
+    correct: correct,
+    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
   });
 
   const buttons = document.querySelectorAll('#choices button');
@@ -374,29 +397,61 @@ function showFinal() {
   document.getElementById('summaryText').textContent =
     'Resultado: ' + score + ' de ' + items.length + ' correctas.';
 
-  let lines = [];
-  lines.push('Síncopa vs Contratiempo — Registro de sesión');
-  lines.push('Resultado: ' + score + '/' + items.length);
-  lines.push('');
-  log.forEach(entry => {
-    lines.push('Pregunta ' + entry.n + ' · Correcto: ' + entry.correctType +
-      ' · Elegido: ' + entry.chosen + ' · ' + entry.result);
-  });
-  document.getElementById('logArea').value = lines.join('\n');
-
   try {
     localStorage.setItem('andre_mus_audicion_sincopa-contratiempo_v1', JSON.stringify({
-      date: new Date().toISOString(),
-      score: score,
-      total: items.length
+      date: isoLocal(new Date()), score: score, total: items.length
     }));
-  } catch (e) {
-    // localStorage may be unavailable; not critical for session
-  }
+  } catch (e) {}
 }
 
-function copyLog() {
-  const ta = document.getElementById('logArea');
+function buildSessionData(moodVal) {
+  var now = new Date();
+  var startDate = sessionStart || now;
+  var durationSec = Math.round((now - startDate) / 1000);
+  var pct = items.length > 0 ? Math.round(score / items.length * 1000) / 10 : 0;
+  var sessionItems = log.map(function(e, i) {
+    return {
+      n: i + 1, block: '', topic: e.topic,
+      expected: e.expected, answered: e.chosen,
+      correct: e.correct, attempts: 1, time_sec: e.time_sec || 0
+    };
+  });
+  return {
+    schema: 'andre-music-log/v1', tool: 'mus_audicion_sincopa-contratiempo_v1', category: 'audicion',
+    session: {start: isoLocal(startDate), end: isoLocal(now), duration_sec: durationSec},
+    score: {correct: score, total: items.length, pct: pct},
+    blocks: [], items: sessionItems, mood: moodVal
+  };
+}
+
+function buildDualText(sd) {
+  var d = new Date(sd.session.end);
+  var fechaLocal = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  return 'Síncopa vs Contratiempo · ' + fechaLocal + '\n'
+    + 'Resultado: ' + sd.score.correct + ' de ' + sd.score.total + ' (' + sd.score.pct + '%)\n'
+    + 'Bloques: Sin bloques\n'
+    + '---JSON---\n' + JSON.stringify(sd);
+}
+
+function finalizarConMood(moodVal) {
+  var moodEl = document.getElementById('mood-section');
+  if (moodEl) moodEl.style.display = 'none';
+  var sessionData = buildSessionData(moodVal);
+  var dualText = buildDualText(sessionData);
+  var regEl = document.getElementById('registro-final');
+  regEl.innerHTML = '<h2 style="font-size:19px;margin:16px 0 8px;">📋 Registro de sesión</h2>'
+    + '<textarea id="registroTexto" readonly style="width:100%;height:240px;font-family:monospace;font-size:13px;padding:10px;border:1px solid #000;border-radius:6px;">'
+    + dualText.replace(/</g,'&lt;') + '</textarea>'
+    + '<br><button onclick="copiarRegistro()">Copiar registro</button>';
+  try {
+    var hist = JSON.parse(localStorage.getItem('andre_music_history') || '[]');
+    hist.push(sessionData);
+    localStorage.setItem('andre_music_history', JSON.stringify(hist));
+  } catch(e) {}
+}
+
+function copiarRegistro() {
+  var ta = document.getElementById('registroTexto');
   ta.select();
   document.execCommand('copy');
 }

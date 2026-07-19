@@ -179,10 +179,17 @@
 <div class="box hidden" id="finalBox">
   <h2>Resumen para André</h2>
   <p id="summaryText"></p>
-  <h2>Registro detallado (para copiar y pegar)</h2>
-  <textarea id="logArea" readonly></textarea>
+  <div id="mood-section" style="text-align:center;margin:24px 0;">
+    <p style="font-weight:700;margin-bottom:12px;">¿Cómo te has sentido?</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="finalizarConMood(1)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😓 Difícil</button>
+      <button onclick="finalizarConMood(2)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😐 Normal</button>
+      <button onclick="finalizarConMood(3)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😊 Fácil</button>
+    </div>
+    <button onclick="finalizarConMood(null)" style="margin-top:8px;font-size:.85rem;color:#999;border:none;background:none;cursor:pointer;text-decoration:underline;">Saltar</button>
+  </div>
+  <div id="registro-final"></div>
   <br>
-  <button onclick="copyLog()">Copiar registro</button>
   <button onclick="location.reload()">Repetir sesión</button>
 </div>
 
@@ -199,6 +206,19 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+function isoLocal(d) {
+  const pad = n => String(n).padStart(2, '0');
+  const off = -d.getTimezoneOffset();
+  const sign = off >= 0 ? '+' : '-';
+  const abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+
+let sessionStart = null;
+let itemStartTime = 0;
+
 // ================= AUDIO =================
 let audioCtx = null;
 function ensureAudio() {
@@ -242,7 +262,7 @@ function showBlock(n) {
   ['introBox','block1','block2','block2b','block3','finalBox'].forEach(id =>
     document.getElementById(id).classList.add('hidden'));
   if (n === 1) { document.getElementById('block1').classList.remove('hidden'); buildRow('row1', 4); }
-  if (n === 2) { document.getElementById('block2').classList.remove('hidden'); initTapBlock(); }
+  if (n === 2) { if(!sessionStart) sessionStart=new Date(); document.getElementById('block2').classList.remove('hidden'); initTapBlock(); }
   if (n === '2b') { document.getElementById('block2b').classList.remove('hidden'); initPointBlock(); }
   if (n === 3) { document.getElementById('block3').classList.remove('hidden'); initClassifyBlock(); }
 }
@@ -328,6 +348,7 @@ function startTapRound() {
   tapMisses = 0;
   strongTimesMs = [];
   tapActive = true;
+  itemStartTime = Date.now();
   document.getElementById('startRound2').classList.add('hidden');
   document.getElementById('tapBtn').classList.remove('hidden');
   document.getElementById('feedback2').style.display = 'none';
@@ -379,10 +400,13 @@ function finishTapRound(success) {
   if (success && tapMisses <= 2) scores.tap.ok++;
   const beats = TAP_ROUNDS[tapRound].beats;
   log.push({
-    block: 'Bloque 2 (tap)',
+    block: 'tap',
     item: 'Ronda ' + (tapRound + 1) + ' · compás de ' + beats,
+    topic: 'tiempo_fuerte',
+    expected: 'tiempo_1',
     chosen: 'Aciertos: ' + tapHits + ', fallos: ' + tapMisses,
-    result: (success && tapMisses <= 2) ? 'Correcto' : 'A repasar'
+    correct: success && tapMisses <= 2,
+    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
   });
 
   const fb = document.getElementById('feedback2');
@@ -430,6 +454,7 @@ function initPointBlock() {
 
 function loadPointItem() {
   pointAnswered = false;
+  itemStartTime = Date.now();
   const item = POINT_ITEMS[pointIndex];
   document.getElementById('progress2b').textContent =
     'Pregunta ' + (pointIndex + 1) + ' de ' + POINT_ITEMS.length;
@@ -471,10 +496,13 @@ function pointAnswer(chosen) {
   if (correct) scores.point.ok++;
 
   log.push({
-    block: 'Bloque 3 (señalar)',
-    item: 'Pregunta ' + (pointIndex + 1) + ' · compás de ' + item.beats + ' · fuerte en posición ' + (item.strong + 1),
-    chosen: 'Señaló posición ' + (chosen + 1),
-    result: correct ? 'Correcto' : 'Incorrecto'
+    block: 'point',
+    item: 'Pregunta ' + (pointIndex + 1) + ' · compás de ' + item.beats,
+    topic: 'tiempo_fuerte',
+    expected: 'posicion_' + (item.strong + 1),
+    chosen: 'posicion_' + (chosen + 1),
+    correct: correct,
+    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
   });
 
   for (let i = 0; i < item.beats; i++) {
@@ -515,6 +543,7 @@ function initClassifyBlock() {
 
 function loadClassifyItem() {
   classifyAnswered = false;
+  itemStartTime = Date.now();
   document.getElementById('progress3').textContent =
     'Pregunta ' + (classifyIndex + 1) + ' de ' + CLASSIFY_ITEMS.length +
     '  ·  Aciertos: ' + scores.classify.ok;
@@ -544,10 +573,13 @@ function answerClassify(choice) {
   if (correct) scores.classify.ok++;
 
   log.push({
-    block: 'Bloque 4 (clasificar)',
-    item: 'Pregunta ' + (classifyIndex + 1) + ' · compás de ' + beats,
-    chosen: choice + ' tiempos',
-    result: correct ? 'Correcto' : 'Incorrecto'
+    block: 'classify',
+    item: 'Pregunta ' + (classifyIndex + 1),
+    topic: 'compas_' + beats,
+    expected: String(beats),
+    chosen: String(choice),
+    correct: correct,
+    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
   });
 
   const fb = document.getElementById('feedback3');
@@ -574,42 +606,95 @@ function nextClassifyItem() {
 
 // ================= FINAL =================
 function showFinal() {
-  showBlockFinal();
+  clearVisualTimeouts();
+  stopTapLoop();
+  ['introBox','block1','block2','block2b','block3'].forEach(id =>
+    document.getElementById(id).classList.add('hidden'));
+  document.getElementById('finalBox').classList.remove('hidden');
+
   const s = scores;
   document.getElementById('summaryText').innerHTML =
     'Atrapar el fuerte (Bloque 2): ' + s.tap.ok + ' de ' + s.tap.total + ' rondas.<br>' +
     'Señalar el fuerte (Bloque 3): ' + s.point.ok + ' de ' + s.point.total + '.<br>' +
     'Clasificar compases (Bloque 4): ' + s.classify.ok + ' de ' + s.classify.total + '.';
 
-  let lines = [];
-  lines.push('Tiempos Fuertes y Débiles — Registro de sesión');
-  lines.push('Bloque 2 (tap): ' + s.tap.ok + '/' + s.tap.total);
-  lines.push('Bloque 3 (señalar): ' + s.point.ok + '/' + s.point.total);
-  lines.push('Bloque 4 (clasificar): ' + s.classify.ok + '/' + s.classify.total);
-  lines.push('');
-  log.forEach(e => {
-    lines.push(e.block + ' · ' + e.item + ' · Respuesta: ' + e.chosen + ' · ' + e.result);
-  });
-  document.getElementById('logArea').value = lines.join('\n');
-
   try {
     localStorage.setItem('andre_mus_audicion_fuerte-debil_v1', JSON.stringify({
-      date: new Date().toISOString(),
+      date: isoLocal(new Date()),
       tap: s.tap, point: s.point, classify: s.classify
     }));
   } catch (e) { /* not critical */ }
 }
 
-function showBlockFinal() {
-  clearVisualTimeouts();
-  stopTapLoop();
-  ['introBox','block1','block2','block2b','block3'].forEach(id =>
-    document.getElementById(id).classList.add('hidden'));
-  document.getElementById('finalBox').classList.remove('hidden');
+function buildSessionData(moodVal) {
+  var now = new Date();
+  var startDate = sessionStart || now;
+  var durationSec = Math.round((now - startDate) / 1000);
+  var s = scores;
+  var totalCorrect = s.tap.ok + s.point.ok + s.classify.ok;
+  var totalItems = s.tap.total + s.point.total + s.classify.total;
+  var pct = totalItems > 0 ? Math.round(totalCorrect / totalItems * 1000) / 10 : 0;
+
+  var blocks = [
+    {id: 'tap', label: 'Atrapar el fuerte', correct: s.tap.ok, total: s.tap.total},
+    {id: 'point', label: 'Señalar el fuerte', correct: s.point.ok, total: s.point.total},
+    {id: 'classify', label: 'Clasificar compases', correct: s.classify.ok, total: s.classify.total}
+  ];
+
+  var items = log.map(function(e, i) {
+    return {
+      n: i + 1,
+      block: e.block,
+      topic: e.topic,
+      expected: e.expected,
+      answered: e.chosen,
+      correct: e.correct,
+      attempts: 1,
+      time_sec: e.time_sec || 0
+    };
+  });
+
+  return {
+    schema: 'andre-music-log/v1',
+    tool: 'mus_audicion_fuerte-debil_v1',
+    category: 'audicion',
+    session: {start: isoLocal(startDate), end: isoLocal(now), duration_sec: durationSec},
+    score: {correct: totalCorrect, total: totalItems, pct: pct},
+    blocks: blocks,
+    items: items,
+    mood: moodVal
+  };
 }
 
-function copyLog() {
-  const ta = document.getElementById('logArea');
+function buildDualText(sd) {
+  var d = new Date(sd.session.end);
+  var fechaLocal = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  var blockLine = sd.blocks.map(function(b) { return b.label + ' ' + b.correct + '/' + b.total; }).join(' · ');
+  return 'Tiempos Fuertes y Débiles · ' + fechaLocal + '\n'
+    + 'Resultado: ' + sd.score.correct + ' de ' + sd.score.total + ' (' + sd.score.pct + '%)\n'
+    + 'Bloques: ' + blockLine + '\n'
+    + '---JSON---\n' + JSON.stringify(sd);
+}
+
+function finalizarConMood(moodVal) {
+  var moodEl = document.getElementById('mood-section');
+  if (moodEl) moodEl.style.display = 'none';
+  var sessionData = buildSessionData(moodVal);
+  var dualText = buildDualText(sessionData);
+  var regEl = document.getElementById('registro-final');
+  regEl.innerHTML = '<h2 style="font-size:19px;margin:16px 0 8px;">📋 Registro de sesión</h2>'
+    + '<textarea id="registroTexto" readonly style="width:100%;height:240px;font-family:monospace;font-size:13px;padding:10px;border:1px solid #000;border-radius:6px;">'
+    + dualText.replace(/</g,'&lt;') + '</textarea>'
+    + '<br><button onclick="copiarRegistro()">Copiar registro</button>';
+  try {
+    var hist = JSON.parse(localStorage.getItem('andre_music_history') || '[]');
+    hist.push(sessionData);
+    localStorage.setItem('andre_music_history', JSON.stringify(hist));
+  } catch(e) {}
+}
+
+function copiarRegistro() {
+  var ta = document.getElementById('registroTexto');
   ta.select();
   document.execCommand('copy');
 }

@@ -115,17 +115,21 @@
   <div id="bloque2"></div>
 
   <!-- RESUMEN FINAL -->
-  <div class="resumen">
-    <h2>Resumen de la sesión</h2>
-    <p>Al terminar, pulsa "Generar resumen", luego "Copiar" y pégalo en el chat para planificar la próxima sesión.</p>
-    <div class="resumen-btns">
-      <button class="btn btn-oir" onclick="generarResumen()">Generar resumen</button>
-      <button class="btn btn-sol" onclick="copiarResumen()">Copiar</button>
-      <span id="avisoCopia"></span>
+  <div id="resumen-section" style="display:none; margin-top:46px; border-top:2px solid var(--tinta); padding-top:20px;">
+    <h2 style="font-size:1.3rem; margin:0 0 12px;">Resumen de la sesión</h2>
+    <div id="mood-section" style="text-align:center;margin:24px 0;">
+      <p style="font-weight:700;margin-bottom:12px;">¿Cómo te has sentido?</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn" onclick="finalizarConMood(1)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😓 Difícil</button>
+        <button class="btn" onclick="finalizarConMood(2)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😐 Normal</button>
+        <button class="btn" onclick="finalizarConMood(3)" style="font-size:1.5rem;padding:10px 20px;border-radius:12px;border:2px solid #ddd;background:#fff;">😊 Fácil</button>
+      </div>
+      <button onclick="finalizarConMood(null)" style="margin-top:8px;font-size:.85rem;color:#999;border:none;background:none;cursor:pointer;text-decoration:underline;">Saltar</button>
     </div>
-    <textarea id="resumenTexto" readonly placeholder="El resumen aparecerá aquí…"></textarea>
-    <div style="margin-top:16px"><button class="btn-reset" onclick="resetTodo()">Reiniciar progreso</button></div>
+    <div id="registro-final"></div>
   </div>
+
+  <div style="margin-top:16px"><button class="btn-reset" onclick="resetTodo()">Reiniciar progreso</button></div>
 
 </div>
 
@@ -142,6 +146,18 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+function isoLocal(d) {
+  const pad = n => String(n).padStart(2, '0');
+  const off = -d.getTimezoneOffset();
+  const sign = off >= 0 ? '+' : '-';
+  const abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+
+let sessionStart = null;
+
 /* ===================== AUDIO ===================== */
 let audioCtx=null;
 function getCtx(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
@@ -250,59 +266,95 @@ function actualizaProgreso(){
   document.getElementById('progresoTxt').textContent=`Marcados: ${hechos} / ${total}`;
   document.getElementById('progresoRelleno').style.width=(hechos/total*100)+'%';
 }
-function resetTodo(){ if(confirm('¿Borrar todas las marcas y empezar de nuevo?')){ estado={}; guardar(); pintar(); document.getElementById('resumenTexto').value=''; } }
-
-/* ===================== RESUMEN COPIABLE ===================== */
-function lineaCelda(id, tokens, compas){
-  const m=estado[id];
-  const estadoTxt = m==='bien' ? '✓ bien' : (m==='repasar' ? '✗ A REPASAR' : '— (sin marcar)');
-  const tc=tiempoCorcheas(tokens);
-  const hint = tc ? ` [corcheas en tiempo ${tc}]` : (tokens.includes('silencio')?' [con silencio]':'');
-  const num='Nº'+id.split('-')[1];
-  return `  ${num.padEnd(4)} ${nombresRitmo(tokens).padEnd(46)} → ${estadoTxt}${hint}`;
-}
-function generarResumen(){
-  const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
-  const tempoTxt=(TEMPO===69)?'Lento (69)':'Normal (84)';
-  let L=[];
-  L.push('=== DICTADO RÍTMICO · André — Sesión 2 (repaso corcheas) ===');
-  L.push('Fecha: '+fecha+'   |   Velocidad usada: '+tempoTxt);
-  L.push('Objetivo: una pareja de corcheas aislada entre negras (cambio de subdivisión a mitad de compás).');
-  L.push('');
-  L.push('BLOQUE 1 (4/4):');
-  BLOQUE_1.forEach((tk,i)=>L.push(lineaCelda('b1-'+(i+1),tk,4)));
-  L.push('');
-  L.push('BLOQUE 2 (3/4):');
-  BLOQUE_2.forEach((tk,i)=>L.push(lineaCelda('b2-'+(i+1),tk,3)));
-  L.push('');
-  const total=BLOQUE_1.length+BLOQUE_2.length;
-  const bien=Object.keys(estado).filter(k=>estado[k]==='bien').length;
-  const rep=Object.keys(estado).filter(k=>estado[k]==='repasar');
-  L.push('Resultado: '+bien+' / '+total+' correctas.');
-  if(rep.length){
-    const repTxt=rep.map(id=>{
-      const num='Nº'+id.split('-')[1];
-      const bloque=id.startsWith('b1')?'B1':'B2';
-      const tk=(id.startsWith('b1')?BLOQUE_1:BLOQUE_2)[parseInt(id.split('-')[1])-1];
-      const tc=tiempoCorcheas(tk);
-      return `${bloque}-${num}${tc?' (corcheas t'+tc+')':''}`;
-    }).join(', ');
-    L.push('A repasar: '+repTxt);
-  } else {
-    L.push('A repasar: ninguna marcada.');
+function resetTodo(){
+  if(confirm('¿Borrar todas las marcas y empezar de nuevo?')){
+    estado={}; guardar(); sessionStart=null;
+    document.getElementById('resumen-section').style.display='none';
+    document.getElementById('mood-section').style.display='';
+    document.getElementById('registro-final').innerHTML='';
+    pintar();
   }
-  L.push('Notas del mediador (José Pedro): _______________________________');
-  document.getElementById('resumenTexto').value=L.join('\n');
-  document.getElementById('avisoCopia').textContent='';
 }
-function copiarResumen(){
-  const ta=document.getElementById('resumenTexto');
-  if(!ta.value){ generarResumen(); }
-  ta.select(); ta.setSelectionRange(0,99999);
-  let ok=false;
-  try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
-  if(navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(()=>{}, ()=>{}); ok=true; }
-  document.getElementById('avisoCopia').textContent = ok ? '✓ Copiado' : 'Selecciona el texto y copia con Ctrl+C';
+
+/* ===================== SESSION TRACKING ===================== */
+function captureSessionStart(){ if(!sessionStart) sessionStart=new Date(); }
+
+var _origTocarCelda=tocarCelda;
+tocarCelda=function(){ captureSessionStart(); return _origTocarCelda.apply(this,arguments); };
+var _origVerSolucion=verSolucion;
+verSolucion=function(){ captureSessionStart(); return _origVerSolucion.apply(this,arguments); };
+
+function checkShowResumen(){
+  var total=BLOQUE_1.length+BLOQUE_2.length;
+  var hechos=Object.keys(estado).filter(function(k){ return estado[k]; }).length;
+  if(hechos>=total) document.getElementById('resumen-section').style.display='';
+}
+var _origActualizaProgreso=actualizaProgreso;
+actualizaProgreso=function(){ _origActualizaProgreso(); checkShowResumen(); };
+
+function buildSessionData(moodVal){
+  var now=new Date();
+  var startDate=sessionStart||now;
+  var durationSec=Math.round((now-startDate)/1000);
+  var state=JSON.parse(localStorage.getItem(LS_KEY)||'{}');
+  var items=[], correct=0, total=0;
+  var blocks=[
+    {id:"bloque_1", label:"Bloque 1 (4/4)", correct:0, total:0},
+    {id:"bloque_2", label:"Bloque 2 (3/4)", correct:0, total:0}
+  ];
+  BLOQUE_1.forEach(function(tokens,i){
+    var cellId="b1-"+(i+1); var mark=state[cellId]; if(!mark) return;
+    var isCorrect=(mark==="bien"); total++;
+    if(isCorrect){ correct++; blocks[0].correct++; } blocks[0].total++;
+    items.push({n:items.length+1, block:"bloque_1", topic:"compas_4",
+      expected:tokens.join(' '), answered:mark, correct:isCorrect, attempts:1, time_sec:0});
+  });
+  BLOQUE_2.forEach(function(tokens,i){
+    var cellId="b2-"+(i+1); var mark=state[cellId]; if(!mark) return;
+    var isCorrect=(mark==="bien"); total++;
+    if(isCorrect){ correct++; blocks[1].correct++; } blocks[1].total++;
+    items.push({n:items.length+1, block:"bloque_2", topic:"compas_3",
+      expected:tokens.join(' '), answered:mark, correct:isCorrect, attempts:1, time_sec:0});
+  });
+  var pct=total>0?Math.round(correct/total*1000)/10:0;
+  return {
+    schema:"andre-music-log/v1", tool:"mus_dictado_simple-s2_v1", category:"dictado",
+    session:{start:isoLocal(startDate), end:isoLocal(now), duration_sec:durationSec},
+    score:{correct:correct, total:total, pct:pct}, blocks:blocks, items:items, mood:moodVal
+  };
+}
+
+function buildDualText(sd){
+  var d=new Date(sd.session.end);
+  var fechaLocal=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  var nombre='Dictado Rítmico · Sesión 2';
+  var blockLine=sd.blocks.map(function(b){ return b.label+' '+b.correct+'/'+b.total; }).join(' · ');
+  return nombre+' · '+fechaLocal+'\n'
+    +'Resultado: '+sd.score.correct+' de '+sd.score.total+' ('+sd.score.pct+'%)\n'
+    +'Bloques: '+blockLine+'\n'
+    +'---JSON---\n'+JSON.stringify(sd);
+}
+
+function finalizarConMood(moodVal){
+  var moodEl=document.getElementById('mood-section');
+  if(moodEl) moodEl.style.display='none';
+  var sessionData=buildSessionData(moodVal);
+  var dualText=buildDualText(sessionData);
+  var regEl=document.getElementById('registro-final');
+  regEl.innerHTML='<h3 style="margin:16px 0 8px;">📋 Registro de sesión</h3>'
+    +'<textarea id="registroTexto" readonly style="width:100%;min-height:180px;font-family:monospace;font-size:.82rem;padding:10px;border:1px solid #ccc;border-radius:8px;resize:vertical;">'
+    +dualText.replace(/</g,'&lt;')+'</textarea>'
+    +'<button onclick="copiarRegistro()" style="margin-top:8px;padding:8px 20px;border-radius:8px;border:1px solid #ddd;background:#f9f9f9;cursor:pointer;">📋 Copiar registro</button>';
+  try{
+    var hist=JSON.parse(localStorage.getItem('andre_music_history')||'[]');
+    hist.push(sessionData);
+    localStorage.setItem('andre_music_history',JSON.stringify(hist));
+  }catch(e){}
+}
+
+function copiarRegistro(){
+  var ta=document.getElementById('registroTexto');
+  ta.select(); document.execCommand('copy');
 }
 
 pintar();
