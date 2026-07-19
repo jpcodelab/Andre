@@ -38,6 +38,16 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 | `teoria-musica/dictado_ritmico_andre.html` | — | Dictado rítmico · Sesión 1 (4/4 y 3/4, Web Audio API) |
 | `teoria-musica/dictado_ritmico_andre_s2.html` | — | Dictado rítmico · Sesión 2 (foco en corchea por posición) |
 
+### Discriminación auditiva — síncopa y contratiempo (Web Audio API)
+
+Secuencia progresiva de 3 herramientas. Requieren sonido activo y Chrome/Edge. No funcionan offline.
+
+| Archivo | Paso | Descripción |
+|---------|------|-------------|
+| `teoria-musica/andre_fuerte_debil_v1.html` | 1 — Prerrequisito | Tiempos fuertes y débiles: escucha guiada, tap en tiempo real, rejilla, clasificación de compases 2/3/4 |
+| `teoria-musica/andre_puente_sincopa_v1.html` | 2 — Puente | ¿Con el fuerte o en el hueco? Ritmo normal vs contratiempo (Fase 1) y síncopa como tercera opción (Fase 2) |
+| `teoria-musica/andre_sincopa_contratiempo_v1.html` | 3 — Consolidación | Síncopa vs Contratiempo: 12 preguntas con metrónomo + nota, tres opciones, rejilla explicativa |
+
 ---
 
 ## 🏫 Contenidos curriculares
@@ -84,6 +94,8 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 ## 📱 Uso offline
 
 Descarga cualquier archivo `.html` y ábrelo en el navegador del móvil o tablet. Funciona sin conexión — ideal para avión o tren. Los repasos de música guardan el progreso y el registro de sesión en localStorage.
+
+> **Excepción:** Los dictados rítmicos y las herramientas de discriminación auditiva usan Web Audio API y **requieren sonido activo y Chrome/Edge**. No funcionan offline ni son imprimibles.
 
 ## 👩‍🏫 Tutoras
 

@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Tiempos Fuertes y Débiles</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Lora', serif;
+    background: #ffffff;
+    color: #000000;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    line-height: 1.5;
+  }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h2 { font-size: 19px; margin-top: 8px; }
+  .subtitle { color: #444; margin-bottom: 20px; }
+  .box {
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  button {
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    padding: 10px 16px;
+    margin: 5px 6px 5px 0;
+    border: 2px solid #000;
+    background: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover:not(:disabled) { background: #000; color: #fff; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  .beat-row { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+  .beat {
+    width: 52px;
+    height: 52px;
+    border: 2px solid #999;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: #fff;
+    transition: background 0.08s, transform 0.08s;
+  }
+  .beat.strongmark { border: 3px solid #000; font-weight: 700; }
+  .beat.lit { background: #cfcfcf; transform: scale(1.12); }
+  .beat.litStrong { background: #000; color: #fff; transform: scale(1.2); }
+  .beat.clickable { cursor: pointer; }
+  .beat.clickable:hover { background: #eee; }
+  .beat.chosenOk { background: #000; color: #fff; }
+  .beat.chosenBad { background: #fff; border: 2px dashed #000; }
+  #feedback2, #feedback2b, #feedback3 {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    display: none;
+  }
+  .ok { background: #eaeaea; display: block !important; }
+  .bad { background: #f7f7f7; border: 1px dashed #000; display: block !important; }
+  .progress { color: #555; margin-bottom: 10px; font-size: 15px; }
+  textarea {
+    width: 100%;
+    height: 240px;
+    font-family: monospace;
+    font-size: 13px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 6px;
+  }
+  .hidden { display: none; }
+  .note-audio-warning { font-size: 13px; color: #555; margin-top: 6px; }
+  .bigTap {
+    width: 100%;
+    height: 90px;
+    font-size: 22px;
+    margin-top: 10px;
+  }
+  .tapResult { font-size: 15px; margin-top: 8px; min-height: 24px; }
+  .stepLabel {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Tiempos Fuertes y Débiles</h1>
+<p class="subtitle">Paso previo a síncopa y contratiempo · Lenguaje Musical</p>
+
+<!-- ============ INTRO ============ -->
+<div class="box" id="introBox">
+  <h2>¿Qué es el tiempo fuerte?</h2>
+  <p>Todos los compases tienen un latido que <strong>pesa más</strong> que los demás: el <strong>tiempo 1</strong>. Es como cuando marchas: UN-dos, UN-dos… el pie que pisa más fuerte siempre es el mismo.</p>
+  <p>En esta sesión vas a aprender a <strong>escucharlo</strong>, no solo a verlo escrito:</p>
+  <p>
+    <strong>Bloque 1</strong>: escucha y mira cómo se ilumina el tiempo fuerte.<br>
+    <strong>Bloque 2</strong>: ¡pulsa el botón justo cuando caiga el fuerte!<br>
+    <strong>Bloque 3</strong>: escucha, y después señala en la rejilla cuál era el fuerte.<br>
+    <strong>Bloque 4</strong>: ¿el compás es de 2, 3 o 4 tiempos?
+  </p>
+  <p class="note-audio-warning">⚠️ Este archivo necesita sonido. No funciona sin audio ni con el volumen apagado.</p>
+  <button onclick="showBlock(1)">Empezar · Bloque 1</button>
+</div>
+
+<!-- ============ BLOQUE 1: escucha guiada ============ -->
+<div class="box hidden" id="block1">
+  <span class="stepLabel">Bloque 1</span>
+  <h2>Escucha y mira</h2>
+  <p>Pulsa cada botón y <strong>solo escucha</strong>. El tiempo fuerte suena más grave y fuerte, y se pone negro en la rejilla. Fíjate: siempre es el <strong>1</strong>.</p>
+
+  <div class="beat-row" id="row1"></div>
+
+  <button onclick="demoPlay(2)">▶ Compás de 2 (como marchar)</button>
+  <button onclick="demoPlay(3)">▶ Compás de 3 (como un vals)</button>
+  <button onclick="demoPlay(4)">▶ Compás de 4 (como muchas canciones)</button>
+
+  <p style="margin-top:14px;">Cuando lo tengas claro (escucha cada uno al menos 2 veces), sigue adelante.</p>
+  <button onclick="showBlock(2)">Ir al Bloque 2 →</button>
+</div>
+
+<!-- ============ BLOQUE 2: tap en tiempo real ============ -->
+<div class="box hidden" id="block2">
+  <span class="stepLabel">Bloque 2</span>
+  <h2>¡Atrapa el tiempo fuerte!</h2>
+  <p>Va a sonar un compás en bucle (sin rejilla, solo con el oído). Pulsa el botón grande <strong>justo cuando suene el tiempo fuerte</strong>. Tienes que atraparlo 4 veces seguidas por ronda.</p>
+  <div class="progress" id="progress2"></div>
+  <button id="startRound2" onclick="startTapRound()">▶ Empezar ronda</button>
+  <button class="bigTap hidden" id="tapBtn" onclick="registerTap()">👏 ¡AHORA!</button>
+  <div class="tapResult" id="tapResult"></div>
+  <div id="feedback2"></div>
+  <button id="next2" class="hidden" onclick="nextTapRound()">Siguiente ronda →</button>
+  <button id="toBlock2b" class="hidden" onclick="showBlock('2b')">Ir al Bloque 3 →</button>
+</div>
+
+<!-- ============ BLOQUE 2b: versión tranquila ============ -->
+<div class="box hidden" id="block2b">
+  <span class="stepLabel">Bloque 3</span>
+  <h2>Escucha y señala</h2>
+  <p>Ahora sin prisas. Suena el compás 2 veces y se para. Después, <strong>pulsa en la rejilla la casilla donde estaba el tiempo fuerte</strong>. Uno de los tiempos sonó más grave y fuerte — ¿cuál era?</p>
+  <div class="progress" id="progress2b"></div>
+  <button id="play2b" onclick="playPointItem()">🔊 Escuchar</button>
+  <button onclick="playPointItem()">🔁 Repetir</button>
+  <div class="beat-row" id="row2b"></div>
+  <div id="feedback2b"></div>
+  <button id="next2b" class="hidden" onclick="nextPointItem()">Siguiente →</button>
+  <button id="toBlock3" class="hidden" onclick="showBlock(3)">Ir al Bloque 4 →</button>
+</div>
+
+<!-- ============ BLOQUE 3: clasificación 2/3/4 ============ -->
+<div class="box hidden" id="block3">
+  <span class="stepLabel">Bloque 4</span>
+  <h2>¿De cuántos tiempos es el compás?</h2>
+  <p>Escucha el patrón. Cada vez que suene el tiempo fuerte, empieza a contar de nuevo: <strong>UN</strong>-dos, o <strong>UN</strong>-dos-tres, o <strong>UN</strong>-dos-tres-cuatro. ¿Cada cuántos tiempos vuelve el fuerte?</p>
+  <div class="progress" id="progress3"></div>
+  <button onclick="playClassifyItem()">🔊 Escuchar</button>
+  <button onclick="playClassifyItem()">🔁 Repetir</button>
+  <div style="margin-top:12px;">
+    <button onclick="answerClassify(2)">2 tiempos</button>
+    <button onclick="answerClassify(3)">3 tiempos</button>
+    <button onclick="answerClassify(4)">4 tiempos</button>
+  </div>
+  <div id="feedback3"></div>
+  <button id="next3" class="hidden" onclick="nextClassifyItem()">Siguiente →</button>
+</div>
+
+<!-- ============ FINAL ============ -->
+<div class="box hidden" id="finalBox">
+  <h2>Resumen para André</h2>
+  <p id="summaryText"></p>
+  <h2>Registro detallado (para copiar y pegar)</h2>
+  <textarea id="logArea" readonly></textarea>
+  <br>
+  <button onclick="copyLog()">Copiar registro</button>
+  <button onclick="location.reload()">Repetir sesión</button>
+</div>
+
+<script>
+// ================= AUDIO =================
+let audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+// Strong beat: low, loud. Weak beat: higher, softer.
+function playBeat(t, strong) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'triangle';
+  osc.frequency.value = strong ? 220 : 660;
+  const vol = strong ? 0.4 : 0.14;
+  const dur = strong ? 0.22 : 0.12;
+  gain.gain.setValueAtTime(0.001, t);
+  gain.gain.linearRampToValueAtTime(vol, t + 0.012);
+  gain.gain.linearRampToValueAtTime(0.001, t + dur);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.02);
+}
+
+const BPM = 88;
+const BEAT_SEC = 60 / BPM;
+
+// ================= STATE / LOG =================
+let log = [];
+let scores = { tap: {ok:0,total:0}, point: {ok:0,total:0}, classify: {ok:0,total:0} };
+let visualTimeouts = [];
+
+function clearVisualTimeouts() {
+  visualTimeouts.forEach(id => clearTimeout(id));
+  visualTimeouts = [];
+}
+
+function showBlock(n) {
+  clearVisualTimeouts();
+  stopTapLoop();
+  ['introBox','block1','block2','block2b','block3','finalBox'].forEach(id =>
+    document.getElementById(id).classList.add('hidden'));
+  if (n === 1) { document.getElementById('block1').classList.remove('hidden'); buildRow('row1', 4); }
+  if (n === 2) { document.getElementById('block2').classList.remove('hidden'); initTapBlock(); }
+  if (n === '2b') { document.getElementById('block2b').classList.remove('hidden'); initPointBlock(); }
+  if (n === 3) { document.getElementById('block3').classList.remove('hidden'); initClassifyBlock(); }
+}
+
+// ================= BLOQUE 1: demo =================
+function buildRow(rowId, count, strongIndex) {
+  const row = document.getElementById(rowId);
+  row.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const d = document.createElement('div');
+    d.className = 'beat' + ((strongIndex === undefined ? i === 0 : i === strongIndex) ? ' strongmark' : '');
+    d.textContent = i + 1;
+    d.id = rowId + '_b' + i;
+    row.appendChild(d);
+  }
+}
+
+function demoPlay(beats) {
+  ensureAudio();
+  clearVisualTimeouts();
+  buildRow('row1', beats);
+  const start = audioCtx.currentTime + 0.2;
+  const startMs = performance.now() + 200;
+  const measures = 4;
+  for (let m = 0; m < measures; m++) {
+    for (let b = 0; b < beats; b++) {
+      const t = start + (m * beats + b) * BEAT_SEC;
+      playBeat(t, b === 0);
+      const delay = startMs + (m * beats + b) * BEAT_SEC * 1000 - performance.now();
+      const id = setTimeout(() => lightBeat('row1', b, b === 0, beats), Math.max(0, delay));
+      visualTimeouts.push(id);
+    }
+  }
+}
+
+function lightBeat(rowId, index, strong, count) {
+  for (let i = 0; i < count; i++) {
+    const el = document.getElementById(rowId + '_b' + i);
+    if (el) el.classList.remove('lit', 'litStrong');
+  }
+  const el = document.getElementById(rowId + '_b' + index);
+  if (el) el.classList.add(strong ? 'litStrong' : 'lit');
+}
+
+// ================= BLOQUE 2: tap en tiempo real =================
+const TAP_ROUNDS = [ {beats:2}, {beats:4}, {beats:3}, {beats:4}, {beats:3} ];
+let tapRound = 0;
+let tapLoopIds = [];
+let tapNeeded = 4;
+let tapHits = 0;
+let tapMisses = 0;
+let strongTimesMs = [];
+let tapActive = false;
+const TAP_TOLERANCE_MS = 220;
+
+function initTapBlock() {
+  tapRound = 0;
+  updateTapProgress();
+  document.getElementById('startRound2').classList.remove('hidden');
+  document.getElementById('tapBtn').classList.add('hidden');
+  document.getElementById('next2').classList.add('hidden');
+  document.getElementById('toBlock2b').classList.add('hidden');
+  document.getElementById('feedback2').style.display = 'none';
+  document.getElementById('feedback2').className = '';
+  document.getElementById('tapResult').textContent = '';
+}
+
+function updateTapProgress() {
+  document.getElementById('progress2').textContent =
+    'Ronda ' + (tapRound + 1) + ' de ' + TAP_ROUNDS.length;
+}
+
+function stopTapLoop() {
+  tapLoopIds.forEach(id => clearTimeout(id));
+  tapLoopIds = [];
+  tapActive = false;
+}
+
+function startTapRound() {
+  ensureAudio();
+  stopTapLoop();
+  tapHits = 0;
+  tapMisses = 0;
+  strongTimesMs = [];
+  tapActive = true;
+  document.getElementById('startRound2').classList.add('hidden');
+  document.getElementById('tapBtn').classList.remove('hidden');
+  document.getElementById('feedback2').style.display = 'none';
+  document.getElementById('feedback2').className = '';
+  document.getElementById('tapResult').textContent = 'Escucha primero un compás entero, y luego ¡atrapa el fuerte!';
+
+  const beats = TAP_ROUNDS[tapRound].beats;
+  const measures = 10; // enough loop time
+  const start = audioCtx.currentTime + 0.25;
+  const startMs = performance.now() + 250;
+
+  for (let m = 0; m < measures; m++) {
+    for (let b = 0; b < beats; b++) {
+      const t = start + (m * beats + b) * BEAT_SEC;
+      playBeat(t, b === 0);
+      if (b === 0 && m >= 1) { // first measure is listen-only
+        strongTimesMs.push(startMs + (m * beats + b) * BEAT_SEC * 1000);
+      }
+    }
+  }
+  // auto end round if time runs out
+  const endId = setTimeout(() => { if (tapActive) finishTapRound(false); },
+    measures * beats * BEAT_SEC * 1000 + 400);
+  tapLoopIds.push(endId);
+}
+
+function registerTap() {
+  if (!tapActive) return;
+  const now = performance.now();
+  // find nearest strong time
+  let nearest = Infinity;
+  strongTimesMs.forEach(t => {
+    const d = Math.abs(now - t);
+    if (d < nearest) nearest = d;
+  });
+  if (nearest <= TAP_TOLERANCE_MS) {
+    tapHits++;
+    document.getElementById('tapResult').textContent = '✅ ¡Atrapado! (' + tapHits + ' de ' + tapNeeded + ')';
+  } else {
+    tapMisses++;
+    document.getElementById('tapResult').textContent = '❌ Ese no era el fuerte… sigue escuchando. (' + tapHits + ' de ' + tapNeeded + ')';
+  }
+  if (tapHits >= tapNeeded) finishTapRound(true);
+}
+
+function finishTapRound(success) {
+  stopTapLoop();
+  scores.tap.total++;
+  if (success && tapMisses <= 2) scores.tap.ok++;
+  const beats = TAP_ROUNDS[tapRound].beats;
+  log.push({
+    block: 'Bloque 2 (tap)',
+    item: 'Ronda ' + (tapRound + 1) + ' · compás de ' + beats,
+    chosen: 'Aciertos: ' + tapHits + ', fallos: ' + tapMisses,
+    result: (success && tapMisses <= 2) ? 'Correcto' : 'A repasar'
+  });
+
+  const fb = document.getElementById('feedback2');
+  if (success && tapMisses <= 2) {
+    fb.className = 'ok';
+    fb.textContent = '✅ ¡Muy bien! Has atrapado el tiempo fuerte del compás de ' + beats + ' tiempos.';
+  } else if (success) {
+    fb.className = 'ok';
+    fb.textContent = 'Conseguido, aunque con varios fallos (' + tapMisses + '). El fuerte es el sonido GRAVE que vuelve cada ' + beats + ' tiempos.';
+  } else {
+    fb.className = 'bad';
+    fb.textContent = 'Se acabó el tiempo. Recuerda: el fuerte es el sonido más GRAVE y fuerte. Vuelve cada ' + beats + ' tiempos.';
+  }
+  document.getElementById('tapBtn').classList.add('hidden');
+  if (tapRound + 1 >= TAP_ROUNDS.length) {
+    document.getElementById('toBlock2b').classList.remove('hidden');
+  } else {
+    document.getElementById('next2').classList.remove('hidden');
+  }
+}
+
+function nextTapRound() {
+  tapRound++;
+  updateTapProgress();
+  document.getElementById('next2').classList.add('hidden');
+  document.getElementById('feedback2').style.display = 'none';
+  document.getElementById('feedback2').className = '';
+  document.getElementById('tapResult').textContent = '';
+  document.getElementById('startRound2').classList.remove('hidden');
+}
+
+// ================= BLOQUE 2b: escucha y señala =================
+// Strong beat placed at a rotated position so André must LISTEN, not assume slot 1.
+const POINT_ITEMS = [
+  {beats:4, strong:0}, {beats:3, strong:1}, {beats:4, strong:2},
+  {beats:2, strong:1}, {beats:3, strong:0}, {beats:4, strong:3}
+];
+let pointIndex = 0;
+let pointAnswered = false;
+
+function initPointBlock() {
+  pointIndex = 0;
+  loadPointItem();
+}
+
+function loadPointItem() {
+  pointAnswered = false;
+  const item = POINT_ITEMS[pointIndex];
+  document.getElementById('progress2b').textContent =
+    'Pregunta ' + (pointIndex + 1) + ' de ' + POINT_ITEMS.length;
+  document.getElementById('feedback2b').style.display = 'none';
+  document.getElementById('feedback2b').className = '';
+  document.getElementById('next2b').classList.add('hidden');
+  document.getElementById('toBlock3').classList.add('hidden');
+
+  const row = document.getElementById('row2b');
+  row.innerHTML = '';
+  for (let i = 0; i < item.beats; i++) {
+    const d = document.createElement('div');
+    d.className = 'beat clickable';
+    d.textContent = i + 1;
+    d.onclick = () => pointAnswer(i);
+    d.id = 'row2b_b' + i;
+    row.appendChild(d);
+  }
+}
+
+function playPointItem() {
+  ensureAudio();
+  const item = POINT_ITEMS[pointIndex];
+  const start = audioCtx.currentTime + 0.2;
+  for (let m = 0; m < 2; m++) {
+    for (let b = 0; b < item.beats; b++) {
+      const t = start + (m * item.beats + b) * BEAT_SEC;
+      playBeat(t, b === item.strong);
+    }
+  }
+}
+
+function pointAnswer(chosen) {
+  if (pointAnswered) return;
+  pointAnswered = true;
+  const item = POINT_ITEMS[pointIndex];
+  const correct = chosen === item.strong;
+  scores.point.total++;
+  if (correct) scores.point.ok++;
+
+  log.push({
+    block: 'Bloque 3 (señalar)',
+    item: 'Pregunta ' + (pointIndex + 1) + ' · compás de ' + item.beats + ' · fuerte en posición ' + (item.strong + 1),
+    chosen: 'Señaló posición ' + (chosen + 1),
+    result: correct ? 'Correcto' : 'Incorrecto'
+  });
+
+  for (let i = 0; i < item.beats; i++) {
+    const el = document.getElementById('row2b_b' + i);
+    el.classList.remove('clickable');
+    el.onclick = null;
+    if (i === item.strong) el.classList.add('chosenOk');
+    else if (i === chosen) el.classList.add('chosenBad');
+  }
+
+  const fb = document.getElementById('feedback2b');
+  fb.className = correct ? 'ok' : 'bad';
+  fb.textContent = correct
+    ? '✅ ¡Exacto! El sonido grave y fuerte estaba en la casilla ' + (item.strong + 1) + '.'
+    : '❌ El fuerte estaba en la casilla ' + (item.strong + 1) + '. Escucha otra vez con "Repetir": es el sonido más GRAVE.';
+
+  if (pointIndex + 1 >= POINT_ITEMS.length) {
+    document.getElementById('toBlock3').classList.remove('hidden');
+  } else {
+    document.getElementById('next2b').classList.remove('hidden');
+  }
+}
+
+function nextPointItem() {
+  pointIndex++;
+  loadPointItem();
+}
+
+// ================= BLOQUE 3: clasificación =================
+const CLASSIFY_ITEMS = [4, 2, 3, 4, 3, 2, 4, 3];
+let classifyIndex = 0;
+let classifyAnswered = false;
+
+function initClassifyBlock() {
+  classifyIndex = 0;
+  loadClassifyItem();
+}
+
+function loadClassifyItem() {
+  classifyAnswered = false;
+  document.getElementById('progress3').textContent =
+    'Pregunta ' + (classifyIndex + 1) + ' de ' + CLASSIFY_ITEMS.length +
+    '  ·  Aciertos: ' + scores.classify.ok;
+  document.getElementById('feedback3').style.display = 'none';
+  document.getElementById('feedback3').className = '';
+  document.getElementById('next3').classList.add('hidden');
+}
+
+function playClassifyItem() {
+  ensureAudio();
+  const beats = CLASSIFY_ITEMS[classifyIndex];
+  const start = audioCtx.currentTime + 0.2;
+  const measures = 3;
+  for (let m = 0; m < measures; m++) {
+    for (let b = 0; b < beats; b++) {
+      playBeat(start + (m * beats + b) * BEAT_SEC, b === 0);
+    }
+  }
+}
+
+function answerClassify(choice) {
+  if (classifyAnswered) return;
+  classifyAnswered = true;
+  const beats = CLASSIFY_ITEMS[classifyIndex];
+  const correct = choice === beats;
+  scores.classify.total++;
+  if (correct) scores.classify.ok++;
+
+  log.push({
+    block: 'Bloque 4 (clasificar)',
+    item: 'Pregunta ' + (classifyIndex + 1) + ' · compás de ' + beats,
+    chosen: choice + ' tiempos',
+    result: correct ? 'Correcto' : 'Incorrecto'
+  });
+
+  const fb = document.getElementById('feedback3');
+  fb.className = correct ? 'ok' : 'bad';
+  fb.textContent = correct
+    ? '✅ ¡Sí! El fuerte volvía cada ' + beats + ' tiempos.'
+    : '❌ Era de ' + beats + ' tiempos. Cuenta desde cada sonido grave: UN-dos' +
+      (beats >= 3 ? '-tres' : '') + (beats === 4 ? '-cuatro' : '') + '.';
+
+  document.getElementById('progress3').textContent =
+    'Pregunta ' + (classifyIndex + 1) + ' de ' + CLASSIFY_ITEMS.length +
+    '  ·  Aciertos: ' + scores.classify.ok;
+  document.getElementById('next3').classList.remove('hidden');
+}
+
+function nextClassifyItem() {
+  classifyIndex++;
+  if (classifyIndex >= CLASSIFY_ITEMS.length) {
+    showFinal();
+  } else {
+    loadClassifyItem();
+  }
+}
+
+// ================= FINAL =================
+function showFinal() {
+  showBlockFinal();
+  const s = scores;
+  document.getElementById('summaryText').innerHTML =
+    'Atrapar el fuerte (Bloque 2): ' + s.tap.ok + ' de ' + s.tap.total + ' rondas.<br>' +
+    'Señalar el fuerte (Bloque 3): ' + s.point.ok + ' de ' + s.point.total + '.<br>' +
+    'Clasificar compases (Bloque 4): ' + s.classify.ok + ' de ' + s.classify.total + '.';
+
+  let lines = [];
+  lines.push('Tiempos Fuertes y Débiles — Registro de sesión');
+  lines.push('Bloque 2 (tap): ' + s.tap.ok + '/' + s.tap.total);
+  lines.push('Bloque 3 (señalar): ' + s.point.ok + '/' + s.point.total);
+  lines.push('Bloque 4 (clasificar): ' + s.classify.ok + '/' + s.classify.total);
+  lines.push('');
+  log.forEach(e => {
+    lines.push(e.block + ' · ' + e.item + ' · Respuesta: ' + e.chosen + ' · ' + e.result);
+  });
+  document.getElementById('logArea').value = lines.join('\n');
+
+  try {
+    localStorage.setItem('andre_fuerte-debil_v1', JSON.stringify({
+      date: new Date().toISOString(),
+      tap: s.tap, point: s.point, classify: s.classify
+    }));
+  } catch (e) { /* not critical */ }
+}
+
+function showBlockFinal() {
+  clearVisualTimeouts();
+  stopTapLoop();
+  ['introBox','block1','block2','block2b','block3'].forEach(id =>
+    document.getElementById(id).classList.add('hidden'));
+  document.getElementById('finalBox').classList.remove('hidden');
+}
+
+function copyLog() {
+  const ta = document.getElementById('logArea');
+  ta.select();
+  document.execCommand('copy');
+}
+</script>
+
+</body>
+</html>

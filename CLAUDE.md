@@ -1,7 +1,7 @@
 # CLAUDE.md — Proyecto André: Biblioteca de Juegos Educativos
 
 > Documento de contexto para Claude Code. Leer antes de cualquier sesión de trabajo.
-> Última actualización: mayo 2026 (rev. 2)
+> Última actualización: julio 2026 (rev. 3)
 
 ---
 
@@ -75,9 +75,11 @@ CEIP Rosa Luxemburgo (Madrid, Comunidad de Madrid).
 - Los repasos usan test adaptativo: hasta 3 intentos por tema, feedback inmediato,
   progreso guardado en localStorage, registro de sesión copiable al final.
 - Los mapas son fichas de una o dos páginas para imprimir — no son juegos interactivos.
-- Los dictados rítmicos usan Web Audio API (sin ficheros de audio externos) — requieren
-  Chrome/Edge; no funcionan offline ni son imprimibles.
+- Los dictados rítmicos y las herramientas de discriminación auditiva usan Web Audio API
+  (sin ficheros de audio externos) — requieren Chrome/Edge; no funcionan offline ni son imprimibles.
 - Secuencia natural de los repasos: Nivel 1 → Nivel 2 → Nivel 3 → Final → Compás → Gran Repaso 1 → Gran Repaso 2 → Dictado S1 → Dictado S2.
+- Secuencia de discriminación auditiva (nueva rama, independiente de los repasos teóricos):
+  Fuerte/Débil (Paso 1) → ¿Con el fuerte o en el hueco? (Paso 2) → Síncopa vs Contratiempo (Paso 3).
 
 ---
 
@@ -107,7 +109,10 @@ Andre/
 │   ├── repaso_completo_musica_andre.html     # Gran repaso 1 · 40 temas
 │   ├── repaso_completo2_musica_andre.html    # Gran repaso 2 · 40 temas (por unidad)
 │   ├── dictado_ritmico_andre.html            # Dictado rítmico S1 · 4/4 y 3/4 · Web Audio API
-│   └── dictado_ritmico_andre_s2.html         # Dictado rítmico S2 · foco corchea por posición
+│   ├── dictado_ritmico_andre_s2.html         # Dictado rítmico S2 · foco corchea por posición
+│   ├── andre_fuerte_debil_v1.html            # Discriminación auditiva · Paso 1 · Tiempos fuertes/débiles
+│   ├── andre_puente_sincopa_v1.html          # Discriminación auditiva · Paso 2 · Ritmo normal/contratiempo/síncopa
+│   └── andre_sincopa_contratiempo_v1.html    # Discriminación auditiva · Paso 3 · Síncopa vs contratiempo · 12 preguntas
 │
 ├── CLAUDE.md                          # Este fichero — contexto para Claude Code
 └── README.md                          # Descripción pública del repositorio

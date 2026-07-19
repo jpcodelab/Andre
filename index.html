@@ -120,8 +120,9 @@ body {
 .subject-nav a[href="#juegos"].active         { background: var(--red); }
 .subject-nav a[href="#musica"].active         { background: #e65100; }
 .subject-nav a[href="#musica-teoria"].active  { background: #e65100; }
-.subject-nav a[href="#musica-dictado"].active { background: #1565c0; }
-.subject-nav a[href="#como-usar"].active      { background: var(--mid); }
+.subject-nav a[href="#musica-dictado"].active   { background: #1565c0; }
+.subject-nav a[href="#musica-auditiva"].active { background: #e65100; }
+.subject-nav a[href="#como-usar"].active       { background: var(--mid); }
 
 /* ── SECTION HEADER ── */
 .section-hdr {
@@ -161,6 +162,8 @@ body {
 }
 .subsection-hdr.dit { border-bottom-color: #1565c0; }
 .subsection-hdr.dit h3 { color: #1565c0; }
+.subsection-hdr.mus { border-bottom-color: #e65100; }
+.subsection-hdr.mus h3 { color: #e65100; }
 
 /* ── SUBGROUP HEADER ── */
 .subgroup-hdr {
@@ -420,6 +423,7 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
   <a href="#musica">🎵 Escuela de Música</a>
   <a href="#musica-teoria">🎺 Teoría Musical</a>
   <a href="#musica-dictado">🎧 Dictado Rítmico</a>
+  <a href="#musica-auditiva">👂 Discriminación Auditiva</a>
   <a href="#como-usar">ℹ️ Cómo usar</a>
 </nav>
 
@@ -594,7 +598,7 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 <!-- ── ESCUELA DE MÚSICA ── -->
 <div class="section-hdr" id="musica">
   <h2>Escuela de Música 🎵</h2>
-  <span>3 mapas · 7 repasos · 2 dictados · Lenguaje Musical 5º</span>
+  <span>3 mapas · 7 repasos · 2 dictados · 3 auditivas · Lenguaje Musical 5º</span>
 </div>
 <p class="section-desc">Todo el material de repaso para la escuela de música. Los mapas son para imprimir; los repasos son tests adaptativos que guardan tu progreso. El dictado necesita sonido.</p>
 
@@ -905,6 +909,90 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 
 </div>
 
+<!-- ── SUBSECCIÓN C: DISCRIMINACIÓN AUDITIVA ── -->
+<div class="subsection-hdr mus" id="musica-auditiva">
+  <h3>👂 Discriminación Auditiva</h3>
+  <span>Secuencia progresiva · síncopa y contratiempo · Requiere audio</span>
+</div>
+
+<div class="audio-aviso-wrap">
+  <div class="audio-aviso">🔊 Activa el sonido antes de empezar · Sigue el orden recomendado: Paso 1 → 2 → 3</div>
+</div>
+
+<div class="grid">
+
+  <a class="card" href="teoria-musica/andre_fuerte_debil_v1.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">👂 Discriminación Auditiva</div>
+      <span class="card-icon">1️⃣</span>
+      <div class="card-title">Tiempos Fuertes y Débiles</div>
+      <p class="card-desc">
+        Paso 1 · Prerrequisito. 4 bloques progresivos: escucha guiada con rejilla
+        iluminada, atrapa el tiempo fuerte en tiempo real (tap), señálalo en la
+        rejilla y clasifica compases de 2, 3 y 4 tiempos.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Tiempos fuertes</span>
+        <span class="subj">Tap</span>
+        <span class="subj">Compás</span>
+        <span class="subj">Escucha activa</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🔊 Requiere audio · Chrome/Edge</span>
+      <span class="card-cta mus">Empezar →</span>
+    </div>
+  </a>
+
+  <a class="card" href="teoria-musica/andre_puente_sincopa_v1.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">👂 Discriminación Auditiva</div>
+      <span class="card-icon">2️⃣</span>
+      <div class="card-title">¿Con el fuerte o en el hueco?</div>
+      <p class="card-desc">
+        Paso 2. Fase 1: distingue ritmo normal vs contratiempo (2 opciones).
+        Fase 2: aparece la síncopa como tercera opción. Mismo lenguaje sonoro
+        que el paso 1 — pulso fuerte grave, débiles agudos.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Contratiempo</span>
+        <span class="subj">Síncopa</span>
+        <span class="subj">Ritmo normal</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🔊 Requiere audio · Chrome/Edge</span>
+      <span class="card-cta mus">Empezar →</span>
+    </div>
+  </a>
+
+  <a class="card" href="teoria-musica/andre_sincopa_contratiempo_v1.html">
+    <div class="card-accent mus"></div>
+    <div class="card-body">
+      <div class="card-badge badge-mus">👂 Discriminación Auditiva</div>
+      <span class="card-icon">3️⃣</span>
+      <div class="card-title">Síncopa vs Contratiempo</div>
+      <p class="card-desc">
+        Paso 3 · Consolidación. 12 preguntas con metrónomo + nota. Tres opciones:
+        síncopa / contratiempo / ritmo normal. Rejilla explicativa tras cada
+        respuesta. Resumen y registro de sesión copiable al terminar.
+      </p>
+      <div class="card-subjects">
+        <span class="subj">Síncopa</span>
+        <span class="subj">Contratiempo</span>
+        <span class="subj">12 preguntas</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">🔊 Requiere audio · Chrome/Edge</span>
+      <span class="card-cta mus">Empezar →</span>
+    </div>
+  </a>
+
+</div>
+
 <!-- ── CÓMO USAR ── -->
 <div class="section-hdr" id="como-usar">
   <h2>¿Cómo usar la biblioteca?</h2>
@@ -947,11 +1035,12 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 (function () {
   /* ── Nav active state ── */
   const idToHref = {
-    'juegos':          '#juegos',
-    'musica':          '#musica',
-    'musica-teoria':   '#musica-teoria',
-    'musica-dictado':  '#musica-dictado',
-    'como-usar':       '#como-usar',
+    'juegos':           '#juegos',
+    'musica':           '#musica',
+    'musica-teoria':    '#musica-teoria',
+    'musica-dictado':   '#musica-dictado',
+    'musica-auditiva':  '#musica-auditiva',
+    'como-usar':        '#como-usar',
   };
 
   const ids = Object.keys(idToHref);

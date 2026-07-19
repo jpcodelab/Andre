@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Síncopa vs Contratiempo</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Lora', serif;
+    background: #ffffff;
+    color: #000000;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    line-height: 1.5;
+  }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h2 { font-size: 19px; margin-top: 28px; }
+  .subtitle { color: #444; margin-bottom: 20px; }
+  .box {
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .example-grid {
+    display: flex;
+    gap: 6px;
+    margin: 14px 0;
+    flex-wrap: wrap;
+  }
+  .slot {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    border-radius: 4px;
+    background: #fff;
+  }
+  .slot.strong { border: 2px solid #000; font-weight: 700; }
+  .slot.note { background: #cfcfcf; }
+  .slot.rest { background: #fff; color: #aaa; }
+  button {
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    padding: 10px 16px;
+    margin: 5px 6px 5px 0;
+    border: 2px solid #000;
+    background: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover { background: #000; color: #fff; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  button.correct { background: #000; color: #fff; }
+  .play-btn { font-size: 17px; }
+  #feedback {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    display: none;
+  }
+  #feedback.ok { background: #eaeaea; }
+  #feedback.bad { background: #f2f2f2; border: 1px dashed #000; }
+  .progress { color: #555; margin-bottom: 10px; font-size: 15px; }
+  .question-grid { margin: 14px 0; }
+  textarea {
+    width: 100%;
+    height: 220px;
+    font-family: monospace;
+    font-size: 13px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 6px;
+  }
+  .hidden { display: none; }
+  .note-audio-warning {
+    font-size: 13px;
+    color: #555;
+    margin-top: 6px;
+  }
+  .legend span { display: inline-block; margin-right: 14px; font-size: 13px; }
+  .swatch { display:inline-block; width:12px; height:12px; margin-right:4px; vertical-align:middle; border:1px solid #999; }
+</style>
+</head>
+<body>
+
+<h1>Síncopa vs Contratiempo</h1>
+<p class="subtitle">Discriminación auditiva — Lenguaje Musical</p>
+
+<div class="box" id="introBox">
+  <h2>¿Qué vas a escuchar?</h2>
+  <p>En cada pregunta vas a oír un <strong>pulso</strong> (clic agudo, marca los 4 tiempos) y una <strong>nota</strong> (sonido más grave y sostenido). Tienes que decidir qué relación tiene la nota con el pulso:</p>
+
+  <p><strong>Contratiempo</strong>: la nota suena en la parte débil (el "y" del tiempo), y el tiempo fuerte queda en <em>silencio</em>.</p>
+  <div class="example-grid">
+    <div class="slot strong rest">1</div>
+    <div class="slot note">y</div>
+    <div class="slot strong rest">2</div>
+    <div class="slot note">y</div>
+  </div>
+
+  <p><strong>Síncopa</strong>: la nota empieza en la parte débil y se <em>prolonga (atada)</em> sobre el tiempo fuerte siguiente.</p>
+  <div class="example-grid">
+    <div class="slot rest">1</div>
+    <div class="slot note">y</div>
+    <div class="slot strong note">2</div>
+    <div class="slot rest">y</div>
+  </div>
+
+  <p><strong>Ritmo normal</strong>: la nota coincide exactamente con el pulso fuerte. No hay ningún desplazamiento.</p>
+  <div class="example-grid">
+    <div class="slot strong note">1</div>
+    <div class="slot rest">y</div>
+    <div class="slot strong note">2</div>
+    <div class="slot rest">y</div>
+  </div>
+
+  <p class="note-audio-warning">⚠️ Este archivo necesita sonido. No funciona sin conexión de audio ni con el volumen apagado.</p>
+  <button onclick="startSession()">Empezar</button>
+</div>
+
+<div class="box hidden" id="quizBox">
+  <div class="progress" id="progressLine"></div>
+  <button class="play-btn" onclick="playCurrent()">🔊 Escuchar</button>
+  <button class="play-btn" onclick="playCurrent()">🔁 Repetir</button>
+
+  <div class="question-grid" id="questionGrid"></div>
+
+  <div id="choices">
+    <button onclick="answer('contratiempo')">Contratiempo</button>
+    <button onclick="answer('sincopa')">Síncopa</button>
+    <button onclick="answer('normal')">Ritmo normal</button>
+  </div>
+
+  <div id="feedback"></div>
+
+  <button id="nextBtn" class="hidden" onclick="nextItem()">Siguiente →</button>
+</div>
+
+<div class="box hidden" id="finalBox">
+  <h2>Resumen para André</h2>
+  <p id="summaryText"></p>
+  <div class="legend">
+    <span><span class="swatch" style="background:#cfcfcf"></span>Nota</span>
+    <span><span class="swatch" style="background:#fff"></span>Silencio</span>
+  </div>
+
+  <h2>Registro detallado (para copiar y pegar)</h2>
+  <textarea id="logArea" readonly></textarea>
+  <br>
+  <button onclick="copyLog()">Copiar registro</button>
+  <button onclick="location.reload()">Repetir sesión</button>
+</div>
+
+<script>
+// ---------- Pattern definitions ----------
+// Grid: 8 eighth-note slots per measure. Strong beats at index 0,2,4,6.
+// Each item: { type: 'contratiempo'|'sincopa'|'normal', notes: [{start,dur}] }
+const ITEM_POOL = [
+  { type: 'contratiempo', notes: [{start:1,dur:1},{start:3,dur:1},{start:5,dur:1},{start:7,dur:1}] },
+  { type: 'contratiempo', notes: [{start:1,dur:1},{start:5,dur:1}] },
+  { type: 'contratiempo', notes: [{start:3,dur:1},{start:7,dur:1}] },
+  { type: 'sincopa',      notes: [{start:1,dur:2},{start:5,dur:2}] },
+  { type: 'sincopa',      notes: [{start:3,dur:2}] },
+  { type: 'sincopa',      notes: [{start:5,dur:2}] },
+  { type: 'normal',       notes: [{start:0,dur:1},{start:2,dur:1},{start:4,dur:1},{start:6,dur:1}] },
+  { type: 'normal',       notes: [{start:0,dur:1},{start:4,dur:1}] },
+  { type: 'normal',       notes: [{start:2,dur:1},{start:6,dur:1}] },
+  { type: 'contratiempo', notes: [{start:1,dur:1},{start:3,dur:1}] },
+  { type: 'sincopa',      notes: [{start:1,dur:2},{start:3,dur:2}] },
+  { type: 'normal',       notes: [{start:0,dur:1},{start:2,dur:1},{start:6,dur:1}] }
+];
+
+const TYPE_LABEL = {
+  contratiempo: 'Contratiempo',
+  sincopa: 'Síncopa',
+  normal: 'Ritmo normal'
+};
+
+const FEEDBACK_TEXT = {
+  contratiempo: 'Las notas suenan en la parte débil, y el pulso fuerte queda en SILENCIO. Por eso es contratiempo.',
+  sincopa: 'La nota empieza en la parte débil y se prolonga (atada) sobre el pulso fuerte siguiente. Por eso es síncopa.',
+  normal: 'Las notas coinciden exactamente con el pulso fuerte. No hay desplazamiento del acento: ritmo normal.'
+};
+
+// Shuffle a copy of the pool
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let items = [];
+let currentIndex = 0;
+let score = 0;
+let log = [];
+let answered = false;
+let audioCtx = null;
+
+function startSession() {
+  items = shuffle(ITEM_POOL);
+  currentIndex = 0;
+  score = 0;
+  log = [];
+  document.getElementById('introBox').classList.add('hidden');
+  document.getElementById('quizBox').classList.remove('hidden');
+  loadItem();
+}
+
+function ensureAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function loadItem() {
+  answered = false;
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('feedback').className = '';
+  document.getElementById('nextBtn').classList.add('hidden');
+  const buttons = document.querySelectorAll('#choices button');
+  buttons.forEach(b => { b.disabled = false; b.classList.remove('correct'); });
+  document.getElementById('progressLine').textContent =
+    'Pregunta ' + (currentIndex + 1) + ' de ' + items.length + '  ·  Aciertos: ' + score;
+  document.getElementById('questionGrid').innerHTML = '';
+}
+
+function playPattern(notes, bpm) {
+  ensureAudio();
+  const eighth = 60 / bpm / 2;
+  const startTime = audioCtx.currentTime + 0.15;
+  const totalEighths = 8;
+  const repeats = 2;
+
+  for (let r = 0; r < repeats; r++) {
+    const base = startTime + r * totalEighths * eighth;
+    // click track on strong beats
+    for (let i = 0; i < totalEighths; i += 2) {
+      playClick(base + i * eighth);
+    }
+    // notes
+    notes.forEach(n => {
+      playNote(base + n.start * eighth, n.dur * eighth);
+    });
+  }
+}
+
+function playClick(t) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.value = 1600;
+  gain.gain.setValueAtTime(0.001, t);
+  gain.gain.linearRampToValueAtTime(0.12, t + 0.005);
+  gain.gain.linearRampToValueAtTime(0.001, t + 0.05);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + 0.06);
+}
+
+function playNote(t, dur) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'triangle';
+  osc.frequency.value = 440;
+  const release = Math.min(0.08, dur * 0.3);
+  gain.gain.setValueAtTime(0.001, t);
+  gain.gain.linearRampToValueAtTime(0.28, t + 0.02);
+  gain.gain.setValueAtTime(0.28, t + Math.max(0.02, dur - release));
+  gain.gain.linearRampToValueAtTime(0.001, t + dur);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.02);
+}
+
+function playCurrent() {
+  const item = items[currentIndex];
+  playPattern(item.notes, 96);
+}
+
+function renderGrid(item) {
+  const grid = document.getElementById('questionGrid');
+  grid.innerHTML = '';
+  // build occupancy array
+  const occ = new Array(8).fill(false);
+  item.notes.forEach(n => {
+    for (let i = n.start; i < n.start + n.dur && i < 8; i++) occ[i] = true;
+  });
+  for (let i = 0; i < 8; i++) {
+    const div = document.createElement('div');
+    div.className = 'slot' + (i % 2 === 0 ? ' strong' : '') + (occ[i] ? ' note' : ' rest');
+    div.textContent = (i % 2 === 0) ? String(i / 2 + 1) : 'y';
+    grid.appendChild(div);
+  }
+  const gridWrap = document.createElement('div');
+  gridWrap.className = 'example-grid';
+  // move slots into a flex wrapper instead
+  const slots = Array.from(grid.children);
+  grid.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'example-grid';
+  slots.forEach(s => wrap.appendChild(s));
+  grid.appendChild(wrap);
+}
+
+function answer(choice) {
+  if (answered) return;
+  answered = true;
+  const item = items[currentIndex];
+  const correct = (choice === item.type);
+  if (correct) score++;
+
+  log.push({
+    n: currentIndex + 1,
+    correctType: TYPE_LABEL[item.type],
+    chosen: TYPE_LABEL[choice],
+    result: correct ? 'Correcto' : 'Incorrecto'
+  });
+
+  const buttons = document.querySelectorAll('#choices button');
+  buttons.forEach(b => b.disabled = true);
+
+  renderGrid(item);
+
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'block';
+  fb.className = correct ? 'ok' : 'bad';
+  fb.innerHTML = (correct ? '✅ Correcto. ' : '❌ No es correcto — era <strong>' + TYPE_LABEL[item.type] + '</strong>. ')
+    + FEEDBACK_TEXT[item.type];
+
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('progressLine').textContent =
+    'Pregunta ' + (currentIndex + 1) + ' de ' + items.length + '  ·  Aciertos: ' + score;
+}
+
+function nextItem() {
+  currentIndex++;
+  if (currentIndex >= items.length) {
+    showFinal();
+  } else {
+    loadItem();
+  }
+}
+
+function showFinal() {
+  document.getElementById('quizBox').classList.add('hidden');
+  document.getElementById('finalBox').classList.remove('hidden');
+
+  document.getElementById('summaryText').textContent =
+    'Resultado: ' + score + ' de ' + items.length + ' correctas.';
+
+  let lines = [];
+  lines.push('Síncopa vs Contratiempo — Registro de sesión');
+  lines.push('Resultado: ' + score + '/' + items.length);
+  lines.push('');
+  log.forEach(entry => {
+    lines.push('Pregunta ' + entry.n + ' · Correcto: ' + entry.correctType +
+      ' · Elegido: ' + entry.chosen + ' · ' + entry.result);
+  });
+  document.getElementById('logArea').value = lines.join('\n');
+
+  try {
+    localStorage.setItem('andre_sincopa_contratiempo_v1', JSON.stringify({
+      date: new Date().toISOString(),
+      score: score,
+      total: items.length
+    }));
+  } catch (e) {
+    // localStorage may be unavailable; not critical for session
+  }
+}
+
+function copyLog() {
+  const ta = document.getElementById('logArea');
+  ta.select();
+  document.execCommand('copy');
+}
+</script>
+
+</body>
+</html>
