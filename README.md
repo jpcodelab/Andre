@@ -20,23 +20,23 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 
 | Archivo | Contenido |
 |---------|-----------|
-| `teoria-musica/mapa_repaso_grados_tonalidades.html` | Grados I–VII, tonalidades relativas |
-| `teoria-musica/mapa_repaso_compas.html` | Compás simple/compuesto, trampas FA–SI |
-| `teoria-musica/mapa_repaso_resto.html` | Figuras, matices, articulación, tempo… |
+| `teoria-musica/mus_mapa_grados-tonalidades_v1.html` | Grados I–VII, tonalidades relativas |
+| `teoria-musica/mus_mapa_compas_v1.html` | Compás simple/compuesto, trampas FA–SI |
+| `teoria-musica/mus_mapa_resto-temario_v1.html` | Figuras, matices, articulación, tempo… |
 
 ### Repasos interactivos (test adaptativo con localStorage)
 
 | Archivo | Temas | Foco |
 |---------|-------|------|
-| `teoria-musica/examen_musica_andre.html` | 26 | Teoría general, sin partituras |
-| `teoria-musica/examen_musica_andre_nivel2.html` | 23 | Partituras SVG, armaduras, intervalos |
-| `teoria-musica/examen_musica_andre_nivel3.html` | 19 | Compases especiales, tonalidades |
-| `teoria-musica/repaso_final_musica_andre.html` | 26 | Grados, tonalidades, confianza general |
-| `teoria-musica/repaso2_compas_musica_andre.html` | 22 | Foco intensivo en compás |
-| `teoria-musica/repaso_completo_musica_andre.html` | 40 | Barrido completo con partituras |
-| `teoria-musica/repaso_completo2_musica_andre.html` | 40 | Preguntas nuevas por unidad (U10–U15 + U1–5) |
-| `teoria-musica/dictado_ritmico_andre.html` | — | Dictado rítmico · Sesión 1 (4/4 y 3/4, Web Audio API) |
-| `teoria-musica/dictado_ritmico_andre_s2.html` | — | Dictado rítmico · Sesión 2 (foco en corchea por posición) |
+| `teoria-musica/mus_teoria_nivel1_v1.html` | 26 | Teoría general, sin partituras |
+| `teoria-musica/mus_teoria_nivel2_v1.html` | 23 | Partituras SVG, armaduras, intervalos |
+| `teoria-musica/mus_teoria_nivel3_v1.html` | 19 | Compases especiales, tonalidades |
+| `teoria-musica/mus_teoria_repaso-final_v1.html` | 26 | Grados, tonalidades, confianza general |
+| `teoria-musica/mus_teoria_compas_v1.html` | 22 | Foco intensivo en compás |
+| `teoria-musica/mus_teoria_gran-repaso1_v1.html` | 40 | Barrido completo con partituras |
+| `teoria-musica/mus_teoria_gran-repaso2_v1.html` | 40 | Preguntas nuevas por unidad (U10–U15 + U1–5) |
+| `teoria-musica/mus_dictado_simple-s1_v1.html` | — | Dictado rítmico · Sesión 1 (4/4 y 3/4, Web Audio API) |
+| `teoria-musica/mus_dictado_simple-s2_v1.html` | — | Dictado rítmico · Sesión 2 (foco en corchea por posición) |
 
 ### Discriminación auditiva — síncopa y contratiempo (Web Audio API)
 
@@ -44,9 +44,9 @@ Secuencia progresiva de 3 herramientas. Requieren sonido activo y Chrome/Edge. N
 
 | Archivo | Paso | Descripción |
 |---------|------|-------------|
-| `teoria-musica/andre_fuerte_debil_v1.html` | 1 — Prerrequisito | Tiempos fuertes y débiles: escucha guiada, tap en tiempo real, rejilla, clasificación de compases 2/3/4 |
-| `teoria-musica/andre_puente_sincopa_v1.html` | 2 — Puente | ¿Con el fuerte o en el hueco? Ritmo normal vs contratiempo (Fase 1) y síncopa como tercera opción (Fase 2) |
-| `teoria-musica/andre_sincopa_contratiempo_v1.html` | 3 — Consolidación | Síncopa vs Contratiempo: 12 preguntas con metrónomo + nota, tres opciones, rejilla explicativa |
+| `teoria-musica/mus_audicion_fuerte-debil_v1.html` | 1 — Prerrequisito | Tiempos fuertes y débiles: escucha guiada, tap en tiempo real, rejilla, clasificación de compases 2/3/4 |
+| `teoria-musica/mus_audicion_puente-sincopa_v1.html` | 2 — Puente | ¿Con el fuerte o en el hueco? Ritmo normal vs contratiempo (Fase 1) y síncopa como tercera opción (Fase 2) |
+| `teoria-musica/mus_audicion_sincopa-contratiempo_v1.html` | 3 — Consolidación | Síncopa vs Contratiempo: 12 preguntas con metrónomo + nota, tres opciones, rejilla explicativa |
 
 ---
 

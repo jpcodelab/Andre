@@ -138,6 +138,18 @@
 </div>
 
 <script>
+/* ── Migración de clave localStorage (legacy → §2 MUSIC_GUIDE) ──
+   Clave antigua: andre_musica_repaso_completo2
+   ──────────────────────────────────────────────────────────────── */
+(function () {
+  var _old = localStorage.getItem('andre_musica_repaso_completo2');
+  if (_old !== null) {
+    try {
+      localStorage.setItem('andre_mus_teoria_gran-repaso2_v1', _old);
+      localStorage.removeItem('andre_musica_repaso_completo2');
+    } catch (e) { /* quota o privado: no crítico */ }
+  }
+})();
 /* ===== Helpers de notación musical en SVG (clave de Sol) ===== */
 const LINEGAP=10, STAFFTOP=40, YBOTTOM=STAFFTOP+4*LINEGAP;
 const LETTER={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
@@ -168,221 +180,221 @@ function figuraPuntillo(tipo){const x=64,y=58,filled=(tipo==="negra");let inner=
 const TEMAS=[
  /* ===== U10 · Matices, reguladores, síncopa, contratiempo, anacrusa ===== */
  {id:"matices",bloque:"U10 · Dinámica y ritmo",nombre:"Matices dinámicos",preguntas:[
-  {q:"¿Qué matiz es 'medianamente débil'?",o:["mp","mf","pp","f"],c:0,exp:"mp = mezzopiano = medianamente débil."},
-  {q:"¿Cuál suena más fuerte: f o mf?",o:["f","mf","iguales","depende"],c:0,exp:"f (forte) es más fuerte que mf (mezzoforte)."},
-  {q:"¿Cuántos matices hay entre pp y ff (incluidos)?",o:["4","5","6","8"],c:2,exp:"Son 6: pp, p, mp, mf, f, ff."}
+  {q:"¿Qué matiz es 'medianamente débil'?",o:["mp","mf","pp","f"], c:0,exp:"mp = mezzopiano = medianamente débil."},
+  {q:"¿Cuál suena más fuerte: f o mf?",o:["mf","iguales","depende","f"], c:3,exp:"f (forte) es más fuerte que mf (mezzoforte)."},
+  {q:"¿Cuántos matices hay entre pp y ff (incluidos)?",o:["6","4","5","8"], c:0,exp:"Son 6: pp, p, mp, mf, f, ff."}
  ]},
  {id:"reguladores",bloque:"U10 · Dinámica y ritmo",nombre:"Reguladores",preguntas:[
-  {q:"El signo < (que se abre) indica…",o:["crescendo","diminuendo","acento","ritardando"],c:0,exp:"Se abre = crescendo (la intensidad aumenta)."},
-  {q:"'dim.' es la abreviatura de…",o:["diminuendo","disminución de velocidad","do menor","dinámica"],c:0,exp:"dim. = diminuendo = ir bajando la intensidad."},
-  {q:"Los reguladores cambian poco a poco…",o:["la intensidad","la velocidad","la tonalidad","el compás"],c:0,exp:"Regulan la intensidad de forma gradual."}
+  {q:"El signo < (que se abre) indica…",o:["diminuendo","crescendo","acento","ritardando"], c:1,exp:"Se abre = crescendo (la intensidad aumenta)."},
+  {q:"'dim.' es la abreviatura de…",o:["diminuendo","disminución de velocidad","do menor","dinámica"], c:0,exp:"dim. = diminuendo = ir bajando la intensidad."},
+  {q:"Los reguladores cambian poco a poco…",o:["la velocidad","la tonalidad","el compás","la intensidad"], c:3,exp:"Regulan la intensidad de forma gradual."}
  ]},
  {id:"sincopa",bloque:"U10 · Dinámica y ritmo",nombre:"La síncopa",preguntas:[
-  {q:"¿Qué define a la síncopa?",o:["empieza débil, se prolonga y acaba en fuerte","empieza fuerte y acaba débil","lleva silencio delante","va antes del compás"],c:0,exp:"Empieza en parte débil, SE PROLONGA y acaba en fuerte."},
-  {q:"La síncopa produce una sensación de…",o:["ir a contracorriente del pulso","aceleración","silencio","cambio de tono"],c:0,exp:"Suena desplazada respecto al pulso."},
-  {q:"La nota de una síncopa, ¿se prolonga?",o:["sí, de débil a fuerte","no, se corta","solo si hay puntillo","nunca"],c:0,exp:"Sí: ese es su rasgo clave frente al contratiempo."}
+  {q:"¿Qué define a la síncopa?",o:["empieza fuerte y acaba débil","lleva silencio delante","empieza débil, se prolonga y acaba en fuerte","va antes del compás"], c:2,exp:"Empieza en parte débil, SE PROLONGA y acaba en fuerte."},
+  {q:"La síncopa produce una sensación de…",o:["aceleración","ir a contracorriente del pulso","silencio","cambio de tono"], c:1,exp:"Suena desplazada respecto al pulso."},
+  {q:"La nota de una síncopa, ¿se prolonga?",o:["sí, de débil a fuerte","no, se corta","solo si hay puntillo","nunca"], c:0,exp:"Sí: ese es su rasgo clave frente al contratiempo."}
  ]},
  {id:"contratiempo",bloque:"U10 · Dinámica y ritmo",nombre:"Nota a contratiempo",preguntas:[
-  {q:"¿Qué lleva SIEMPRE delante un contratiempo?",o:["un silencio en parte débil","un acento","un tresillo","una ligadura"],c:0,exp:"Va precedido de un silencio en parte o fracción débil."},
-  {q:"A diferencia de la síncopa, el contratiempo…",o:["no se prolonga","se prolonga más","sube de tono","cambia el compás"],c:0,exp:"No se prolonga; la síncopa sí."},
-  {q:"El contratiempo empieza en parte…",o:["débil","fuerte","cualquiera","de silencio fuerte"],c:0,exp:"Empieza en parte (o fracción) débil."}
+  {q:"¿Qué lleva SIEMPRE delante un contratiempo?",o:["un acento","un tresillo","una ligadura","un silencio en parte débil"], c:3,exp:"Va precedido de un silencio en parte o fracción débil."},
+  {q:"A diferencia de la síncopa, el contratiempo…",o:["se prolonga más","sube de tono","no se prolonga","cambia el compás"], c:2,exp:"No se prolonga; la síncopa sí."},
+  {q:"El contratiempo empieza en parte…",o:["fuerte","débil","cualquiera","de silencio fuerte"], c:1,exp:"Empieza en parte (o fracción) débil."}
  ]},
  {id:"anacrusa",bloque:"U10 · Dinámica y ritmo",nombre:"La anacrusa",preguntas:[
-  {q:"La anacrusa va colocada…",o:["antes de la primera barra de compás","al final de la obra","en mitad del compás","sobre el pentagrama"],c:0,exp:"Antes de la barra: precede al primer tiempo fuerte."},
-  {q:"Las notas de la anacrusa son…",o:["sin acento","muy acentuadas","siempre largas","siempre graves"],c:0,exp:"Notas sin acento que dan impulso de entrada."},
-  {q:"La anacrusa precede a…",o:["el primer tiempo fuerte de la frase","el último compás","un silencio","una repetición"],c:0,exp:"Al primer tiempo fuerte."}
+  {q:"La anacrusa va colocada…",o:["antes de la primera barra de compás","al final de la obra","en mitad del compás","sobre el pentagrama"], c:0,exp:"Antes de la barra: precede al primer tiempo fuerte."},
+  {q:"Las notas de la anacrusa son…",o:["muy acentuadas","siempre largas","siempre graves","sin acento"], c:3,exp:"Notas sin acento que dan impulso de entrada."},
+  {q:"La anacrusa precede a…",o:["el último compás","un silencio","el primer tiempo fuerte de la frase","una repetición"], c:2,exp:"Al primer tiempo fuerte."}
  ]},
 
  /* ===== U11 · Tresillo y signos de repetición (incl. Segno) ===== */
  {id:"tresillo",bloque:"U11 · Tresillo y repeticiones",nombre:"El tresillo",preguntas:[
-  {q:"Un tresillo es un grupo de 3 figuras que valen…",o:["2 de su especie","4 de su especie","3 distintas","1 con puntillo"],c:0,exp:"3 figuras que equivalen a 2 de su misma especie."},
-  {q:"Un tresillo de 3 negras dura como…",o:["2 negras","3 negras","1 blanca con puntillo","4 negras"],c:0,exp:"3 negras (tresillo) = 2 negras."},
-  {q:"¿Para qué sirve el tresillo?",o:["meter ritmo ternario en un compás simple","cambiar de tonalidad","repetir un fragmento","subir el volumen"],c:0,exp:"Introduce subdivisión ternaria en un compás simple."}
+  {q:"Un tresillo es un grupo de 3 figuras que valen…",o:["4 de su especie","2 de su especie","3 distintas","1 con puntillo"], c:1,exp:"3 figuras que equivalen a 2 de su misma especie."},
+  {q:"Un tresillo de 3 negras dura como…",o:["2 negras","3 negras","1 blanca con puntillo","4 negras"], c:0,exp:"3 negras (tresillo) = 2 negras."},
+  {q:"¿Para qué sirve el tresillo?",o:["cambiar de tonalidad","repetir un fragmento","subir el volumen","meter ritmo ternario en un compás simple"], c:3,exp:"Introduce subdivisión ternaria en un compás simple."}
  ]},
  {id:"rep_barra",bloque:"U11 · Tresillo y repeticiones",nombre:"Barra y casillas de repetición",preguntas:[
-  {q:"La barra de repetición se parece a la doble barra final pero lleva…",o:["dos puntos","un sostenido","un número 3","un calderón"],c:0,exp:"Lleva 2 puntos; marca el fragmento que se repite."},
-  {q:"Las casillas de 1.ª y 2.ª vez sirven para…",o:["tocar compases distintos en cada vuelta","cambiar el tempo","marcar acentos","afinar"],c:0,exp:"Indican qué compases van en la 1.ª vuelta y cuáles en la 2.ª."},
-  {q:"La barra de repetición puede repetir…",o:["desde el principio o entre dos barras de repetición","solo el último compás","solo la anacrusa","toda la obra siempre"],c:0,exp:"Repite desde el inicio o el tramo entre dos barras de repetición."}
+  {q:"La barra de repetición se parece a la doble barra final pero lleva…",o:["un sostenido","un número 3","dos puntos","un calderón"], c:2,exp:"Lleva 2 puntos; marca el fragmento que se repite."},
+  {q:"Las casillas de 1.ª y 2.ª vez sirven para…",o:["cambiar el tempo","tocar compases distintos en cada vuelta","marcar acentos","afinar"], c:1,exp:"Indican qué compases van en la 1.ª vuelta y cuáles en la 2.ª."},
+  {q:"La barra de repetición puede repetir…",o:["desde el principio o entre dos barras de repetición","solo el último compás","solo la anacrusa","toda la obra siempre"], c:0,exp:"Repite desde el inicio o el tramo entre dos barras de repetición."}
  ]},
  {id:"dc_segno",bloque:"U11 · Tresillo y repeticiones",nombre:"Da Capo y Segno",preguntas:[
-  {q:"'Da Capo' (D.C.) significa…",o:["volver al principio","ir al final","más fuerte","más lento"],c:0,exp:"Da Capo = desde el principio (suele acompañarse de FIN)."},
-  {q:"El Segno (§), o párrafo, indica…",o:["el punto al que hay que volver","un acento","un silencio largo","la tonalidad"],c:0,exp:"Son dos signos sobre el pentagrama que marcan a dónde volver."},
-  {q:"'D.C. al Fine' quiere decir…",o:["volver al principio y tocar hasta Fine","parar en seco","repetir el compás","subir el volumen"],c:0,exp:"Desde el principio hasta la palabra Fine."}
+  {q:"'Da Capo' (D.C.) significa…",o:["ir al final","más fuerte","más lento","volver al principio"], c:3,exp:"Da Capo = desde el principio (suele acompañarse de FIN)."},
+  {q:"El Segno (§), o párrafo, indica…",o:["un acento","un silencio largo","el punto al que hay que volver","la tonalidad"], c:2,exp:"Son dos signos sobre el pentagrama que marcan a dónde volver."},
+  {q:"'D.C. al Fine' quiere decir…",o:["parar en seco","volver al principio y tocar hasta Fine","repetir el compás","subir el volumen"], c:1,exp:"Desde el principio hasta la palabra Fine."}
  ]},
 
  /* ===== U12 · Tonalidad, modalidad, grados, Sol Mayor ===== */
  {id:"grados",bloque:"U12 · Tonalidad y grados",nombre:"Nombres de los grados",preguntas:[
-  {q:"El II grado se llama…",o:["Supertónica","Subdominante","Sensible","Mediante"],c:0,exp:"II = Supertónica."},
-  {q:"El VI grado se llama…",o:["Superdominante","Subdominante","Sensible","Tónica"],c:0,exp:"VI = Superdominante."},
-  {q:"La 'Sensible' es el grado…",o:["VII","V","III","II"],c:0,exp:"VII = Sensible (o Subtónica)."}
+  {q:"El II grado se llama…",o:["Supertónica","Subdominante","Sensible","Mediante"], c:0,exp:"II = Supertónica."},
+  {q:"El VI grado se llama…",o:["Subdominante","Sensible","Tónica","Superdominante"], c:3,exp:"VI = Superdominante."},
+  {q:"La 'Sensible' es el grado…",o:["V","III","VII","II"], c:2,exp:"VII = Sensible (o Subtónica)."}
  ]},
  {id:"tonal_modal",bloque:"U12 · Tonalidad y grados",nombre:"Grados tonales y modales",preguntas:[
-  {q:"¿Cuáles son TONALES?",o:["I, IV y V","III, VI y VII","II, IV y VI","I, II y III"],c:0,exp:"Tonales: I, IV y V."},
-  {q:"¿Cuáles son MODALES?",o:["III, VI y VII","I, IV y V","II, V y VII","I, III y V"],c:0,exp:"Modales: III, VI y VII."},
-  {q:"Los grados tonales determinan…",o:["la tonalidad","el modo","el tempo","la intensidad"],c:0,exp:"Los tonales fijan la tonalidad; los modales, el modo."}
+  {q:"¿Cuáles son TONALES?",o:["III, VI y VII","I, IV y V","II, IV y VI","I, II y III"], c:1,exp:"Tonales: I, IV y V."},
+  {q:"¿Cuáles son MODALES?",o:["III, VI y VII","I, IV y V","II, V y VII","I, III y V"], c:0,exp:"Modales: III, VI y VII."},
+  {q:"Los grados tonales determinan…",o:["el modo","el tempo","la intensidad","la tonalidad"], c:3,exp:"Los tonales fijan la tonalidad; los modales, el modo."}
  ]},
  {id:"modo",bloque:"U12 · Tonalidad y grados",nombre:"Modo Mayor o menor",preguntas:[
-  {q:"¿Qué grado decide si la escala es Mayor o menor?",o:["el III","el I","el V","el IV"],c:0,exp:"El III (Mediante) define el modo."},
-  {q:"Si del I al III hay una 3.ª Mayor, el modo es…",o:["Mayor","menor","ninguno","compuesto"],c:0,exp:"3.ª Mayor entre I y III → modo Mayor."},
-  {q:"La tonalidad la dan los grados tonales; el modo lo da…",o:["el III grado","el V grado","la armadura sola","el tempo"],c:0,exp:"El III grado marca Mayor o menor."}
+  {q:"¿Qué grado decide si la escala es Mayor o menor?",o:["el I","el V","el III","el IV"], c:2,exp:"El III (Mediante) define el modo."},
+  {q:"Si del I al III hay una 3.ª Mayor, el modo es…",o:["menor","Mayor","ninguno","compuesto"], c:1,exp:"3.ª Mayor entre I y III → modo Mayor."},
+  {q:"La tonalidad la dan los grados tonales; el modo lo da…",o:["el III grado","el V grado","la armadura sola","el tempo"], c:0,exp:"El III grado marca Mayor o menor."}
  ]},
  {id:"sol_mayor",bloque:"U12 · Tonalidad y grados",nombre:"Sol Mayor y los semitonos",preguntas:[
-  {q:"¿Cuántas alteraciones tiene SOL Mayor?",o:["1 sostenido (FA#)","1 bemol","ninguna","2 sostenidos"],c:0,exp:"SOL Mayor: 1 sostenido, FA#."},
-  {q:"En cualquier escala MAYOR, los semitonos están entre…",o:["III-IV y VII-I","II-III y V-VI","I-II y IV-V","solo VII-I"],c:0,exp:"Mayores: semitonos en III-IV y VII-I."},
-  {q:"SOL Mayor tiene los semitonos en los mismos sitios que…",o:["DO Mayor","LA menor","RE menor","MI menor"],c:0,exp:"Como DO Mayor y todas las Mayores."}
+  {q:"¿Cuántas alteraciones tiene SOL Mayor?",o:["1 bemol","ninguna","2 sostenidos","1 sostenido (FA#)"], c:3,exp:"SOL Mayor: 1 sostenido, FA#."},
+  {q:"En cualquier escala MAYOR, los semitonos están entre…",o:["II-III y V-VI","I-II y IV-V","III-IV y VII-I","solo VII-I"], c:2,exp:"Mayores: semitonos en III-IV y VII-I."},
+  {q:"SOL Mayor tiene los semitonos en los mismos sitios que…",o:["LA menor","DO Mayor","RE menor","MI menor"], c:1,exp:"Como DO Mayor y todas las Mayores."}
  ]},
 
  /* ===== U13 · Articulación ===== */
  {id:"artic_id",bloque:"U13 · Articulación",nombre:"Identificar la articulación",preguntas:[
-  {svg:articTriple(["picado","acento","tenuto"]),q:"¿Cuál lleva el PICADO?",o:["A","B","C","Ninguna"],c:0,exp:"El picado es el puntito (A)."},
-  {svg:articTriple(["tenuto","picado","acento"]),q:"¿Cuál lleva el ACENTO?",o:["A","B","C","Las tres"],c:2,exp:"El acento es el ángulo > (C)."},
-  {svg:articTriple(["acento","tenuto","picado"]),q:"¿Cuál lleva el TENUTO?",o:["A","B","C","Ninguna"],c:1,exp:"El tenuto es la rayita (B)."}
+  {svg:articTriple(["picado","acento","tenuto"]),q:"¿Cuál lleva el PICADO?",o:["A","B","C","Ninguna"], c:0,exp:"El picado es el puntito (A)."},
+  {svg:articTriple(["tenuto","picado","acento"]),q:"¿Cuál lleva el ACENTO?",o:["A","C","B","Las tres"], c:1,exp:"El acento es el ángulo > (C)."},
+  {svg:articTriple(["acento","tenuto","picado"]),q:"¿Cuál lleva el TENUTO?",o:["A","C","Ninguna","B"], c:3,exp:"El tenuto es la rayita (B)."}
  ]},
  {id:"artic_efecto",bloque:"U13 · Articulación",nombre:"Efecto de la articulación",preguntas:[
-  {q:"El tenuto indica tocar la nota…",o:["respetando su valor, con más tensión","la mitad de corta","muy fuerte solo al inicio","más aguda"],c:0,exp:"Mantiene el valor, con más tensión."},
-  {q:"El picado (staccato)…",o:["acorta la nota a la mitad","la alarga","la repite","sube el tono"],c:0,exp:"Reduce el valor a la mitad: corta y separada."},
-  {q:"El acento cambia…",o:["la intensidad del inicio","la duración a la mitad","el tono","el compás"],c:0,exp:"Más intensidad al inicio; no cambia la duración."}
+  {q:"El tenuto indica tocar la nota…",o:["la mitad de corta","respetando su valor, con más tensión","muy fuerte solo al inicio","más aguda"], c:1,exp:"Mantiene el valor, con más tensión."},
+  {q:"El picado (staccato)…",o:["acorta la nota a la mitad","la alarga","la repite","sube el tono"], c:0,exp:"Reduce el valor a la mitad: corta y separada."},
+  {q:"El acento cambia…",o:["la duración a la mitad","el tono","el compás","la intensidad del inicio"], c:3,exp:"Más intensidad al inicio; no cambia la duración."}
  ]},
 
  /* ===== U14 · Mi menor y compás compuesto ===== */
  {id:"mi_menor",bloque:"U14 · Mi menor y compás compuesto",nombre:"Mi menor",preguntas:[
-  {q:"MI menor tiene en la armadura…",o:["1 sostenido (FA#)","1 bemol","ninguna alteración","2 sostenidos"],c:0,exp:"MI menor: 1 sostenido (FA#), como su relativa SOL Mayor."},
-  {q:"En MI menor (escala menor), los semitonos están entre…",o:["II-III y V-VI","III-IV y VII-I","I-II y IV-V","solo II-III"],c:0,exp:"Menores: semitonos en II-III y V-VI."},
-  {q:"La relativa mayor de MI menor es…",o:["SOL Mayor","DO Mayor","FA Mayor","RE Mayor"],c:0,exp:"Comparten 1 sostenido (FA#)."}
+  {q:"MI menor tiene en la armadura…",o:["1 bemol","ninguna alteración","1 sostenido (FA#)","2 sostenidos"], c:2,exp:"MI menor: 1 sostenido (FA#), como su relativa SOL Mayor."},
+  {q:"En MI menor (escala menor), los semitonos están entre…",o:["III-IV y VII-I","II-III y V-VI","I-II y IV-V","solo II-III"], c:1,exp:"Menores: semitonos en II-III y V-VI."},
+  {q:"La relativa mayor de MI menor es…",o:["SOL Mayor","DO Mayor","FA Mayor","RE Mayor"], c:0,exp:"Comparten 1 sostenido (FA#)."}
  ]},
  {id:"simple_comp",bloque:"U14 · Mi menor y compás compuesto",nombre:"Simple o compuesto",preguntas:[
-  {q:"Numerador 6, 9 ó 12 → compás…",o:["compuesto","simple","irregular","de amalgama"],c:0,exp:"6/9/12 → compuesto (subdivisión ternaria)."},
-  {q:"En un compás compuesto, cada tiempo se parte en…",o:["3 tercios","2 mitades","4 partes","no se parte"],c:0,exp:"Subdivisión ternaria: en 3."},
-  {q:"Numerador 2, 3 ó 4 → compás…",o:["simple","compuesto","ternario compuesto","irregular"],c:0,exp:"2/3/4 → simple (subdivisión binaria)."}
+  {q:"Numerador 6, 9 ó 12 → compás…",o:["simple","irregular","de amalgama","compuesto"], c:3,exp:"6/9/12 → compuesto (subdivisión ternaria)."},
+  {q:"En un compás compuesto, cada tiempo se parte en…",o:["2 mitades","4 partes","3 tercios","no se parte"], c:2,exp:"Subdivisión ternaria: en 3."},
+  {q:"Numerador 2, 3 ó 4 → compás…",o:["compuesto","simple","ternario compuesto","irregular"], c:1,exp:"2/3/4 → simple (subdivisión binaria)."}
  ]},
  {id:"tiempos_comp",bloque:"U14 · Mi menor y compás compuesto",nombre:"Tiempos en compases compuestos",preguntas:[
-  {svg:compas(6,8),q:"¿Cuántos TIEMPOS tiene el 6/8?",o:["6","2","3","4"],c:1,exp:"6 ÷ 3 = 2 tiempos."},
-  {svg:compas(12,8),q:"¿Cuántos TIEMPOS tiene el 12/8?",o:["12","3","4","6"],c:2,exp:"12 ÷ 3 = 4 tiempos."},
-  {svg:compas(9,8),q:"¿Cuántos TIEMPOS tiene el 9/8?",o:["9","2","3","4"],c:2,exp:"9 ÷ 3 = 3 tiempos."}
+  {svg:compas(6,8),q:"¿Cuántos TIEMPOS tiene el 6/8?",o:["6","2","3","4"], c:1,exp:"6 ÷ 3 = 2 tiempos."},
+  {svg:compas(12,8),q:"¿Cuántos TIEMPOS tiene el 12/8?",o:["12","4","3","6"], c:1,exp:"12 ÷ 3 = 4 tiempos."},
+  {svg:compas(9,8),q:"¿Cuántos TIEMPOS tiene el 9/8?",o:["3","9","2","4"], c:0,exp:"9 ÷ 3 = 3 tiempos."}
  ]},
  {id:"ut_comp",bloque:"U14 · Mi menor y compás compuesto",nombre:"Unidad de tiempo (compuestos)",preguntas:[
-  {svg:compas(9,8),q:"En 9/8, ¿cuál es la unidad de tiempo?",o:["la negra con puntillo","la negra","la corchea","la blanca"],c:0,exp:"Negra con puntillo (= 3 corcheas)."},
-  {q:"En los compuestos, la unidad de tiempo lleva…",o:["puntillo","sostenido","becuadro","acento"],c:0,exp:"Es una figura con puntillo."},
-  {q:"La negra con puntillo equivale a…",o:["3 corcheas","2 corcheas","4 corcheas","1 negra"],c:0,exp:"Negra (2 corcheas) + mitad (1) = 3 corcheas."}
+  {svg:compas(9,8),q:"En 9/8, ¿cuál es la unidad de tiempo?",o:["la negra","la negra con puntillo","la corchea","la blanca"], c:1,exp:"Negra con puntillo (= 3 corcheas)."},
+  {q:"En los compuestos, la unidad de tiempo lleva…",o:["puntillo","sostenido","becuadro","acento"], c:0,exp:"Es una figura con puntillo."},
+  {q:"La negra con puntillo equivale a…",o:["2 corcheas","4 corcheas","1 negra","3 corcheas"], c:3,exp:"Negra (2 corcheas) + mitad (1) = 3 corcheas."}
  ]},
 
  /* ===== U15 · Bemoles, Fa Mayor, Re menor, relativas, armaduras ===== */
  {id:"orden_bem",bloque:"U15 · Bemoles y tonalidades",nombre:"Orden de los bemoles",preguntas:[
-  {q:"El orden de los bemoles empieza por…",o:["SI","FA","DO","MI"],c:0,exp:"SI-MI-LA-RE-SOL-DO-FA."},
-  {q:"Con 2 bemoles, ¿cuáles son?",o:["SI y MI","SI y LA","FA y DO","SI y FA"],c:0,exp:"Los dos primeros: SI y MI."},
-  {q:"El orden de bemoles es el de sostenidos…",o:["al revés","igual","sin el FA","empezando por DO"],c:0,exp:"Es el inverso."}
+  {q:"El orden de los bemoles empieza por…",o:["FA","DO","SI","MI"], c:2,exp:"SI-MI-LA-RE-SOL-DO-FA."},
+  {q:"Con 2 bemoles, ¿cuáles son?",o:["SI y LA","SI y MI","FA y DO","SI y FA"], c:1,exp:"Los dos primeros: SI y MI."},
+  {q:"El orden de bemoles es el de sostenidos…",o:["al revés","igual","sin el FA","empezando por DO"], c:0,exp:"Es el inverso."}
  ]},
  {id:"fa_mayor",bloque:"U15 · Bemoles y tonalidades",nombre:"Fa Mayor",preguntas:[
-  {q:"FA Mayor tiene en la armadura…",o:["1 bemol (SIb)","1 sostenido","ninguna alteración","2 bemoles"],c:0,exp:"FA Mayor: 1 bemol, SIb."},
-  {q:"Los semitonos de FA Mayor están entre…",o:["III-IV y VII-I","II-III y V-VI","I-II y IV-V","solo III-IV"],c:0,exp:"Es Mayor: III-IV y VII-I."},
-  {q:"La relativa menor de FA Mayor es…",o:["RE menor","LA menor","SOL menor","MI menor"],c:0,exp:"RE menor (misma armadura, 1 bemol)."}
+  {q:"FA Mayor tiene en la armadura…",o:["1 sostenido","ninguna alteración","2 bemoles","1 bemol (SIb)"], c:3,exp:"FA Mayor: 1 bemol, SIb."},
+  {q:"Los semitonos de FA Mayor están entre…",o:["II-III y V-VI","I-II y IV-V","III-IV y VII-I","solo III-IV"], c:2,exp:"Es Mayor: III-IV y VII-I."},
+  {q:"La relativa menor de FA Mayor es…",o:["LA menor","RE menor","SOL menor","MI menor"], c:1,exp:"RE menor (misma armadura, 1 bemol)."}
  ]},
  {id:"re_menor",bloque:"U15 · Bemoles y tonalidades",nombre:"Re menor",preguntas:[
-  {q:"RE menor tiene en la armadura…",o:["1 bemol (SIb)","1 sostenido","ninguna alteración","2 bemoles"],c:0,exp:"RE menor: 1 bemol (SIb), como FA Mayor."},
-  {q:"Los semitonos de RE menor están entre…",o:["II-III y V-VI","III-IV y VII-I","I-II y IV-V","solo V-VI"],c:0,exp:"Es menor: II-III y V-VI."},
-  {q:"Con 1 bemol, la tonalidad puede ser…",o:["FA Mayor o RE menor","DO Mayor o LA menor","SOL Mayor o MI menor","RE Mayor o SI menor"],c:0,exp:"1 bemol = FA Mayor o RE menor (relativas)."}
+  {q:"RE menor tiene en la armadura…",o:["1 bemol (SIb)","1 sostenido","ninguna alteración","2 bemoles"], c:0,exp:"RE menor: 1 bemol (SIb), como FA Mayor."},
+  {q:"Los semitonos de RE menor están entre…",o:["III-IV y VII-I","I-II y IV-V","solo V-VI","II-III y V-VI"], c:3,exp:"Es menor: II-III y V-VI."},
+  {q:"Con 1 bemol, la tonalidad puede ser…",o:["DO Mayor o LA menor","SOL Mayor o MI menor","FA Mayor o RE menor","RE Mayor o SI menor"], c:2,exp:"1 bemol = FA Mayor o RE menor (relativas)."}
  ]},
  {id:"relativas",bloque:"U15 · Bemoles y tonalidades",nombre:"Tonalidades relativas",preguntas:[
-  {q:"Dos tonalidades relativas comparten…",o:["la misma armadura","la misma tónica","el mismo tempo","el mismo compás"],c:0,exp:"Misma armadura (una Mayor y una menor)."},
-  {q:"La menor está, respecto a su Mayor, una…",o:["3.ª menor por debajo","5.ª por encima","2.ª por debajo","8.ª"],c:0,exp:"Una 3.ª menor por debajo."},
-  {q:"La relativa menor de DO Mayor es…",o:["LA menor","MI menor","RE menor","SOL menor"],c:0,exp:"DO→SI→LA: LA menor (sin alteraciones)."}
+  {q:"Dos tonalidades relativas comparten…",o:["la misma tónica","la misma armadura","el mismo tempo","el mismo compás"], c:1,exp:"Misma armadura (una Mayor y una menor)."},
+  {q:"La menor está, respecto a su Mayor, una…",o:["3.ª menor por debajo","5.ª por encima","2.ª por debajo","8.ª"], c:0,exp:"Una 3.ª menor por debajo."},
+  {q:"La relativa menor de DO Mayor es…",o:["MI menor","RE menor","SOL menor","LA menor"], c:3,exp:"DO→SI→LA: LA menor (sin alteraciones)."}
  ]},
  {id:"arm_mayor",bloque:"U15 · Bemoles y tonalidades",nombre:"Armadura → Mayor",preguntas:[
-  {svg:armadura("b",1),q:"¿Qué tonalidad MAYOR es? (1 bemol)",o:["FA Mayor","DO Mayor","SOL Mayor","RE Mayor"],c:0,exp:"1 bemol (SIb) = FA Mayor."},
-  {svg:armadura("#",2),q:"¿Qué tonalidad MAYOR es? (2 sostenidos)",o:["RE Mayor","SOL Mayor","LA Mayor","FA Mayor"],c:0,exp:"2 sostenidos (FA#, DO#) = RE Mayor."},
-  {svg:armadura("#",1),q:"¿Qué tonalidad MAYOR es? (1 sostenido)",o:["SOL Mayor","RE Mayor","DO Mayor","FA Mayor"],c:0,exp:"1 sostenido (FA#) = SOL Mayor."}
+  {svg:armadura("b",1),q:"¿Qué tonalidad MAYOR es? (1 bemol)",o:["DO Mayor","SOL Mayor","FA Mayor","RE Mayor"], c:2,exp:"1 bemol (SIb) = FA Mayor."},
+  {svg:armadura("#",2),q:"¿Qué tonalidad MAYOR es? (2 sostenidos)",o:["SOL Mayor","RE Mayor","LA Mayor","FA Mayor"], c:1,exp:"2 sostenidos (FA#, DO#) = RE Mayor."},
+  {svg:armadura("#",1),q:"¿Qué tonalidad MAYOR es? (1 sostenido)",o:["SOL Mayor","RE Mayor","DO Mayor","FA Mayor"], c:0,exp:"1 sostenido (FA#) = SOL Mayor."}
  ]},
  {id:"arm_menor",bloque:"U15 · Bemoles y tonalidades",nombre:"Armadura → menor",preguntas:[
-  {svg:armadura("b",1),q:"¿Qué tonalidad MENOR es? (1 bemol)",o:["RE menor","LA menor","MI menor","SOL menor"],c:0,exp:"1 bemol = RE menor (relativa de FA Mayor)."},
-  {svg:armadura("#",1),q:"¿Qué tonalidad MENOR es? (1 sostenido)",o:["MI menor","LA menor","RE menor","SI menor"],c:0,exp:"1 sostenido = MI menor (relativa de SOL Mayor)."},
-  {svg:armadura("b",0),q:"¿Qué tonalidad MENOR es? (sin alteraciones)",o:["LA menor","MI menor","RE menor","SI menor"],c:0,exp:"Sin alteraciones = LA menor (relativa de DO Mayor)."}
+  {svg:armadura("b",1),q:"¿Qué tonalidad MENOR es? (1 bemol)",o:["LA menor","MI menor","SOL menor","RE menor"], c:3,exp:"1 bemol = RE menor (relativa de FA Mayor)."},
+  {svg:armadura("#",1),q:"¿Qué tonalidad MENOR es? (1 sostenido)",o:["LA menor","RE menor","MI menor","SI menor"], c:2,exp:"1 sostenido = MI menor (relativa de SOL Mayor)."},
+  {svg:armadura("b",0),q:"¿Qué tonalidad MENOR es? (sin alteraciones)",o:["MI menor","LA menor","RE menor","SI menor"], c:1,exp:"Sin alteraciones = LA menor (relativa de DO Mayor)."}
  ]},
 
  /* ===== Repaso U1–5 · Figuras, compás simple, lectura, intervalos, alteraciones, tempo ===== */
  {id:"figuras_valor",bloque:"Repaso U1–5",nombre:"Valor de las figuras",preguntas:[
-  {q:"¿Cuántas corcheas vale una blanca?",o:["4","2","3","8"],c:0,exp:"Blanca = 2 negras = 4 corcheas."},
-  {q:"¿Cuántas negras vale una redonda?",o:["4","2","3","8"],c:0,exp:"Redonda = 4 negras."},
-  {q:"¿Cuántas semicorcheas vale una negra?",o:["4","2","3","1"],c:0,exp:"Negra = 4 semicorcheas."}
+  {q:"¿Cuántas corcheas vale una blanca?",o:["4","2","3","8"], c:0,exp:"Blanca = 2 negras = 4 corcheas."},
+  {q:"¿Cuántas negras vale una redonda?",o:["2","3","8","4"], c:3,exp:"Redonda = 4 negras."},
+  {q:"¿Cuántas semicorcheas vale una negra?",o:["2","3","4","1"], c:2,exp:"Negra = 4 semicorcheas."}
  ]},
  {id:"silencios",bloque:"Repaso U1–5",nombre:"Los silencios",preguntas:[
-  {q:"El silencio de corchea dura como…",o:["una corchea","una negra","una blanca","una redonda"],c:0,exp:"Cada silencio dura lo mismo que su figura."},
-  {q:"Un silencio es…",o:["una pausa con duración concreta","una nota aguda","un acento","un cambio de compás"],c:0,exp:"Una pausa de duración exacta."},
-  {q:"El silencio de redonda dura…",o:["4 negras","2 negras","1 negra","media negra"],c:0,exp:"Como la redonda: 4 negras."}
+  {q:"El silencio de corchea dura como…",o:["una negra","una corchea","una blanca","una redonda"], c:1,exp:"Cada silencio dura lo mismo que su figura."},
+  {q:"Un silencio es…",o:["una pausa con duración concreta","una nota aguda","un acento","un cambio de compás"], c:0,exp:"Una pausa de duración exacta."},
+  {q:"El silencio de redonda dura…",o:["2 negras","1 negra","media negra","4 negras"], c:3,exp:"Como la redonda: 4 negras."}
  ]},
  {id:"puntillo",bloque:"Repaso U1–5",nombre:"El puntillo",preguntas:[
-  {svg:figuraPuntillo("blanca"),q:"¿Cuánto vale esta figura?",o:["3 negras","2 negras","4 negras","1 negra"],c:0,exp:"Blanca con puntillo = 3 negras."},
-  {q:"El puntillo añade a la figura…",o:["su mitad","el doble","un cuarto","nada"],c:0,exp:"La mitad de su valor."},
-  {svg:figuraPuntillo("negra"),q:"¿Cuánto vale esta figura?",o:["3 corcheas","2 corcheas","4 corcheas","1 corchea"],c:0,exp:"Negra con puntillo = 3 corcheas."}
+  {svg:figuraPuntillo("blanca"),q:"¿Cuánto vale esta figura?",o:["2 negras","4 negras","3 negras","1 negra"], c:2,exp:"Blanca con puntillo = 3 negras."},
+  {q:"El puntillo añade a la figura…",o:["el doble","su mitad","un cuarto","nada"], c:1,exp:"La mitad de su valor."},
+  {svg:figuraPuntillo("negra"),q:"¿Cuánto vale esta figura?",o:["3 corcheas","2 corcheas","4 corcheas","1 corchea"], c:0,exp:"Negra con puntillo = 3 corcheas."}
  ]},
  {id:"compas_simple",bloque:"Repaso U1–5",nombre:"El compás simple",preguntas:[
-  {q:"En un compás simple, ¿qué indica el numerador?",o:["el número de tiempos","la figura de tiempo","la velocidad","la intensidad"],c:0,exp:"En simple, el numerador = nº de tiempos."},
-  {q:"En el compás simple, cada tiempo se divide en…",o:["2 mitades","3 tercios","4 partes","no se divide"],c:0,exp:"Subdivisión binaria: en 2."},
-  {q:"La unidad de tiempo en un compás simple es…",o:["una figura sin puntillo","una figura con puntillo","siempre una corchea","siempre una negra"],c:0,exp:"Una figura simple (sin puntillo)."}
+  {q:"En un compás simple, ¿qué indica el numerador?",o:["la figura de tiempo","la velocidad","la intensidad","el número de tiempos"], c:3,exp:"En simple, el numerador = nº de tiempos."},
+  {q:"En el compás simple, cada tiempo se divide en…",o:["3 tercios","4 partes","2 mitades","no se divide"], c:2,exp:"Subdivisión binaria: en 2."},
+  {q:"La unidad de tiempo en un compás simple es…",o:["una figura con puntillo","una figura sin puntillo","siempre una corchea","siempre una negra"], c:1,exp:"Una figura simple (sin puntillo)."}
  ]},
  {id:"tiempos_simple",bloque:"Repaso U1–5",nombre:"Tiempos en compases simples",preguntas:[
-  {svg:compas(2,4),q:"¿Cuántos TIEMPOS tiene el 2/4?",o:["2","4","8","1"],c:0,exp:"Simple: el numerador = 2 tiempos."},
-  {svg:compas(3,4),q:"¿Cuántos TIEMPOS tiene el 3/4?",o:["2","3","4","6"],c:1,exp:"Simple: 3 tiempos."},
-  {svg:compas(4,4),q:"¿Cuántos TIEMPOS tiene el 4/4?",o:["2","3","4","8"],c:2,exp:"Simple: 4 tiempos."}
+  {svg:compas(2,4),q:"¿Cuántos TIEMPOS tiene el 2/4?",o:["2","4","8","1"], c:0,exp:"Simple: el numerador = 2 tiempos."},
+  {svg:compas(3,4),q:"¿Cuántos TIEMPOS tiene el 3/4?",o:["3","2","4","6"], c:0,exp:"Simple: 3 tiempos."},
+  {svg:compas(4,4),q:"¿Cuántos TIEMPOS tiene el 4/4?",o:["4","2","3","8"], c:0,exp:"Simple: 4 tiempos."}
  ]},
  {id:"ut_simple",bloque:"Repaso U1–5",nombre:"Unidad de tiempo (simples)",preguntas:[
-  {q:"En 2/4, ¿qué figura vale un tiempo?",o:["la negra","la corchea","la blanca","la redonda"],c:0,exp:"Denominador 4 → la negra."},
-  {q:"En 3/8, ¿qué figura vale un tiempo?",o:["la corchea","la negra","la blanca","la semicorchea"],c:0,exp:"Denominador 8 → la corchea."},
-  {q:"En 2/2, ¿qué figura vale un tiempo?",o:["la blanca","la negra","la redonda","la corchea"],c:0,exp:"Denominador 2 → la blanca."}
+  {q:"En 2/4, ¿qué figura vale un tiempo?",o:["la corchea","la negra","la blanca","la redonda"], c:1,exp:"Denominador 4 → la negra."},
+  {q:"En 3/8, ¿qué figura vale un tiempo?",o:["la corchea","la negra","la blanca","la semicorchea"], c:0,exp:"Denominador 8 → la corchea."},
+  {q:"En 2/2, ¿qué figura vale un tiempo?",o:["la negra","la redonda","la corchea","la blanca"], c:3,exp:"Denominador 2 → la blanca."}
  ]},
  {id:"clasif_8",bloque:"Repaso U1–5",nombre:"Clasificar compases de /8",preguntas:[
-  {svg:compas(3,8),q:"El 3/8 es…",o:["simple ternario","compuesto ternario","simple binario","compuesto binario"],c:0,exp:"Numerador 3 → simple; 3 tiempos → ternario."},
-  {svg:compas(6,8),q:"El 6/8 es…",o:["compuesto binario","simple binario","compuesto ternario","simple ternario"],c:0,exp:"Numerador 6 → compuesto; 6÷3=2 → binario."},
-  {svg:compas(2,8),q:"El 2/8 es…",o:["simple binario","compuesto binario","simple ternario","compuesto ternario"],c:0,exp:"Numerador 2 → simple; 2 tiempos → binario."}
+  {svg:compas(3,8),q:"El 3/8 es…",o:["compuesto ternario","simple binario","simple ternario","compuesto binario"], c:2,exp:"Numerador 3 → simple; 3 tiempos → ternario."},
+  {svg:compas(6,8),q:"El 6/8 es…",o:["simple binario","compuesto binario","compuesto ternario","simple ternario"], c:1,exp:"Numerador 6 → compuesto; 6÷3=2 → binario."},
+  {svg:compas(2,8),q:"El 2/8 es…",o:["simple binario","compuesto binario","simple ternario","compuesto ternario"], c:0,exp:"Numerador 2 → simple; 2 tiempos → binario."}
  ]},
  {id:"c_12_8",bloque:"Repaso U1–5",nombre:"El compás de 12/8",preguntas:[
-  {svg:compas(12,8),q:"El 12/8 es…",o:["compuesto cuaternario","simple cuaternario","compuesto ternario","simple binario"],c:0,exp:"Compuesto (numerador 12) y 12÷3=4 → cuaternario."},
-  {svg:compas(12,8),q:"La unidad de tiempo del 12/8 es…",o:["la negra con puntillo","la negra","la corchea","la blanca"],c:0,exp:"Negra con puntillo."},
-  {q:"En 12/8, el 12 indica…",o:["12 tercios (3 en cada uno de los 4 tiempos)","12 compases","12 negras","12 tiempos"],c:0,exp:"12 tercios repartidos en 4 tiempos."}
+  {svg:compas(12,8),q:"El 12/8 es…",o:["simple cuaternario","compuesto ternario","simple binario","compuesto cuaternario"], c:3,exp:"Compuesto (numerador 12) y 12÷3=4 → cuaternario."},
+  {svg:compas(12,8),q:"La unidad de tiempo del 12/8 es…",o:["la negra","la corchea","la negra con puntillo","la blanca"], c:2,exp:"Negra con puntillo."},
+  {q:"En 12/8, el 12 indica…",o:["12 compases","12 tercios (3 en cada uno de los 4 tiempos)","12 negras","12 tiempos"], c:1,exp:"12 tercios repartidos en 4 tiempos."}
  ]},
  {id:"orden_sost",bloque:"Repaso U1–5",nombre:"Orden de los sostenidos",preguntas:[
-  {q:"El orden de los sostenidos empieza por…",o:["FA","SI","DO","SOL"],c:0,exp:"FA-DO-SOL-RE-LA-MI-SI."},
-  {q:"Con 3 sostenidos, ¿cuáles son?",o:["FA, DO y SOL","FA, DO y RE","FA, SOL y LA","DO, SOL y RE"],c:0,exp:"Los tres primeros: FA, DO y SOL."},
-  {q:"El cuarto sostenido del orden es…",o:["RE","LA","MI","SI"],c:0,exp:"FA-DO-SOL-RE…: el 4.º es RE."}
+  {q:"El orden de los sostenidos empieza por…",o:["FA","SI","DO","SOL"], c:0,exp:"FA-DO-SOL-RE-LA-MI-SI."},
+  {q:"Con 3 sostenidos, ¿cuáles son?",o:["FA, DO y RE","FA, SOL y LA","DO, SOL y RE","FA, DO y SOL"], c:3,exp:"Los tres primeros: FA, DO y SOL."},
+  {q:"El cuarto sostenido del orden es…",o:["LA","MI","RE","SI"], c:2,exp:"FA-DO-SOL-RE…: el 4.º es RE."}
  ]},
  {id:"leer_notas",bloque:"Repaso U1–5",nombre:"Lectura y clave de Sol",preguntas:[
-  {svg:unaNota("G4"),q:"¿Qué nota es? (clave de Sol)",o:["SOL","MI","SI","DO"],c:0,exp:"La clave de Sol fija el SOL en la 2.ª línea."},
-  {svg:unaNota("C4"),q:"¿Qué nota es? (línea adicional inferior)",o:["DO","SI","RE","LA"],c:0,exp:"DO central, 1.ª línea adicional inferior."},
-  {svg:unaNota("F5"),q:"¿Qué nota es? (clave de Sol)",o:["FA","MI","SOL","RE"],c:0,exp:"5.ª línea = FA."}
+  {svg:unaNota("G4"),q:"¿Qué nota es? (clave de Sol)",o:["MI","SOL","SI","DO"], c:1,exp:"La clave de Sol fija el SOL en la 2.ª línea."},
+  {svg:unaNota("C4"),q:"¿Qué nota es? (línea adicional inferior)",o:["DO","SI","RE","LA"], c:0,exp:"DO central, 1.ª línea adicional inferior."},
+  {svg:unaNota("F5"),q:"¿Qué nota es? (clave de Sol)",o:["MI","SOL","RE","FA"], c:3,exp:"5.ª línea = FA."}
  ]},
  {id:"int_orden",bloque:"Repaso U1–5",nombre:"Intervalos: número de orden",preguntas:[
-  {svg:intervalo("C5","G5"),q:"¿De qué número de orden es?",o:["5.ª","4.ª","6.ª","3.ª"],c:0,exp:"DO-RE-MI-FA-SOL = 5 = 5.ª."},
-  {svg:intervalo("E4","B4"),q:"¿De qué número de orden es?",o:["5.ª","4.ª","6.ª","3.ª"],c:0,exp:"MI-FA-SOL-LA-SI = 5 = 5.ª."},
-  {svg:intervalo("D5","F5"),q:"¿De qué número de orden es?",o:["3.ª","2.ª","4.ª","5.ª"],c:0,exp:"RE-MI-FA = 3 = 3.ª."}
+  {svg:intervalo("C5","G5"),q:"¿De qué número de orden es?",o:["4.ª","6.ª","5.ª","3.ª"], c:2,exp:"DO-RE-MI-FA-SOL = 5 = 5.ª."},
+  {svg:intervalo("E4","B4"),q:"¿De qué número de orden es?",o:["4.ª","5.ª","6.ª","3.ª"], c:1,exp:"MI-FA-SOL-LA-SI = 5 = 5.ª."},
+  {svg:intervalo("D5","F5"),q:"¿De qué número de orden es?",o:["3.ª","2.ª","4.ª","5.ª"], c:0,exp:"RE-MI-FA = 3 = 3.ª."}
  ]},
  {id:"int_clasif",bloque:"Repaso U1–5",nombre:"Intervalos: otras clasificaciones",preguntas:[
-  {q:"Si la 2.ª nota es más AGUDA que la 1.ª, el intervalo es…",o:["ascendente","descendente","armónico","disminuido"],c:0,exp:"Por su dirección: ascendente (sube) o descendente (baja)."},
-  {q:"Si las dos notas suenan A LA VEZ, el intervalo es…",o:["armónico","melódico","ascendente","simple"],c:0,exp:"Melódico = una tras otra; armónico = a la vez."},
-  {q:"Un intervalo dentro de una octava se llama…",o:["simple","compuesto","melódico","disminuido"],c:0,exp:"Por su amplitud: simple (≤ 8.ª) o compuesto (> 8.ª)."}
+  {q:"Si la 2.ª nota es más AGUDA que la 1.ª, el intervalo es…",o:["descendente","armónico","disminuido","ascendente"], c:3,exp:"Por su dirección: ascendente (sube) o descendente (baja)."},
+  {q:"Si las dos notas suenan A LA VEZ, el intervalo es…",o:["melódico","ascendente","armónico","simple"], c:2,exp:"Melódico = una tras otra; armónico = a la vez."},
+  {q:"Un intervalo dentro de una octava se llama…",o:["compuesto","simple","melódico","disminuido"], c:1,exp:"Por su amplitud: simple (≤ 8.ª) o compuesto (> 8.ª)."}
  ]},
  {id:"int_especie",bloque:"Repaso U1–5",nombre:"Intervalos: las trampas",preguntas:[
-  {svg:intervalo("F4","B4"),q:"De FA a SI, ¿qué intervalo es?",o:["4.ª aumentada","4.ª Justa","5.ª Justa","3.ª Mayor"],c:0,exp:"FA-SI = única 4.ª aumentada con notas naturales."},
-  {svg:intervalo("B4","F5"),q:"De SI a FA, ¿qué intervalo es?",o:["5.ª disminuida","5.ª Justa","4.ª aumentada","6.ª"],c:0,exp:"SI-FA = única 5.ª disminuida con notas naturales."},
-  {q:"Las 4.ª y 5.ª naturales son Justas salvo…",o:["FA-SI y SI-FA","DO-FA y RE-SOL","MI-LA y LA-RE","DO-SOL y RE-LA"],c:0,exp:"FA-SI (4.ª aum.) y SI-FA (5.ª dism.)."}
+  {svg:intervalo("F4","B4"),q:"De FA a SI, ¿qué intervalo es?",o:["4.ª aumentada","4.ª Justa","5.ª Justa","3.ª Mayor"], c:0,exp:"FA-SI = única 4.ª aumentada con notas naturales."},
+  {svg:intervalo("B4","F5"),q:"De SI a FA, ¿qué intervalo es?",o:["5.ª Justa","4.ª aumentada","6.ª","5.ª disminuida"], c:3,exp:"SI-FA = única 5.ª disminuida con notas naturales."},
+  {q:"Las 4.ª y 5.ª naturales son Justas salvo…",o:["DO-FA y RE-SOL","MI-LA y LA-RE","FA-SI y SI-FA","DO-SOL y RE-LA"], c:2,exp:"FA-SI (4.ª aum.) y SI-FA (5.ª dism.)."}
  ]},
  {id:"alteraciones",bloque:"Repaso U1–5",nombre:"Las alteraciones",preguntas:[
-  {svg:unaNota("A4",{acc:"#"}),q:"El sostenido (#)…",o:["sube 1 semitono","baja 1 semitono","sube 1 tono","no cambia"],c:0,exp:"Sube 1 semitono."},
-  {q:"El doble sostenido (x)…",o:["sube 2 semitonos","sube 1 semitono","baja 2 semitonos","anula"],c:0,exp:"Sube 2 semitonos; el doble bemol baja 2."},
-  {svg:unaNota("A4",{acc:"b"}),q:"El bemol (b)…",o:["baja 1 semitono","sube 1 semitono","baja 1 tono","anula"],c:0,exp:"Baja 1 semitono."}
+  {svg:unaNota("A4",{acc:"#"}),q:"El sostenido (#)…",o:["baja 1 semitono","sube 1 semitono","sube 1 tono","no cambia"], c:1,exp:"Sube 1 semitono."},
+  {q:"El doble sostenido (x)…",o:["sube 2 semitonos","sube 1 semitono","baja 2 semitonos","anula"], c:0,exp:"Sube 2 semitonos; el doble bemol baja 2."},
+  {svg:unaNota("A4",{acc:"b"}),q:"El bemol (b)…",o:["sube 1 semitono","baja 1 tono","anula","baja 1 semitono"], c:3,exp:"Baja 1 semitono."}
  ]},
  {id:"semitono_enar",bloque:"Repaso U1–5",nombre:"Semitonos, enarmonía y unísono",preguntas:[
-  {svg:intervalo("E5","F5"),q:"De MI a FA hay un semitono…",o:["diatónico","cromático","aumentado","doble"],c:0,exp:"Distinto nombre → diatónico."},
-  {q:"DO# y RE♭ son notas…",o:["enarmónicas","al unísono","cromáticas","de un tono"],c:0,exp:"Distinto nombre, igual sonido = enarmónicas."},
-  {q:"Dos notas de igual nombre y sonido a la vez forman…",o:["un unísono","una enarmonía","un semitono","una octava"],c:0,exp:"Un unísono."}
+  {svg:intervalo("E5","F5"),q:"De MI a FA hay un semitono…",o:["cromático","aumentado","diatónico","doble"], c:2,exp:"Distinto nombre → diatónico."},
+  {q:"DO# y RE♭ son notas…",o:["al unísono","enarmónicas","cromáticas","de un tono"], c:1,exp:"Distinto nombre, igual sonido = enarmónicas."},
+  {q:"Dos notas de igual nombre y sonido a la vez forman…",o:["un unísono","una enarmonía","un semitono","una octava"], c:0,exp:"Un unísono."}
  ]},
  {id:"tempo_agog_metro",bloque:"Repaso U1–5",nombre:"Tempo, agógica y metrónomo",preguntas:[
-  {q:"De más lento a más rápido, ¿cuál es el orden correcto?",o:["Largo · Andante · Allegro · Presto","Presto · Allegro · Andante · Largo","Andante · Largo · Presto · Allegro","Allegro · Andante · Presto · Largo"],c:0,exp:"Largo < Adagio < Andante < Moderato < Allegro < Vivace < Presto."},
-  {q:"'Ad libitum' significa…",o:["con libertad de velocidad","muy fuerte","desde el principio","muy lento"],c:0,exp:"Ad libitum = a voluntad del intérprete (agógica)."},
-  {q:"El metrónomo (Maelzel, 1816) sirve para…",o:["medir y marcar la velocidad","afinar","marcar la intensidad","contar compases"],c:0,exp:"Marca pulsos regulares: mide el tempo (sigla M.M.)."}
+  {q:"De más lento a más rápido, ¿cuál es el orden correcto?",o:["Presto · Allegro · Andante · Largo","Andante · Largo · Presto · Allegro","Allegro · Andante · Presto · Largo","Largo · Andante · Allegro · Presto"], c:3,exp:"Largo < Adagio < Andante < Moderato < Allegro < Vivace < Presto."},
+  {q:"'Ad libitum' significa…",o:["muy fuerte","desde el principio","con libertad de velocidad","muy lento"], c:2,exp:"Ad libitum = a voluntad del intérprete (agógica)."},
+  {q:"El metrónomo (Maelzel, 1816) sirve para…",o:["afinar","medir y marcar la velocidad","marcar la intensidad","contar compases"], c:1,exp:"Marca pulsos regulares: mide el tempo (sigla M.M.)."}
  ]}
 ];
 
 /* ===== MOTOR (adaptativo + registro de sesión) ===== */
-const CLAVE="andre_musica_repaso_completo2";
+const CLAVE="andre_mus_teoria_gran-repaso2_v1";
 let estado=null, cronometro=null;
 function nuevoEstado(){return {temaIdx:0,intento:0,resultados:[],log:[],inicio:Date.now(),segundos:0};}
 function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(estado));}catch(e){}}

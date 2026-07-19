@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Repaso 2 de Música — El compás — André</title>
+<title>Repaso final de Música — André</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -70,7 +70,7 @@
 <body>
 <div class="envoltorio">
   <header>
-    <h1>Repaso 2 de Música · El compás 🎺</h1>
+    <h1>Repaso final de Música · ¡listo para el lunes! 🎺</h1>
     <p class="subtitulo">Lenguaje musical — André · 5º de Primaria</p>
   </header>
 
@@ -82,8 +82,8 @@
   <div class="progreso-ext"><div class="progreso-int" id="progreso"></div></div>
 
   <section id="pantallaInicio" class="intro">
-    <p><strong>¡Segunda vuelta, André!</strong> Preguntas nuevas, sin nada que no hayas visto ya. Esta vez nos centramos en <strong>el compás</strong> (lo que más se resistió) y en los intervalos.</p>
-    <div class="aviso-mapa">🗺️ <strong>Antes de empezar:</strong> ten al lado el <em>Mapa del compás</em> (simple/compuesto, cómo contar los tiempos y la unidad de tiempo). Es lo que más conviene mirar una vez antes de jugar.</div>
+    <p><strong>Último repaso, André.</strong> Hoy no hay nada nuevo: solo afianzar lo que ya sabes para llegar al lunes tranquilo y seguro.</p>
+    <div class="aviso-mapa">🗺️ <strong>Antes de empezar:</strong> ten al lado el <em>Mapa de repaso</em> (los grados de la escala y las tonalidades relativas). Es lo único que conviene mirar bien una vez antes de jugar.</div>
     <p>Cómo funciona:</p>
     <ul>
       <li>Una pregunta por tema; algunas con partitura en clave de Sol.</li>
@@ -138,6 +138,18 @@
 </div>
 
 <script>
+/* ── Migración de clave localStorage (legacy → §2 MUSIC_GUIDE) ──
+   Clave antigua: andre_musica_repaso_final
+   ──────────────────────────────────────────────────────────────── */
+(function () {
+  var _old = localStorage.getItem('andre_musica_repaso_final');
+  if (_old !== null) {
+    try {
+      localStorage.setItem('andre_mus_teoria_repaso-final_v1', _old);
+      localStorage.removeItem('andre_musica_repaso_final');
+    } catch (e) { /* quota o privado: no crítico */ }
+  }
+})();
 /* ===== Helpers de notación musical en SVG (clave de Sol) ===== */
 const LINEGAP=10, STAFFTOP=40, YBOTTOM=STAFFTOP+4*LINEGAP;
 const LETTER={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
@@ -166,125 +178,145 @@ function figuraPuntillo(tipo){const x=64,y=58,filled=(tipo==="negra");let inner=
 /* ===== BANCO DE PREGUNTAS — REPASO FINAL =====
    bloque "foco" = el punto débil (grados y tonalidades) ; "repaso" = barrido de confianza */
 const TEMAS=[
- /* ===== FOCO: EL COMPÁS ===== */
- {id:"simple_comp",bloque:"FOCO: El compás",nombre:"Simple o compuesto, y su subdivisión",preguntas:[
-  {q:"¿Qué numeradores indican un compás COMPUESTO?",o:["2, 3 ó 4","6, 9 ó 12","solo el 8","cualquier número par"],c:1,exp:"Compuesto: numerador 6, 9 ó 12. Simple: 2, 3 ó 4."},
-  {q:"En un compás COMPUESTO, cada tiempo se divide en…",o:["2 mitades","3 tercios","4 partes","no se divide"],c:1,exp:"Compuesto = subdivisión ternaria: cada tiempo se parte en 3."},
-  {q:"En un compás SIMPLE, cada tiempo se divide en…",o:["2 mitades","3 tercios","6 partes","no se divide"],c:0,exp:"Simple = subdivisión binaria: cada tiempo se parte en 2."}
+ /* --- Calentamiento (ya lo domina) --- */
+ {id:"orden_sost",bloque:"Calentamiento",nombre:"Orden de los sostenidos",preguntas:[
+  {q:"¿Cuál es el orden de los sostenidos?",o:["FA DO SOL RE LA MI SI","SI MI LA RE SOL DO FA","DO RE MI FA SOL LA SI","FA SOL LA SI DO RE MI"], c:0,exp:"FA-DO-SOL-RE-LA-MI-SI. Empieza por FA."},
+  {q:"El primer sostenido de una armadura es…",o:["FA","DO","SOL","SI"], c:0,exp:"FA es el primero: FA-DO-SOL-RE-LA-MI-SI."},
+  {q:"El tercer sostenido (tras FA y DO) es…",o:["RE","LA","MI","SOL"], c:3,exp:"FA, DO, SOL: el tercero es SOL."}
  ]},
- {id:"ident_sc",bloque:"FOCO: El compás",nombre:"¿Este compás es simple o compuesto?",preguntas:[
-  {svg:compas(4,4),q:"El compás de 4/4, ¿es simple o compuesto?",o:["simple","compuesto","irregular","los dos"],c:0,exp:"Numerador 4 → simple."},
-  {svg:compas(6,8),q:"El compás de 6/8, ¿es simple o compuesto?",o:["simple","compuesto","irregular","ternario simple"],c:1,exp:"Numerador 6 → compuesto."},
-  {svg:compas(3,4),q:"El compás de 3/4, ¿es simple o compuesto?",o:["simple","compuesto","cuaternario","ninguno"],c:0,exp:"Numerador 3 → simple."}
- ]},
- {id:"tiempos_comp",bloque:"FOCO: El compás",nombre:"Contar los tiempos en compases COMPUESTOS",preguntas:[
-  {svg:compas(6,8),q:"¿Cuántos TIEMPOS tiene el compás de 6/8?",o:["6","3","2","4"],c:2,exp:"Compuesto: tiempos = numerador ÷ 3. 6 ÷ 3 = 2 tiempos."},
-  {svg:compas(9,8),q:"¿Cuántos TIEMPOS tiene el compás de 9/8?",o:["9","2","3","4"],c:2,exp:"9 ÷ 3 = 3 tiempos."},
-  {svg:compas(12,8),q:"¿Cuántos TIEMPOS tiene el compás de 12/8?",o:["12","3","4","6"],c:2,exp:"12 ÷ 3 = 4 tiempos."}
- ]},
- {id:"tiempos_simp",bloque:"FOCO: El compás",nombre:"Contar los tiempos en compases SIMPLES",preguntas:[
-  {svg:compas(2,4),q:"¿Cuántos TIEMPOS tiene el compás de 2/4?",o:["2","4","8","1"],c:0,exp:"Simple: el nº de tiempos es el numerador. 2/4 → 2 tiempos."},
-  {svg:compas(3,8),q:"¿Cuántos TIEMPOS tiene el compás de 3/8?",o:["8","3","6","2"],c:1,exp:"Simple: numerador = 3 tiempos."},
-  {svg:compas(4,4),q:"¿Cuántos TIEMPOS tiene el compás de 4/4?",o:["2","3","4","8"],c:2,exp:"Simple: numerador = 4 tiempos."}
- ]},
- {id:"clasif_8",bloque:"FOCO: El compás",nombre:"Clasificar 3/8, 2/8 y 6/8",preguntas:[
-  {svg:compas(3,8),q:"El compás de 3/8 es…",o:["simple ternario","compuesto ternario","simple binario","compuesto binario"],c:0,exp:"Numerador 3 → simple; 3 tiempos → ternario. (El 8 NO lo hace compuesto.)"},
-  {svg:compas(2,8),q:"El compás de 2/8 es…",o:["compuesto binario","simple binario","simple ternario","simple cuaternario"],c:1,exp:"Numerador 2 → simple; 2 tiempos → binario."},
-  {svg:compas(6,8),q:"El compás de 6/8 es…",o:["simple binario","compuesto binario","compuesto ternario","simple ternario"],c:1,exp:"Numerador 6 → compuesto; 6 ÷ 3 = 2 tiempos → binario."}
- ]},
- {id:"ut_simple",bloque:"FOCO: El compás",nombre:"Unidad de tiempo en compases SIMPLES",preguntas:[
-  {q:"En el compás de 3/4, ¿qué figura vale UN tiempo (unidad de tiempo)?",o:["la corchea","la negra","la blanca","la redonda"],c:1,exp:"El denominador 4 indica la negra: vale un tiempo."},
-  {q:"En el compás de 2/8, ¿qué figura vale UN tiempo?",o:["la corchea","la negra","la blanca","la semicorchea"],c:0,exp:"El denominador 8 indica la corchea: vale un tiempo."},
-  {q:"En el compás de 3/2, ¿qué figura vale UN tiempo?",o:["la negra","la blanca","la redonda","la corchea"],c:1,exp:"El denominador 2 indica la blanca: vale un tiempo."}
- ]},
- {id:"ut_comp",bloque:"FOCO: El compás",nombre:"Unidad de tiempo en compases COMPUESTOS",preguntas:[
-  {svg:compas(6,8),q:"En el compás de 6/8, ¿cuál es la unidad de tiempo?",o:["la corchea","la negra","la negra con puntillo","la blanca"],c:2,exp:"En compuesto la UT es una figura con puntillo: la negra con puntillo (= 3 corcheas)."},
-  {svg:compas(9,8),q:"En el compás de 9/8, ¿cuál es la unidad de tiempo?",o:["la negra con puntillo","la negra","la corchea","la blanca con puntillo"],c:0,exp:"Negra con puntillo (= 3 corcheas)."},
-  {q:"En los compases compuestos (6/8, 9/8, 12/8) la unidad de tiempo es siempre…",o:["una figura simple","una figura con puntillo","una corchea","un silencio"],c:1,exp:"En compuesto la UT es siempre una figura con puntillo (vale 3 subdivisiones)."}
+ {id:"orden_bem",bloque:"Calentamiento",nombre:"Orden de los bemoles",preguntas:[
+  {q:"¿Cuál es el orden de los bemoles?",o:["FA DO SOL RE LA MI SI","SI MI LA RE SOL DO FA","DO SI LA SOL FA MI RE","SI DO RE MI FA SOL LA"], c:1,exp:"SI-MI-LA-RE-SOL-DO-FA: el orden de los sostenidos al revés."},
+  {q:"El primer bemol de una armadura es…",o:["FA","SI","MI","DO"], c:1,exp:"SI es el primero de los bemoles."},
+  {q:"El orden de los bemoles, respecto al de los sostenidos, es…",o:["igual","empieza por DO","sin el SI","el inverso (al revés)"], c:3,exp:"Bemoles = sostenidos al revés (SI...FA frente a FA...SI)."}
  ]},
 
- /* ===== FOCO: INTERVALOS Y ALTERACIONES ===== */
- {id:"especie_4",bloque:"FOCO: Intervalos y alteraciones",nombre:"La 4.ª: ¿Justa o aumentada?",preguntas:[
-  {svg:intervalo("F4","B4"),q:"De FA a SI, ¿qué intervalo es?",o:["4.ª Justa","4.ª aumentada","5.ª Justa","3.ª Mayor"],c:1,exp:"FA-SI es la ÚNICA 4.ª aumentada entre notas naturales (3 tonos)."},
-  {svg:intervalo("C5","F5"),q:"De DO a FA, ¿qué 4.ª es?",o:["4.ª Justa","4.ª aumentada","4.ª disminuida","5.ª Justa"],c:0,exp:"Todas las 4.ª naturales son Justas salvo FA-SI. DO-FA = 4.ª Justa."},
-  {q:"¿Cuál es la ÚNICA 4.ª aumentada entre notas naturales?",o:["DO-FA","RE-SOL","FA-SI","MI-LA"],c:2,exp:"FA-SI es la única 4.ª aumentada."}
+ /* --- FOCO: grados de la escala y tonalidades --- */
+ {id:"grados_nombres1",bloque:"FOCO: Grados y tonalidades",nombre:"Nombres de los grados (I, V, VII)",preguntas:[
+  {q:"El I grado de la escala se llama…",o:["Dominante","Mediante","Tónica","Sensible"], c:2,exp:"I = Tónica: la nota principal, la que da nombre a la tonalidad."},
+  {q:"El V grado se llama…",o:["Subdominante","Mediante","Dominante","Supertónica"], c:2,exp:"V = Dominante: el grado más importante después de la Tónica."},
+  {q:"El VII grado, a un semitono de la tónica, se llama…",o:["Supertónica","Sensible","Superdominante","Subdominante"], c:1,exp:"VII = Sensible: 'quiere subir' a la Tónica (está a un semitono)."}
  ]},
- {id:"especie_5",bloque:"FOCO: Intervalos y alteraciones",nombre:"La 5.ª: ¿Justa o disminuida?",preguntas:[
-  {svg:intervalo("B4","F5"),q:"De SI a FA, ¿qué intervalo es?",o:["5.ª Justa","5.ª disminuida","4.ª aumentada","6.ª menor"],c:1,exp:"SI-FA es la ÚNICA 5.ª disminuida entre notas naturales."},
-  {svg:intervalo("D5","A5"),q:"De RE a LA, ¿qué 5.ª es?",o:["5.ª Justa","5.ª disminuida","5.ª aumentada","4.ª Justa"],c:0,exp:"Todas las 5.ª naturales son Justas salvo SI-FA. RE-LA = 5.ª Justa."},
-  {q:"¿Cuál es la ÚNICA 5.ª disminuida entre notas naturales?",o:["DO-SOL","RE-LA","SI-FA","MI-SI"],c:2,exp:"SI-FA es la única 5.ª disminuida."}
+ {id:"grados_nombres2",bloque:"FOCO: Grados y tonalidades",nombre:"Nombres de los grados (II, III, IV, VI)",preguntas:[
+  {q:"El IV grado se llama…",o:["Superdominante","Dominante","Supertónica","Subdominante"], c:3,exp:"IV = Subdominante."},
+  {q:"El II grado se llama…",o:["Subdominante","Mediante","Supertónica","Sensible"], c:2,exp:"II = Supertónica ('super' = justo encima de la Tónica)."},
+  {q:"El VI grado se llama…",o:["Mediante","Subdominante","Superdominante","Sensible"], c:2,exp:"VI = Superdominante ('super' = justo encima de la Dominante)."}
  ]},
- {id:"alteraciones_dir",bloque:"FOCO: Intervalos y alteraciones",nombre:"Las alteraciones: sube o baja",preguntas:[
-  {svg:unaNota("A4",{acc:"#"}),q:"El sostenido (#), ¿qué le hace a la nota?",o:["la sube 1 semitono","la baja 1 semitono","la sube 1 tono","no la cambia"],c:0,exp:"El sostenido SUBE 1 semitono. (El bemol BAJA.) No los confundas."},
-  {svg:unaNota("A4",{acc:"b"}),q:"El bemol (b), ¿qué le hace a la nota?",o:["la sube 1 semitono","la baja 1 semitono","la baja 1 tono","la anula"],c:1,exp:"El bemol BAJA 1 semitono."},
-  {q:"El doble sostenido (x), ¿qué hace?",o:["sube 1 semitono","sube 2 semitonos","baja 2 semitonos","anula"],c:1,exp:"El doble sostenido sube 2 semitonos; el doble bemol baja 2."}
+ {id:"grados_orden",bloque:"FOCO: Grados y tonalidades",nombre:"Los siete grados (de nombre a número)",preguntas:[
+  {q:"¿Qué grado es la Subdominante?",o:["III","IV","V","VI"], c:1,exp:"Subdominante = IV grado."},
+  {q:"¿Qué grado es la Sensible?",o:["V","VII","VI","II"], c:1,exp:"Sensible = VII grado (a un semitono de la tónica)."},
+  {q:"La Mediante es el grado…",o:["II","IV","V","III"], c:3,exp:"Mediante = III grado (el que define el modo)."}
+ ]},
+ {id:"tonales_modales",bloque:"FOCO: Grados y tonalidades",nombre:"Grados tonales y modales",preguntas:[
+  {q:"Los grados TONALES (los pilares) son…",o:["II, III y VI","I, IV y V","I, II y III","III, VI y VII"], c:1,exp:"Tonales: I (Tónica), IV (Subdominante), V (Dominante). Son los tres pilares."},
+  {q:"¿Qué grado decide si el modo es Mayor o menor?",o:["el I (Tónica)","el III (Mediante)","el V (Dominante)","el VII (Sensible)"], c:1,exp:"El III (Mediante) define el modo: Mayor o menor."},
+  {q:"Los grados MODALES son…",o:["I, IV y V","II, IV y VI","I, III y V","III, VI y VII"], c:3,exp:"Modales: III, VI y VII (cambian según el modo)."}
+ ]},
+ {id:"relativa_a_menor",bloque:"FOCO: Grados y tonalidades",nombre:"Tonalidad relativa (de Mayor a menor)",preguntas:[
+  {q:"La relativa menor de SOL Mayor es…",o:["LA menor","RE menor","SI menor","MI menor"], c:3,exp:"Baja una 3.ª menor (3 notas): SOL → FA → MI. Es MI menor, con la misma armadura (1 sostenido)."},
+  {q:"La relativa menor de FA Mayor es…",o:["LA menor","SOL menor","RE menor","MI menor"], c:2,exp:"FA → MI → RE. Es RE menor, misma armadura que FA Mayor (1 bemol)."},
+  {q:"La relativa menor de DO Mayor es…",o:["LA menor","MI menor","RE menor","FA menor"], c:0,exp:"DO → SI → LA. Es LA menor, sin alteraciones (igual que DO Mayor)."}
+ ]},
+ {id:"relativa_armadura",bloque:"FOCO: Grados y tonalidades",nombre:"¿Con qué tonalidad comparte armadura?",preguntas:[
+  {q:"MI menor comparte armadura con…",o:["SOL Mayor","DO Mayor","FA Mayor","RE Mayor"], c:0,exp:"MI menor y SOL Mayor son relativas: las dos llevan 1 sostenido (FA#)."},
+  {q:"RE menor comparte armadura con…",o:["DO Mayor","SOL Mayor","SI bemol Mayor","FA Mayor"], c:3,exp:"RE menor y FA Mayor son relativas: las dos llevan 1 bemol (SIb)."},
+  {q:"LA menor comparte armadura con…",o:["SOL Mayor","DO Mayor","FA Mayor","RE Mayor"], c:1,exp:"LA menor y DO Mayor son relativas: las dos sin alteraciones."}
+ ]},
+ {id:"dos_relativas",bloque:"FOCO: Grados y tonalidades",nombre:"Las dos tonalidades de una armadura",preguntas:[
+  {svg:armadura("#",1),q:"¿Qué DOS tonalidades comparten esta armadura?",o:["DO M y LA m","SOL M y MI m","FA M y RE m","RE M y SI m"], c:1,exp:"1 sostenido: SOL Mayor y su relativa MI menor."},
+  {svg:armadura("b",1),q:"¿Qué DOS tonalidades comparten esta armadura?",o:["FA M y RE m","SOL M y MI m","SI bemol M y SOL m","DO M y LA m"], c:0,exp:"1 bemol: FA Mayor y su relativa RE menor."},
+  {svg:armadura("#",0),q:"Una armadura SIN alteraciones, ¿a qué dos tonalidades corresponde?",o:["SOL M y MI m","FA M y RE m","DO M y LA m","RE M y SI m"], c:2,exp:"Sin alteraciones: DO Mayor y su relativa LA menor."}
+ ]},
+ {id:"armadura_menores",bloque:"FOCO: Grados y tonalidades",nombre:"Armadura de las tonalidades menores",preguntas:[
+  {q:"MI menor tiene en su armadura…",o:["1 bemol","ninguna alteración","1 sostenido (FA#)","2 sostenidos"], c:2,exp:"MI menor: 1 sostenido (FA#), como su relativa SOL Mayor."},
+  {q:"RE menor tiene en su armadura…",o:["1 sostenido","1 bemol (SIb)","ninguna alteración","2 bemoles"], c:1,exp:"RE menor: 1 bemol (SIb), como su relativa FA Mayor."},
+  {q:"LA menor tiene en su armadura…",o:["1 sostenido","ninguna alteración","1 bemol","2 sostenidos"], c:1,exp:"LA menor: ninguna alteración, como su relativa DO Mayor."}
+ ]},
+ {id:"grado_nota",bloque:"FOCO: Grados y tonalidades",nombre:"Grado de una nota en la tonalidad",preguntas:[
+  {svg:unaNota("D5"),q:"En SOL Mayor, ¿qué grado es esta nota (RE)?",o:["IV (Subdominante)","VI (Superdominante)","III (Mediante)","V (Dominante)"], c:3,exp:"SOL(I) LA(II) SI(III) DO(IV) RE(V). RE es el V: la Dominante."},
+  {svg:unaNota("B4"),q:"En SOL Mayor, ¿qué grado es esta nota (SI)?",o:["II (Supertónica)","IV (Subdominante)","III (Mediante)","V (Dominante)"], c:2,exp:"SOL(I) LA(II) SI(III). SI es el III: la Mediante."},
+  {svg:unaNota("G4"),q:"En DO Mayor, ¿qué grado es esta nota (SOL)?",o:["IV (Subdominante)","V (Dominante)","VI (Superdominante)","VII (Sensible)"], c:1,exp:"DO(I)…SOL(V). SOL es el V: la Dominante."}
  ]},
 
- /* ===== REPASO DE CONFIANZA ===== */
- {id:"grados",bloque:"Repaso de confianza",nombre:"Grados de la escala",preguntas:[
-  {q:"El VII grado se llama…",o:["Sensible","Dominante","Mediante","Tónica"],c:0,exp:"VII = Sensible (a un semitono de la tónica)."},
-  {q:"Los grados tonales son…",o:["I, IV y V","III, VI y VII","II, IV y VI","I, II y III"],c:0,exp:"Tonales: I, IV y V (los pilares)."},
-  {q:"¿Qué grado decide si el modo es Mayor o menor?",o:["el I","el III","el V","el VII"],c:1,exp:"El III (Mediante) define el modo."}
- ]},
- {id:"relativas",bloque:"Repaso de confianza",nombre:"Tonalidades relativas",preguntas:[
-  {q:"La relativa menor de SOL Mayor es…",o:["MI menor","SI menor","LA menor","RE menor"],c:0,exp:"SOL → FA → MI: MI menor, misma armadura (1 sostenido)."},
-  {q:"RE menor comparte armadura con…",o:["FA Mayor","DO Mayor","SOL Mayor","RE Mayor"],c:0,exp:"RE menor y FA Mayor: las dos con 1 bemol (SIb)."},
-  {q:"Entre una tonalidad Mayor y su relativa menor hay…",o:["una 3.ª menor","una 5.ª Justa","una 2.ª","una 8.ª"],c:0,exp:"La relativa menor está una 3.ª menor por debajo."}
- ]},
+ /* --- Barrido de confianza (ya lo domina) --- */
  {id:"arm_mayor",bloque:"Repaso de confianza",nombre:"Armadura → tonalidad Mayor",preguntas:[
-  {svg:armadura("b",1),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["DO Mayor","FA Mayor","SOL Mayor","RE Mayor"],c:1,exp:"1 bemol (SIb) = FA Mayor."},
-  {svg:armadura("#",1),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["SOL Mayor","RE Mayor","DO Mayor","FA Mayor"],c:0,exp:"1 sostenido (FA#) = SOL Mayor."},
-  {svg:armadura("#",2),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["SOL Mayor","RE Mayor","LA Mayor","FA Mayor"],c:1,exp:"2 sostenidos (FA#, DO#) = RE Mayor."}
+  {svg:armadura("#",1),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["SOL Mayor","DO Mayor","RE Mayor","FA Mayor"], c:0,exp:"1 sostenido (FA#) = SOL Mayor."},
+  {svg:armadura("b",1),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["SI bemol Mayor","DO Mayor","SOL Mayor","FA Mayor"], c:3,exp:"1 bemol (SIb) = FA Mayor."},
+  {svg:armadura("#",2),q:"¿Qué tonalidad MAYOR es esta armadura?",o:["SOL Mayor","LA Mayor","RE Mayor","MI Mayor"], c:2,exp:"2 sostenidos (FA#, DO#) = RE Mayor."}
+ ]},
+ {id:"alteraciones",bloque:"Repaso de confianza",nombre:"Las alteraciones",preguntas:[
+  {svg:unaNota("B4",{acc:"#"}),q:"¿Qué le hace el sostenido (#) a esta nota?",o:["la sube 1 semitono","la baja 1 semitono","la sube 1 tono","no la cambia"], c:0,exp:"El sostenido (#) sube la nota 1 semitono."},
+  {svg:unaNota("B4",{acc:"b"}),q:"¿Qué le hace el bemol (b) a esta nota?",o:["la sube 1 semitono","la baja 1 tono","la anula","la baja 1 semitono"], c:3,exp:"El bemol (b) baja la nota 1 semitono."},
+  {svg:unaNota("B4",{acc:"n"}),q:"¿Qué hace el becuadro?",o:["sube 1 semitono","baja 2 semitonos","anula la alteración (vuelve al natural)","la repite"], c:2,exp:"El becuadro anula cualquier alteración: devuelve la nota a su sonido natural."}
  ]},
  {id:"leer_notas",bloque:"Repaso de confianza",nombre:"Leer notas en el pentagrama",preguntas:[
-  {svg:unaNota("E5"),q:"¿Qué nota es esta? (clave de Sol)",o:["DO","RE","MI","FA"],c:2,exp:"4.º espacio = MI."},
-  {svg:unaNota("A4"),q:"¿Qué nota es esta? (clave de Sol)",o:["SOL","LA","SI","DO"],c:1,exp:"2.º espacio = LA."},
-  {svg:unaNota("D5"),q:"¿Qué nota es esta? (clave de Sol)",o:["DO","RE","MI","FA"],c:1,exp:"4.ª línea = RE."}
+  {svg:unaNota("G4"),q:"¿Qué nota es esta? (clave de Sol)",o:["DO","MI","SI","SOL"], c:3,exp:"2.ª línea desde abajo = SOL."},
+  {svg:unaNota("C5"),q:"¿Qué nota es esta? (clave de Sol)",o:["SI","DO","RE","MI"], c:1,exp:"3.er espacio = DO."},
+  {svg:unaNota("F5"),q:"¿Qué nota es esta? (clave de Sol)",o:["RE","FA","MI","SOL"], c:1,exp:"5.ª línea (la de arriba) = FA."}
  ]},
  {id:"int_orden",bloque:"Repaso de confianza",nombre:"Intervalos: número de orden",preguntas:[
-  {svg:intervalo("D5","A5"),q:"¿De qué número de orden es este intervalo?",o:["3.ª","4.ª","5.ª","6.ª"],c:2,exp:"RE-MI-FA-SOL-LA = 5 notas = 5.ª."},
-  {svg:intervalo("C5","F5"),q:"¿De qué número de orden es este intervalo?",o:["3.ª","4.ª","5.ª","6.ª"],c:1,exp:"DO-RE-MI-FA = 4 notas = 4.ª."},
-  {svg:intervalo("G4","E5"),q:"¿De qué número de orden es este intervalo?",o:["5.ª","6.ª","7.ª","8.ª"],c:1,exp:"SOL-LA-SI-DO-RE-MI = 6 notas = 6.ª."}
+  {svg:intervalo("G4","B4"),q:"¿De qué número de orden es este intervalo?",o:["2.ª","4.ª","5.ª","3.ª"], c:3,exp:"SOL-LA-SI = 3 notas = 3.ª."},
+  {svg:intervalo("C5","G5"),q:"¿De qué número de orden es este intervalo?",o:["3.ª","4.ª","6.ª","5.ª"], c:3,exp:"DO-RE-MI-FA-SOL = 5 = 5.ª."},
+  {svg:intervalo("E4","C5"),q:"¿De qué número de orden es este intervalo?",o:["5.ª","6.ª","7.ª","8.ª"], c:1,exp:"MI-FA-SOL-LA-SI-DO = 6 = 6.ª."}
+ ]},
+ {id:"int_especie",bloque:"Repaso de confianza",nombre:"Intervalos: especie (los casos trampa)",preguntas:[
+  {svg:intervalo("F4","B4"),q:"De FA a SI, ¿qué intervalo es?",o:["4.ª aumentada","4.ª Justa","5.ª Justa","3.ª Mayor"], c:0,exp:"FA-SI es la única 4.ª aumentada entre notas naturales."},
+  {svg:intervalo("B4","F5"),q:"De SI a FA, ¿qué intervalo es?",o:["5.ª Justa","4.ª aumentada","6.ª menor","5.ª disminuida"], c:3,exp:"SI-FA es la única 5.ª disminuida entre notas naturales."},
+  {svg:intervalo("C5","G5"),q:"De DO a SOL, ¿qué intervalo es?",o:["5.ª disminuida","5.ª Justa","5.ª aumentada","4.ª Justa"], c:1,exp:"Todas las 5.ª naturales son Justas salvo SI-FA. DO-SOL = 5.ª Justa."}
+ ]},
+ {id:"compas_8",bloque:"Repaso de confianza",nombre:"Compases de 3/8 y 2/8",preguntas:[
+  {svg:compas(3,8),q:"El compás de 3/8 es…",o:["simple binario","simple ternario","compuesto ternario","compuesto binario"], c:1,exp:"Numerador 3 → simple; 3 tiempos → ternario. (El 8 = la corchea vale un tiempo.)"},
+  {svg:compas(2,8),q:"El compás de 2/8 es…",o:["compuesto binario","simple cuaternario","simple ternario","simple binario"], c:3,exp:"Numerador 2 → simple; 2 tiempos → binario."},
+  {q:"Un numerador 2, 3 o 4 indica siempre compás…",o:["compuesto","ternario","simple","irregular"], c:2,exp:"2/3/4 → simple; 6/9/12 → compuesto."}
+ ]},
+ {id:"compas_tiempos",bloque:"Repaso de confianza",nombre:"¿Cuántos tiempos tiene el compás?",preguntas:[
+  {svg:compas(6,8),q:"¿Cuántos tiempos tiene el compás de 6/8?",o:["3","2","6","4"], c:1,exp:"Compuesto: 6 ÷ 3 = 2 tiempos."},
+  {svg:compas(9,8),q:"¿Cuántos tiempos tiene el compás de 9/8?",o:["2","3","4","9"], c:1,exp:"Compuesto: 9 ÷ 3 = 3 tiempos."},
+  {svg:compas(3,4),q:"¿Cuántos tiempos tiene el compás de 3/4?",o:["3","2","4","6"], c:0,exp:"Simple: el número de tiempos es el numerador → 3."}
+ ]},
+ {id:"unidad_tiempo",bloque:"Repaso de confianza",nombre:"Unidad de tiempo y puntillo",preguntas:[
+  {q:"En un compás simple con denominador 8, la unidad de tiempo es la…",o:["negra","blanca","corchea","semicorchea"], c:2,exp:"Denominador 8 → la corchea vale un tiempo."},
+  {svg:figuraPuntillo("negra"),q:"¿Cuánto vale una negra con puntillo?",o:["2 corcheas","4 corcheas","3 corcheas","1 corchea"], c:2,exp:"Negra (2 corcheas) + mitad (1) = 3 corcheas."},
+  {q:"¿Qué figura con puntillo dura lo mismo que 3 negras?",o:["la negra con puntillo","la blanca con puntillo","la redonda con puntillo","la corchea con puntillo"], c:1,exp:"Blanca (2 negras) + mitad (1) = 3 negras."}
+ ]},
+ {id:"artic_id",bloque:"Repaso de confianza",nombre:"Signos de articulación",preguntas:[
+  {svg:articTriple(["picado","tenuto","acento"]),q:"¿Cuál de las tres notas lleva el PICADO?",o:["B","C","Las tres","A"], c:3,exp:"El picado es el puntito (A). Acorta la nota a la mitad."},
+  {svg:articTriple(["tenuto","acento","picado"]),q:"¿Cuál se toca con MÁS INTENSIDAD al inicio?",o:["A","C","Ninguna","B"], c:3,exp:"El acento (B) da más intensidad al ataque."},
+  {q:"¿Qué signo NO cambia la duración de la nota, solo su intensidad?",o:["el picado","el tenuto","el puntillo","el acento"], c:3,exp:"El acento afecta a la fuerza, no a la duración."}
+ ]},
+ {id:"semitono",bloque:"Repaso de confianza",nombre:"Semitono diatónico o cromático",preguntas:[
+  {svg:intervalo("C5","C5",{},{acc:"#"}),q:"De DO a DO sostenido, ¿qué semitono hay?",o:["cromático","diatónico","unísono","un tono"], c:0,exp:"Mismo nombre (DO–DO#) → cromático."},
+  {svg:intervalo("E5","F5"),q:"De MI a FA, ¿qué semitono hay?",o:["cromático","unísono","un tono","diatónico"], c:3,exp:"Distinto nombre (MI–FA) → diatónico."},
+  {q:"Un semitono entre notas de DISTINTO nombre es…",o:["cromático","enarmónico","unísono","diatónico"], c:3,exp:"Distinto nombre = diatónico; mismo nombre = cromático."}
+ ]},
+ {id:"enarmonia",bloque:"Repaso de confianza",nombre:"Enarmonía y unísono",preguntas:[
+  {svg:intervalo("C5","D5",{acc:"#"},{acc:"b"}),q:"DO sostenido y RE bemol suenan igual pero se llaman distinto. Son…",o:["unísono","notas enarmónicas","semitono cromático","una octava"], c:1,exp:"Distinto nombre, igual sonido = enarmónicas."},
+  {svg:intervalo("G4","G4"),q:"Dos notas de igual nombre y sonido a la vez forman un…",o:["unísono","enarmonía","semitono","octava"], c:0,exp:"Igual nombre y sonido = unísono."},
+  {q:"FA sostenido y SOL bemol son…",o:["unísono","un tono","una 3.ª","notas enarmónicas"], c:3,exp:"Igual sonido, distinto nombre (FA#=SOLb) = enarmónicas."}
  ]},
  {id:"ritmo_especial",bloque:"Repaso de confianza",nombre:"Síncopa, contratiempo y anacrusa",preguntas:[
-  {q:"¿Qué figura empieza en parte débil, SE PROLONGA y acaba en fuerte?",o:["síncopa","contratiempo","anacrusa","tresillo"],c:0,exp:"Eso es la síncopa."},
-  {q:"¿Y la que empieza en débil, NO se prolonga y lleva un silencio delante?",o:["contratiempo","síncopa","anacrusa","calderón"],c:0,exp:"Eso es el contratiempo."},
-  {q:"Las notas sin acento ANTES del primer tiempo fuerte son…",o:["la anacrusa","la síncopa","la coda","el tresillo"],c:0,exp:"Es la anacrusa."}
+  {q:"Una nota que empieza en parte DÉBIL, se PROLONGA y acaba en fuerte es…",o:["contratiempo","anacrusa","síncopa","tresillo"], c:2,exp:"Síncopa: empieza débil, se prolonga, acaba en fuerte."},
+  {q:"Una nota en parte débil, que NO se prolonga y con un silencio delante, es…",o:["síncopa","contratiempo","anacrusa","picado"], c:1,exp:"Contratiempo: no se prolonga y lleva silencio delante."},
+  {q:"Las notas sin acento ANTES del primer tiempo fuerte forman la…",o:["anacrusa","síncopa","coda","cadencia"], c:0,exp:"Anacrusa: notas de impulso antes del primer tiempo fuerte."}
  ]},
- {id:"tresillo",bloque:"Repaso de confianza",nombre:"El tresillo",preguntas:[
-  {q:"Un tresillo de 3 negras dura lo mismo que…",o:["2 negras","3 negras","4 negras","1 blanca con puntillo"],c:0,exp:"3 figuras que valen 2: 3 negras suenan como 2."},
-  {q:"¿Cómo se reconoce un tresillo en la partitura?",o:["por un 3 encima del grupo","por un punto","por un sostenido","por dos puntos"],c:0,exp:"Por el número 3 sobre el grupo."},
-  {q:"El tresillo mete ritmo… dentro de un compás simple.",o:["ternario","binario","libre","lento"],c:0,exp:"Mete subdivisión ternaria en un compás simple."}
+ {id:"matices_tempo",bloque:"Repaso de confianza",nombre:"Matices y tempo",preguntas:[
+  {q:"Ordena de MÁS SUAVE a más fuerte.",o:["f – mf – p – pp","p – pp – f – mf","mf – f – pp – p","pp – p – mf – f"], c:3,exp:"pp < p < mf < f."},
+  {q:"Un regulador que se ABRE (<) indica…",o:["diminuendo","ritardando","crescendo (ir aumentando)","picado"], c:2,exp:"Se abre = crescendo (el sonido crece)."},
+  {q:"Ordena de MÁS LENTO a más rápido.",o:["Presto – Allegro – Andante – Largo","Largo – Andante – Allegro – Presto","Allegro – Largo – Presto – Andante","Andante – Largo – Presto – Allegro"], c:1,exp:"Largo (muy lento) → Andante → Allegro → Presto (rápido)."}
  ]},
- {id:"matices",bloque:"Repaso de confianza",nombre:"Matices y reguladores",preguntas:[
-  {q:"¿Qué matiz significa 'medianamente fuerte'?",o:["mp","mf","ff","p"],c:1,exp:"mf = mezzoforte = medianamente fuerte."},
-  {q:"Un regulador que se CIERRA (>) indica…",o:["diminuendo (ir bajando)","crescendo","acento","picado"],c:0,exp:"Se cierra → diminuendo (la intensidad baja)."},
-  {q:"Ordena de MÁS FUERTE a más suave.",o:["ff – f – mf – p","p – mf – f – ff","mf – p – ff – f","f – ff – p – mf"],c:0,exp:"ff > f > mf > p."}
- ]},
- {id:"tempo",bloque:"Repaso de confianza",nombre:"Tempo",preguntas:[
-  {q:"'Presto' significa…",o:["muy rápido","muy lento","moderado","tranquilo"],c:0,exp:"Presto = muy rápido."},
-  {q:"¿Cuál es más lento: Adagio o Allegro?",o:["Adagio","Allegro","iguales","depende"],c:0,exp:"Adagio (despacio) es más lento que Allegro (animado)."},
-  {q:"El tempo se refiere a…",o:["la velocidad","la intensidad","la altura del sonido","el timbre"],c:0,exp:"El tempo = velocidad de interpretación."}
- ]},
- {id:"agogica_rep",bloque:"Repaso de confianza",nombre:"Agógica y repeticiones",preguntas:[
-  {q:"'Accelerando' indica…",o:["acelerar (ir más rápido)","frenar","repetir","callar"],c:0,exp:"Accelerando = ir aumentando la velocidad."},
-  {q:"Un calderón sobre una nota…",o:["la alarga un tiempo a voluntad","la acorta","la repite","la sube un tono"],c:0,exp:"El calderón alarga la nota una duración indeterminada."},
-  {q:"'D.C. al Fine' significa…",o:["volver al principio y tocar hasta Fine","parar al momento","repetir el último compás","tocar más fuerte"],c:0,exp:"Da Capo = desde el principio; tocas hasta la palabra Fine."}
- ]},
- {id:"semitono_enar",bloque:"Repaso de confianza",nombre:"Semitonos y enarmonía",preguntas:[
-  {q:"DO sostenido y RE bemol suenan igual: son…",o:["notas enarmónicas","unísono","cromáticas","un tono"],c:0,exp:"Distinto nombre, igual sonido = enarmónicas."},
-  {q:"De MI a FA (distinto nombre) hay un semitono…",o:["diatónico","cromático","aumentado","doble"],c:0,exp:"Distinto nombre = semitono diatónico."},
-  {q:"De FA a FA sostenido (mismo nombre) hay un semitono…",o:["cromático","diatónico","enarmónico","unísono"],c:0,exp:"Mismo nombre = semitono cromático."}
+ {id:"agogica_repeticion",bloque:"Repaso de confianza",nombre:"Agógica y signos de repetición",preguntas:[
+  {q:"Tras un ritardando, para volver a la velocidad normal se indica…",o:["A Tempo","accelerando","calderón","crescendo"], c:0,exp:"A Tempo = volver a la velocidad anterior."},
+  {q:"Un calderón sobre una nota indica…",o:["acortarla","repetirla","bajarla","alargarla un tiempo a voluntad"], c:3,exp:"El calderón alarga la nota una duración indeterminada."},
+  {q:"La barra con dos puntos (barra de repetición) indica…",o:["acabar la obra","un silencio","repetir un fragmento","un acento"], c:2,exp:"Señala el fragmento que hay que repetir."}
  ]},
  {id:"metronomo",bloque:"Repaso de confianza",nombre:"El metrónomo",preguntas:[
-  {q:"El metrónomo sirve para medir…",o:["la velocidad (el tempo)","la intensidad","la afinación","el compás"],c:0,exp:"Marca pulsos regulares: mide la velocidad."},
-  {q:"La indicación ♩ = 60 significa…",o:["60 negras por minuto","60 compases","60 segundos","60 notas en total"],c:0,exp:"60 negras por minuto."},
-  {q:"El metrónomo se asocia al nombre de… (hacia 1816)",o:["Maelzel","Mozart","Chopin","Verdi"],c:0,exp:"Maelzel: de ahí la sigla M.M. (Metrónomo de Maelzel)."}
+  {q:"¿Para qué sirve el metrónomo?",o:["para afinar","para medir y marcar la velocidad (el tempo) con exactitud","para marcar la intensidad","para contar compases"], c:1,exp:"Marca pulsos regulares: mide y mantiene la velocidad."},
+  {q:"La indicación ♩ = 120 significa…",o:["120 compases por minuto","120 negras por minuto","120 segundos","120 notas en total"], c:1,exp:"120 negras por minuto."},
+  {q:"¿Quién dio nombre al metrónomo (hacia 1816)?",o:["Maelzel","Bach","Vivaldi","Haydn"], c:0,exp:"Maelzel: por eso la sigla M.M. (Metrónomo de Maelzel)."}
  ]}
 ];
 
 /* ===== MOTOR (adaptativo + registro de sesión) ===== */
-const CLAVE="andre_musica_repaso2";
+const CLAVE="andre_mus_teoria_repaso-final_v1";
 let estado=null, cronometro=null;
 function nuevoEstado(){return {temaIdx:0,intento:0,resultados:[],log:[],inicio:Date.now(),segundos:0};}
 function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(estado));}catch(e){}}
@@ -397,8 +429,8 @@ function mostrarResumen(){
   document.getElementById("nDom").textContent=nDom;document.getElementById("nCasi").textContent=nCasi;document.getElementById("nRep").textContent=nRep;
   const total=TEMAS.length;const msg=document.getElementById("mensajeAndre");
   if(nRep===0&&nCasi===0)msg.textContent="¡Espectacular, André! Lo has dominado todo a la primera. Vas al examen con todo aprendido. 🎺🌟";
-  else if(nRep===0)msg.textContent="¡Muy bien, André! Has resuelto todos los temas. Un último vistazo al mapa del compás a los que te costaron y listo.";
-  else msg.textContent="¡Buen trabajo, André! Dominas "+nDom+" de "+total+" temas. Mira en el mapa del compás los "+nRep+" que quedan y los tendrás.";
+  else if(nRep===0)msg.textContent="¡Muy bien, André! Has resuelto todos los temas. Un último vistazo al mapa a los que te costaron y listo para el lunes.";
+  else msg.textContent="¡Buen trabajo, André! Dominas "+nDom+" de "+total+" temas. Mira en el mapa los "+nRep+" que quedan y los tendrás para el examen.";
   const lista=document.getElementById("listaProfundizar");lista.innerHTML="";
   if(prof.length===0){document.getElementById("bloqueProfundizar").classList.add("oculto");}
   else{document.getElementById("bloqueProfundizar").classList.remove("oculto");prof.forEach(function(n){const li=document.createElement("li");li.textContent=n;lista.appendChild(li);});}

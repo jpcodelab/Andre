@@ -187,6 +187,18 @@
 </div>
 
 <script>
+/* ── Migración de clave localStorage (legacy → §2 MUSIC_GUIDE) ──
+   Clave antigua: andre_fuerte-debil_v1
+   ──────────────────────────────────────────────────────────────── */
+(function () {
+  var _old = localStorage.getItem('andre_fuerte-debil_v1');
+  if (_old !== null) {
+    try {
+      localStorage.setItem('andre_mus_audicion_fuerte-debil_v1', _old);
+      localStorage.removeItem('andre_fuerte-debil_v1');
+    } catch (e) { /* quota o privado: no crítico */ }
+  }
+})();
 // ================= AUDIO =================
 let audioCtx = null;
 function ensureAudio() {
@@ -581,7 +593,7 @@ function showFinal() {
   document.getElementById('logArea').value = lines.join('\n');
 
   try {
-    localStorage.setItem('andre_fuerte-debil_v1', JSON.stringify({
+    localStorage.setItem('andre_mus_audicion_fuerte-debil_v1', JSON.stringify({
       date: new Date().toISOString(),
       tap: s.tap, point: s.point, classify: s.classify
     }));

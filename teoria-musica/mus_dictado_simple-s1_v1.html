@@ -164,6 +164,18 @@
 </div>
 
 <script>
+/* ── Migración de clave localStorage (legacy → §2 MUSIC_GUIDE) ──
+   Clave antigua: andre_dictado_ritmico_v1
+   ──────────────────────────────────────────────────────────────── */
+(function () {
+  var _old = localStorage.getItem('andre_dictado_ritmico_v1');
+  if (_old !== null) {
+    try {
+      localStorage.setItem('andre_mus_dictado_simple-s1_v1', _old);
+      localStorage.removeItem('andre_dictado_ritmico_v1');
+    } catch (e) { /* quota o privado: no crítico */ }
+  }
+})();
 /* ===================== AUDIO ===================== */
 let audioCtx = null;
 function getCtx(){
@@ -279,7 +291,7 @@ const BLOQUE_2 = [
 ];
 
 /* ===================== ESTADO (localStorage) ===================== */
-const LS_KEY = 'andre_dictado_ritmico_v1';
+const LS_KEY = 'andre_mus_dictado_simple-s1_v1';
 let estado = cargar();
 function cargar(){
   try{ return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }

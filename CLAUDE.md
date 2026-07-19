@@ -98,21 +98,21 @@ Andre/
 ├── provincias_espana_v4.html          # Juego de geografía — 50 provincias, 5 modos
 │
 ├── teoria-musica/                     # Lenguaje Musical 5º Primaria
-│   ├── mapa_repaso_grados_tonalidades.html   # Mapa imprimible: grados y tonalidades
-│   ├── mapa_repaso_compas.html               # Mapa imprimible: el compás
-│   ├── mapa_repaso_resto.html                # Mapa imprimible: teoría general
-│   ├── examen_musica_andre.html              # Repaso nivel 1 · 26 temas
-│   ├── examen_musica_andre_nivel2.html       # Repaso nivel 2 · 23 temas · partituras SVG
-│   ├── examen_musica_andre_nivel3.html       # Repaso nivel 3 · 19 temas
-│   ├── repaso_final_musica_andre.html        # Repaso final · 26 temas
-│   ├── repaso2_compas_musica_andre.html      # Repaso compás · 22 temas
-│   ├── repaso_completo_musica_andre.html     # Gran repaso 1 · 40 temas
-│   ├── repaso_completo2_musica_andre.html    # Gran repaso 2 · 40 temas (por unidad)
-│   ├── dictado_ritmico_andre.html            # Dictado rítmico S1 · 4/4 y 3/4 · Web Audio API
-│   ├── dictado_ritmico_andre_s2.html         # Dictado rítmico S2 · foco corchea por posición
-│   ├── andre_fuerte_debil_v1.html            # Discriminación auditiva · Paso 1 · Tiempos fuertes/débiles
-│   ├── andre_puente_sincopa_v1.html          # Discriminación auditiva · Paso 2 · Ritmo normal/contratiempo/síncopa
-│   └── andre_sincopa_contratiempo_v1.html    # Discriminación auditiva · Paso 3 · Síncopa vs contratiempo · 12 preguntas
+│   ├── mus_mapa_grados-tonalidades_v1.html   # Mapa imprimible: grados y tonalidades
+│   ├── mus_mapa_compas_v1.html               # Mapa imprimible: el compás
+│   ├── mus_mapa_resto-temario_v1.html        # Mapa imprimible: teoría general
+│   ├── mus_teoria_nivel1_v1.html             # Repaso nivel 1 · 26 temas
+│   ├── mus_teoria_nivel2_v1.html             # Repaso nivel 2 · 23 temas · partituras SVG
+│   ├── mus_teoria_nivel3_v1.html             # Repaso nivel 3 · 19 temas
+│   ├── mus_teoria_repaso-final_v1.html       # Repaso final · 26 temas
+│   ├── mus_teoria_compas_v1.html             # Repaso compás · 22 temas
+│   ├── mus_teoria_gran-repaso1_v1.html       # Gran repaso 1 · 40 temas
+│   ├── mus_teoria_gran-repaso2_v1.html       # Gran repaso 2 · 40 temas (por unidad)
+│   ├── mus_dictado_simple-s1_v1.html         # Dictado rítmico S1 · 4/4 y 3/4 · Web Audio API
+│   ├── mus_dictado_simple-s2_v1.html         # Dictado rítmico S2 · foco corchea por posición
+│   ├── mus_audicion_fuerte-debil_v1.html     # Discriminación auditiva · Paso 1 · Tiempos fuertes/débiles
+│   ├── mus_audicion_puente-sincopa_v1.html   # Discriminación auditiva · Paso 2 · Ritmo normal/contratiempo/síncopa
+│   └── mus_audicion_sincopa-contratiempo_v1.html  # Discriminación auditiva · Paso 3 · Síncopa vs contratiempo · 12 preguntas
 │
 ├── CLAUDE.md                          # Este fichero — contexto para Claude Code
 └── README.md                          # Descripción pública del repositorio

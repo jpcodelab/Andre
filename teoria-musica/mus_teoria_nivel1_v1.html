@@ -182,6 +182,18 @@
 </div>
 
 <script>
+/* ── Migración de clave localStorage (legacy → §2 MUSIC_GUIDE) ──
+   Clave antigua: andre_examen_musica_progreso
+   ──────────────────────────────────────────────────────────────── */
+(function () {
+  var _old = localStorage.getItem('andre_examen_musica_progreso');
+  if (_old !== null) {
+    try {
+      localStorage.setItem('andre_mus_teoria_nivel1_v1', _old);
+      localStorage.removeItem('andre_examen_musica_progreso');
+    } catch (e) { /* quota o privado: no crítico */ }
+  }
+})();
 /* ============================================================
    BANCO DE PREGUNTAS
    Cada tema tiene 3 variantes (para los hasta 3 intentos).
@@ -191,209 +203,209 @@ const TEMAS = [
   { id:"matices", nombre:"Matices dinámicos", preguntas:[
     {q:"¿Qué significa el matiz \u201Cf\u201D (forte)?", o:["Muy débil","Débil","Fuerte","Muy fuerte"], c:2,
      exp:"forte (f) = fuerte. El orden de intensidad, de menor a mayor, es: pp (muy débil), p (débil), mp (medianamente débil), mf (medianamente fuerte), f (fuerte) y ff (muy fuerte)."},
-    {q:"¿Qué matiz significa \u201Cmuy débil\u201D?", o:["p","pp","mp","mf"], c:1,
+    {q:"¿Qué matiz significa \u201Cmuy débil\u201D?", o:["pp","p","mp","mf"], c:0,
      exp:"pp (pianissimo) = muy débil. Truco: cuantas más \u201Cp\u201D, más débil; cuantas más \u201Cf\u201D, más fuerte."},
-    {q:"¿Cuál de estos matices es el MÁS fuerte?", o:["f","mf","ff","mp"], c:2,
+    {q:"¿Cuál de estos matices es el MÁS fuerte?", o:["ff","f","mf","mp"], c:0,
      exp:"ff (fortissimo) = muy fuerte, el más fuerte de la lista. Recuerda el orden: pp < p < mp < mf < f < ff."}
   ]},
   { id:"reguladores", nombre:"Reguladores (crescendo / diminuendo)", preguntas:[
-    {q:"El término \u201Ccrescendo\u201D (cresc.) indica que hay que…", o:["Aumentar la intensidad","Disminuir la intensidad","Ir más rápido","Ir más lento"], c:0,
+    {q:"El término \u201Ccrescendo\u201D (cresc.) indica que hay que…", o:["Disminuir la intensidad","Aumentar la intensidad","Ir más rápido","Ir más lento"], c:1,
      exp:"crescendo = aumentando la intensidad: el sonido se hace cada vez más fuerte. Ojo: habla de intensidad (fuerte/débil), no de velocidad."},
     {q:"¿Qué significa \u201Cdiminuendo\u201D (dim.)?", o:["Aumentar la velocidad","Disminuir la intensidad","Aumentar la intensidad","Repetir"], c:1,
      exp:"diminuendo = disminuyendo la intensidad: el sonido se hace cada vez más débil. Es lo contrario de crescendo."},
-    {q:"A los signos de crescendo y diminuendo también se les llama…", o:["Tresillos","Reguladores","Armaduras","Calderones"], c:1,
+    {q:"A los signos de crescendo y diminuendo también se les llama…", o:["Reguladores","Tresillos","Armaduras","Calderones"], c:0,
      exp:"Se llaman reguladores porque van cambiando poco a poco la intensidad del sonido."}
   ]},
   { id:"sincopa", nombre:"La síncopa", preguntas:[
-    {q:"¿Qué es una síncopa?", o:["Un sonido que empieza y acaba en parte fuerte","Un sonido que se inicia en parte (o fracción) débil y acaba en otra fuerte","Un silencio en parte fuerte","Una nota muy rápida"], c:1,
+    {q:"¿Qué es una síncopa?", o:["Un sonido que empieza y acaba en parte fuerte","Un silencio en parte fuerte","Una nota muy rápida","Un sonido que se inicia en parte (o fracción) débil y acaba en otra fuerte"], c:3,
      exp:"La síncopa es un sonido que se inicia en parte o fracción DÉBIL y acaba en otra FUERTE. La nota se enlaza desde lo débil hacia lo fuerte."},
-    {q:"En la síncopa, el sonido empieza en una parte… y termina en una parte…", o:["fuerte / débil","débil / fuerte","fuerte / fuerte","débil / débil"], c:1,
+    {q:"En la síncopa, el sonido empieza en una parte… y termina en una parte…", o:["fuerte / débil","fuerte / fuerte","débil / fuerte","débil / débil"], c:2,
      exp:"Empieza en parte DÉBIL y termina en parte FUERTE. Por eso suena \u201Ca contracorriente\u201D del pulso."},
     {q:"¿En qué se diferencia la síncopa del contratiempo?", o:["La síncopa lleva un silencio delante","La síncopa SÍ se prolonga (se mantiene) hasta la parte fuerte","La síncopa va antes de la barra de compás","Son exactamente lo mismo"], c:1,
      exp:"La síncopa se prolonga desde lo débil hasta lo fuerte. El contratiempo, en cambio, NO se prolonga y va precedido de un silencio."}
   ]},
   { id:"contratiempo", nombre:"Nota a contratiempo", preguntas:[
-    {q:"Una nota a contratiempo se inicia en parte débil, NO se prolonga y va precedida de…", o:["otra nota fuerte","un silencio en parte (o fracción) débil","una síncopa","una anacrusa"], c:1,
+    {q:"Una nota a contratiempo se inicia en parte débil, NO se prolonga y va precedida de…", o:["un silencio en parte (o fracción) débil","otra nota fuerte","una síncopa","una anacrusa"], c:0,
      exp:"La nota a contratiempo va precedida de un silencio en parte débil, empieza en parte débil y NO se prolonga. Esa es la gran diferencia con la síncopa."},
-    {q:"¿Cuál es la diferencia entre síncopa y contratiempo?", o:["No hay ninguna","La síncopa se prolonga a la parte fuerte; el contratiempo no se prolonga y lleva silencio delante","El contratiempo va antes del compás","La síncopa lleva siempre tresillo"], c:1,
+    {q:"¿Cuál es la diferencia entre síncopa y contratiempo?", o:["No hay ninguna","El contratiempo va antes del compás","La síncopa lleva siempre tresillo","La síncopa se prolonga a la parte fuerte; el contratiempo no se prolonga y lleva silencio delante"], c:3,
      exp:"Síncopa = se prolonga de débil a fuerte. Contratiempo = NO se prolonga y va precedido de un silencio en parte débil."},
-    {q:"¿Qué tiene SIEMPRE delante una nota a contratiempo?", o:["Un tresillo","Una barra de repetición","Un silencio","Un sostenido"], c:2,
+    {q:"¿Qué tiene SIEMPRE delante una nota a contratiempo?", o:["Un tresillo","Una barra de repetición","Un sostenido","Un silencio"], c:3,
      exp:"La nota a contratiempo va siempre precedida de un silencio en parte o fracción débil."}
   ]},
   { id:"anacrusa", nombre:"La anacrusa", preguntas:[
     {q:"¿Qué es la anacrusa?", o:["Una nota muy fuerte al final","Una nota o grupo de notas sin acento que preceden al primer tiempo fuerte de una frase","Un silencio largo","Un tipo de compás"], c:1,
      exp:"La anacrusa es la nota o grupo de notas SIN acento que van antes del primer tiempo fuerte de la frase; por eso se colocan antes de la barra de compás."},
-    {q:"¿Dónde se colocan las notas de la anacrusa?", o:["Después de la doble barra final","Antes de la barra de compás","En el centro del compás","Encima del pentagrama"], c:1,
+    {q:"¿Dónde se colocan las notas de la anacrusa?", o:["Antes de la barra de compás","Después de la doble barra final","En el centro del compás","Encima del pentagrama"], c:0,
      exp:"La anacrusa va antes de la barra de compás, porque son notas sin acento que \u201Cpreparan\u201D la entrada en el primer tiempo fuerte."},
-    {q:"Las notas de la anacrusa son notas…", o:["con mucho acento","sin acento","siempre agudas","siempre largas"], c:1,
+    {q:"Las notas de la anacrusa son notas…", o:["con mucho acento","siempre agudas","siempre largas","sin acento"], c:3,
      exp:"Son notas SIN acento que preceden al primer tiempo fuerte de la frase."}
   ]},
   { id:"tresillo", nombre:"El tresillo", preguntas:[
-    {q:"¿Qué es un tresillo?", o:["3 figuras que valen 4","3 figuras que equivalen a 2 de su misma especie","2 figuras que valen 3","Un grupo de 3 silencios"], c:1,
+    {q:"¿Qué es un tresillo?", o:["3 figuras que valen 4","2 figuras que valen 3","3 figuras que equivalen a 2 de su misma especie","Un grupo de 3 silencios"], c:2,
      exp:"El tresillo es un grupo irregular de 3 figuras que equivalen a 2 de su misma especie. Se indica con un 3 encima de las figuras."},
     {q:"¿Cómo se indica un tresillo en la partitura?", o:["Con un sostenido","Con un número 3 encima de las figuras","Con dos puntos","Con un calderón"], c:1,
      exp:"Se indica con un número 3 sobre las figuras del grupo."},
-    {q:"Un tresillo de 3 corcheas dura lo mismo que…", o:["3 corcheas normales","2 corcheas normales","4 corcheas","1 negra con puntillo"], c:1,
+    {q:"Un tresillo de 3 corcheas dura lo mismo que…", o:["2 corcheas normales","3 corcheas normales","4 corcheas","1 negra con puntillo"], c:0,
      exp:"El tresillo de 3 corcheas vale lo mismo que 2 corcheas normales (3 figuras que equivalen a 2 de su misma especie)."}
   ]},
   { id:"repeticion", nombre:"Signos de repetición", preguntas:[
-    {q:"La barra de repetición (con dos puntos) sirve para…", o:["cambiar de tonalidad","indicar qué fragmento se va a repetir","acabar siempre la obra","marcar un silencio"], c:1,
+    {q:"La barra de repetición (con dos puntos) sirve para…", o:["cambiar de tonalidad","acabar siempre la obra","marcar un silencio","indicar qué fragmento se va a repetir"], c:3,
      exp:"La barra de repetición es como la doble barra final pero con 2 puntos; indica que un fragmento se va a repetir (desde el principio o entre dos barras de repetición)."},
-    {q:"\u201CDa Capo\u201D (D.C.) significa…", o:["desde el final","desde el principio (volver al inicio)","más fuerte","más rápido"], c:1,
+    {q:"\u201CDa Capo\u201D (D.C.) significa…", o:["desde el final","más fuerte","desde el principio (volver al inicio)","más rápido"], c:2,
      exp:"Da Capo (D.C.) es italiano y significa \u201Cdesde el principio\u201D: hay que volver al inicio de la obra. Suele acompañarse de la palabra FIN."},
     {q:"Las casillas de 1.ª y 2.ª vez sirven para…", o:["indicar la tonalidad","indicar qué compases se tocan en la 1.ª repetición y cuáles en la 2.ª","marcar el tempo","señalar un acento"], c:1,
      exp:"Las casillas de 1.ª y 2.ª vez nos dicen qué compases se tocan la primera vez y cuáles la segunda al hacer la repetición."}
   ]},
   { id:"grados", nombre:"Grados de la escala (nombres)", preguntas:[
-    {q:"¿Cómo se llama el I grado de la escala?", o:["Dominante","Tónica","Sensible","Mediante"], c:1,
+    {q:"¿Cómo se llama el I grado de la escala?", o:["Tónica","Dominante","Sensible","Mediante"], c:0,
      exp:"I = Tónica. Es la nota más importante, la que da nombre a la escala."},
-    {q:"¿Qué grado es la Dominante?", o:["I","IV","V","VII"], c:2,
+    {q:"¿Qué grado es la Dominante?", o:["V","I","IV","VII"], c:0,
      exp:"La Dominante es el V grado. Los grados tonales son I (Tónica), IV (Subdominante) y V (Dominante)."},
-    {q:"El IV grado se llama…", o:["Supertónica","Subdominante","Superdominante","Sensible"], c:1,
+    {q:"El IV grado se llama…", o:["Supertónica","Superdominante","Subdominante","Sensible"], c:2,
      exp:"IV = Subdominante. No confundir con la Superdominante, que es el VI grado."}
   ]},
   { id:"tonal_modal", nombre:"Grados tonales y modales", preguntas:[
     {q:"¿Cuáles son los GRADOS TONALES?", o:["II, III, VI","I, IV, V","III, VI, VII","I, II, III"], c:1,
      exp:"Los grados tonales (los que determinan la tonalidad) son I (Tónica), IV (Subdominante) y V (Dominante)."},
-    {q:"¿Cuáles son los GRADOS MODALES?", o:["I, IV, V","III, VI, VII","II, III, IV","V, VI, VII"], c:1,
+    {q:"¿Cuáles son los GRADOS MODALES?", o:["III, VI, VII","I, IV, V","II, III, IV","V, VI, VII"], c:0,
      exp:"Los grados modales (los que determinan el modo, Mayor o menor) son III (Modal o Mediante), VI (Superdominante) y VII (Sensible o Subtónica)."},
-    {q:"¿Qué grado nos dice si una escala está en modo Mayor o menor?", o:["El I","El V","El III","El VII"], c:2,
+    {q:"¿Qué grado nos dice si una escala está en modo Mayor o menor?", o:["El III","El I","El V","El VII"], c:0,
      exp:"El III grado define si la escala está en modo Mayor o menor, según el intervalo entre el I y el III sea una 3.ª Mayor o una 3.ª menor."}
   ]},
   { id:"orden_sost", nombre:"Orden de los sostenidos", preguntas:[
-    {q:"¿Cuál es el orden de los sostenidos?", o:["SI-MI-LA-RE-SOL-DO-FA","FA-DO-SOL-RE-LA-MI-SI","DO-RE-MI-FA-SOL-LA-SI","FA-SOL-LA-SI-DO-RE-MI"], c:1,
+    {q:"¿Cuál es el orden de los sostenidos?", o:["SI-MI-LA-RE-SOL-DO-FA","DO-RE-MI-FA-SOL-LA-SI","FA-DO-SOL-RE-LA-MI-SI","FA-SOL-LA-SI-DO-RE-MI"], c:2,
      exp:"El orden de los sostenidos es FA-DO-SOL-RE-LA-MI-SI. Con 1 sostenido es FA; con 2, FA y DO; y así sucesivamente."},
     {q:"Si una armadura tiene 2 sostenidos, ¿cuáles son?", o:["FA y SOL","FA y DO","DO y SOL","SI y MI"], c:1,
      exp:"Siguiendo el orden FA-DO-SOL…, los 2 primeros sostenidos son FA y DO."},
-    {q:"Si una armadura tiene 3 sostenidos, ¿cuáles son?", o:["FA, DO, RE","FA, DO, SOL","FA, SOL, LA","DO, SOL, RE"], c:1,
+    {q:"Si una armadura tiene 3 sostenidos, ¿cuáles son?", o:["FA, DO, SOL","FA, DO, RE","FA, SOL, LA","DO, SOL, RE"], c:0,
      exp:"Siguiendo el orden FA-DO-SOL-RE…, los 3 primeros sostenidos son FA, DO y SOL."}
   ]},
   { id:"sol_mayor", nombre:"Tonalidad de Sol Mayor", preguntas:[
-    {q:"¿Cuántos sostenidos tiene SOL Mayor en la armadura?", o:["Ninguno","1 (FA)","2 (FA y DO)","3"], c:1,
+    {q:"¿Cuántos sostenidos tiene SOL Mayor en la armadura?", o:["Ninguno","2 (FA y DO)","3","1 (FA)"], c:3,
      exp:"SOL Mayor tiene 1 sostenido en la armadura: FA#."},
-    {q:"En la escala de SOL Mayor, ¿entre qué grados están los semitonos?", o:["I-II y IV-V","III-IV y VII-I","II-III y V-VI","solo en VII-I"], c:1,
+    {q:"En la escala de SOL Mayor, ¿entre qué grados están los semitonos?", o:["I-II y IV-V","II-III y V-VI","III-IV y VII-I","solo en VII-I"], c:2,
      exp:"En SOL Mayor (como en DO Mayor y en todas las escalas Mayores) los semitonos están entre III-IV y VII-I."},
     {q:"SOL Mayor coloca los semitonos en los mismos sitios que…", o:["LA menor","MI menor","DO Mayor","RE menor"], c:2,
      exp:"SOL Mayor pone los semitonos entre III-IV y VII-I, igual que DO Mayor y que todas las tonalidades Mayores."}
   ]},
   { id:"orden_bem", nombre:"Orden de los bemoles", preguntas:[
-    {q:"¿Cuál es el orden de los bemoles?", o:["FA-DO-SOL-RE-LA-MI-SI","SI-MI-LA-RE-SOL-DO-FA","SI-LA-SOL-FA-MI-RE-DO","DO-RE-MI-FA-SOL-LA-SI"], c:1,
+    {q:"¿Cuál es el orden de los bemoles?", o:["SI-MI-LA-RE-SOL-DO-FA","FA-DO-SOL-RE-LA-MI-SI","SI-LA-SOL-FA-MI-RE-DO","DO-RE-MI-FA-SOL-LA-SI"], c:0,
      exp:"El orden de los bemoles es SI-MI-LA-RE-SOL-DO-FA."},
-    {q:"El orden de los bemoles, respecto al de los sostenidos, es…", o:["el mismo","el inverso (al revés)","parecido pero empieza por FA","sin relación"], c:1,
+    {q:"El orden de los bemoles, respecto al de los sostenidos, es…", o:["el mismo","parecido pero empieza por FA","sin relación","el inverso (al revés)"], c:3,
      exp:"El orden de los bemoles (SI-MI-LA-RE-SOL-DO-FA) es el inverso al de los sostenidos (FA-DO-SOL-RE-LA-MI-SI)."},
-    {q:"Si una armadura tiene 1 bemol, ¿cuál es?", o:["FA","SI","MI","LA"], c:1,
+    {q:"Si una armadura tiene 1 bemol, ¿cuál es?", o:["FA","MI","SI","LA"], c:2,
      exp:"El primer bemol del orden es SI. Por eso, con 1 bemol, es SI bemol."}
   ]},
   { id:"fa_re", nombre:"Fa Mayor y Re menor", preguntas:[
     {q:"¿Cuántos bemoles tiene la tonalidad de FA Mayor?", o:["Ninguno","1 (SI)","2","3"], c:1,
      exp:"FA Mayor tiene 1 bemol en la armadura: SI bemol."},
-    {q:"La tonalidad de RE menor tiene… en la armadura.", o:["1 sostenido (FA)","1 bemol (SI)","ninguna alteración","2 bemoles"], c:1,
+    {q:"La tonalidad de RE menor tiene… en la armadura.", o:["1 bemol (SI)","1 sostenido (FA)","ninguna alteración","2 bemoles"], c:0,
      exp:"RE menor tiene 1 bemol (SI), igual que su relativa FA Mayor."},
-    {q:"En la escala de RE menor, ¿entre qué grados están los semitonos?", o:["III-IV y VII-I","II-III y V-VI","I-II y IV-V","solo en II-III"], c:1,
+    {q:"En la escala de RE menor, ¿entre qué grados están los semitonos?", o:["III-IV y VII-I","I-II y IV-V","solo en II-III","II-III y V-VI"], c:3,
      exp:"En RE menor (como en todas las escalas menores) los semitonos están entre II-III y V-VI."}
   ]},
   { id:"relativas", nombre:"Tonalidades relativas", preguntas:[
-    {q:"¿Qué son dos tonalidades relativas?", o:["Dos tonalidades muy rápidas","Dos tonalidades que comparten la misma armadura","Dos escalas iguales","Dos tonalidades sin alteraciones"], c:1,
+    {q:"¿Qué son dos tonalidades relativas?", o:["Dos tonalidades muy rápidas","Dos escalas iguales","Dos tonalidades que comparten la misma armadura","Dos tonalidades sin alteraciones"], c:2,
      exp:"Las tonalidades relativas son las dos tonalidades (una Mayor y una menor) que comparten la misma armadura."},
     {q:"¿Cuál es la relativa menor de FA Mayor?", o:["LA menor","RE menor","SOL menor","MI menor"], c:1,
      exp:"FA Mayor y RE menor comparten armadura (1 bemol, SI), así que son relativas. La relativa menor está una 3.ª menor por debajo."},
-    {q:"La distancia entre una tonalidad Mayor y su relativa menor es siempre de…", o:["una 2.ª Mayor","una 3.ª menor","una 5.ª Justa","una 8.ª"], c:1,
+    {q:"La distancia entre una tonalidad Mayor y su relativa menor es siempre de…", o:["una 3.ª menor","una 2.ª Mayor","una 5.ª Justa","una 8.ª"], c:0,
      exp:"Entre una tonalidad Mayor y su relativa menor hay siempre una 3.ª menor."}
   ]},
   { id:"mi_menor", nombre:"Tonalidad de Mi menor", preguntas:[
-    {q:"¿Cuántos sostenidos tiene MI menor en la armadura?", o:["Ninguno","1 (FA)","2","3"], c:1,
+    {q:"¿Cuántos sostenidos tiene MI menor en la armadura?", o:["Ninguno","2","3","1 (FA)"], c:3,
      exp:"MI menor tiene 1 sostenido (FA), igual que su relativa SOL Mayor."},
-    {q:"Con 1 sostenido en la armadura, la tonalidad puede ser…", o:["DO Mayor o LA menor","SOL Mayor o MI menor","FA Mayor o RE menor","RE Mayor o SI menor"], c:1,
+    {q:"Con 1 sostenido en la armadura, la tonalidad puede ser…", o:["DO Mayor o LA menor","FA Mayor o RE menor","SOL Mayor o MI menor","RE Mayor o SI menor"], c:2,
      exp:"1 sostenido = SOL Mayor (modo Mayor) o MI menor (modo menor). Son tonalidades relativas."},
     {q:"¿Cuál es la relativa menor de SOL Mayor?", o:["LA menor","RE menor","MI menor","SI menor"], c:2,
      exp:"SOL Mayor y MI menor comparten armadura (1 sostenido, FA), por lo que son relativas."}
   ]},
   { id:"articulacion", nombre:"Signos de articulación (picado, tenuto, acento)", preguntas:[
-    {q:"El picado o staccato es un punto que…", o:["alarga la nota","reduce su valor a la mitad","la repite","cambia la tonalidad"], c:1,
+    {q:"El picado o staccato es un punto que…", o:["reduce su valor a la mitad","alarga la nota","la repite","cambia la tonalidad"], c:0,
      exp:"El picado (staccato) es un punto encima o debajo de la nota que reduce su valor a la mitad: suena más corta y separada."},
-    {q:"El tenuto es una rayita que indica tocar la nota…", o:["más corta","con más tensión, respetando su valor","más rápida","más débil"], c:1,
+    {q:"El tenuto es una rayita que indica tocar la nota…", o:["más corta","más rápida","más débil","con más tensión, respetando su valor"], c:3,
      exp:"El tenuto (una rayita) indica tocar la nota con más tensión, pero respetando su valor (no se acorta)."},
-    {q:"El acento (un pequeño ángulo) indica tocar la nota…", o:["más larga","con más intensidad al inicio y disminuyendo enseguida","muy corta","muy suave"], c:1,
+    {q:"El acento (un pequeño ángulo) indica tocar la nota…", o:["más larga","muy corta","con más intensidad al inicio y disminuyendo enseguida","muy suave"], c:2,
      exp:"El acento indica interpretar la nota con más intensidad al principio, disminuyendo inmediatamente después."}
   ]},
   { id:"simple_comp", nombre:"Compás simple y compuesto", preguntas:[
     {q:"Un compás SIMPLE tiene como numerador…", o:["6, 9 ó 12","2, 3 ó 4","cualquier número","siempre 4"], c:1,
      exp:"Los compases simples tienen por numerador 2, 3 ó 4. Su unidad de tiempo es una figura simple (sin puntillo) y son de subdivisión binaria."},
-    {q:"Un compás COMPUESTO es de subdivisión…", o:["binaria","ternaria","libre","doble"], c:1,
+    {q:"Un compás COMPUESTO es de subdivisión…", o:["ternaria","binaria","libre","doble"], c:0,
      exp:"Los compases compuestos son de subdivisión ternaria (cada tiempo se divide en 3 tercios). Su numerador es 6, 9 ó 12."},
-    {q:"En un compás simple, cada tiempo se divide en…", o:["3 partes","2 mitades","4 partes","no se divide"], c:1,
+    {q:"En un compás simple, cada tiempo se divide en…", o:["3 partes","4 partes","no se divide","2 mitades"], c:3,
      exp:"En el compás simple (subdivisión binaria) cada tiempo se divide en 2 mitades. En el compuesto (ternaria), en 3 tercios."}
   ]},
   { id:"c_9_8", nombre:"Compás de 9/8", preguntas:[
-    {q:"El compás de 9/8 es un compás…", o:["binario simple","ternario compuesto","cuaternario simple","binario compuesto"], c:1,
+    {q:"El compás de 9/8 es un compás…", o:["binario simple","cuaternario simple","ternario compuesto","binario compuesto"], c:2,
      exp:"El 9/8 es ternario (3 tiempos) y compuesto (subdivisión ternaria): cada tiempo se divide en 3 tercios."},
     {q:"En 9/8, ¿qué figura es la unidad de tiempo (lo que vale un tiempo)?", o:["una corchea","una negra","una negra con puntillo","una blanca"], c:2,
      exp:"En 9/8 la unidad de tiempo es la negra con puntillo, que equivale a 3 corcheas."},
-    {q:"En el compás de 9/8, el numerador 9 indica…", o:["9 compases","9 tercios (3 en cada tiempo)","9 negras","9 silencios"], c:1,
+    {q:"En el compás de 9/8, el numerador 9 indica…", o:["9 tercios (3 en cada tiempo)","9 compases","9 negras","9 silencios"], c:0,
      exp:"El 9 indica 9 tercios en total, 3 en cada uno de los 3 tiempos. El 8 indica que cada tercio es una corchea."}
   ]},
   { id:"c_3_8", nombre:"Compases de 3/8 y 2/8", preguntas:[
-    {q:"El compás de 3/8 es un compás…", o:["compuesto","simple","cuaternario","de subdivisión ternaria"], c:1,
+    {q:"El compás de 3/8 es un compás…", o:["compuesto","cuaternario","de subdivisión ternaria","simple"], c:3,
      exp:"El 3/8 es simple (numerador 3) y de subdivisión binaria. Su unidad de tiempo es la corchea (sin puntillo)."},
-    {q:"En el compás de 3/8, ¿qué figura entra en cada tiempo?", o:["una negra","una corchea","una negra con puntillo","una semicorchea"], c:1,
+    {q:"En el compás de 3/8, ¿qué figura entra en cada tiempo?", o:["una negra","una negra con puntillo","una corchea","una semicorchea"], c:2,
      exp:"El denominador 8 indica que en cada tiempo entra una corchea. El 3/8 tiene 3 tiempos."},
     {q:"El 2/8 es un compás binario. ¿Cuántos tiempos tiene?", o:["3","2","4","6"], c:1,
      exp:"El 2/8 es binario: tiene 2 tiempos. En cada tiempo entra una corchea (denominador 8)."}
   ]},
   { id:"c_12_8", nombre:"Compás de 12/8", preguntas:[
-    {q:"El compás de 12/8 es…", o:["binario simple","cuaternario compuesto","ternario simple","binario compuesto"], c:1,
+    {q:"El compás de 12/8 es…", o:["cuaternario compuesto","binario simple","ternario simple","binario compuesto"], c:0,
      exp:"El 12/8 es cuaternario (4 tiempos) y compuesto (subdivisión ternaria)."},
-    {q:"En 12/8, ¿cuál es la unidad de tiempo?", o:["la corchea","la blanca","la negra con puntillo","la redonda"], c:2,
+    {q:"En 12/8, ¿cuál es la unidad de tiempo?", o:["la negra con puntillo","la corchea","la blanca","la redonda"], c:0,
      exp:"En 12/8 la unidad de tiempo es la negra con puntillo (equivale a 3 corcheas). Tiene 4 tiempos."},
-    {q:"En 12/8, el numerador 12 indica…", o:["12 compases","12 tercios (3 en cada uno de los 4 tiempos)","12 negras","12 tiempos"], c:1,
+    {q:"En 12/8, el numerador 12 indica…", o:["12 compases","12 negras","12 tercios (3 en cada uno de los 4 tiempos)","12 tiempos"], c:2,
      exp:"El 12 indica 12 tercios, repartidos 3 en cada uno de los 4 tiempos. El 8 indica que cada tercio es una corchea."}
   ]},
   { id:"interv_orden", nombre:"Intervalos: número de orden", preguntas:[
     {q:"¿Qué es un intervalo?", o:["Un tipo de compás","La distancia que hay entre dos sonidos distintos","Un signo de repetición","Una alteración"], c:1,
      exp:"Un intervalo es la distancia entre dos sonidos distintos."},
-    {q:"El número de orden de un intervalo se cuenta…", o:["solo las notas del medio","contando todas las notas desde la 1.ª hasta la última, incluyendo ambas","restando las notas","solo las negras"], c:1,
+    {q:"El número de orden de un intervalo se cuenta…", o:["contando todas las notas desde la 1.ª hasta la última, incluyendo ambas","solo las notas del medio","restando las notas","solo las negras"], c:0,
      exp:"Se cuentan todas las notas entre la primera y la última, incluyendo las dos. Ejemplo: DO-RE-MI-FA-SOL = 5 notas = 5.ª."},
-    {q:"El intervalo de DO a MI, ¿de qué número de orden es?", o:["2.ª","3.ª","4.ª","5.ª"], c:1,
+    {q:"El intervalo de DO a MI, ¿de qué número de orden es?", o:["2.ª","4.ª","5.ª","3.ª"], c:3,
      exp:"DO-RE-MI = 3 notas, así que es una 3.ª. Se cuentan también las notas de los extremos."}
   ]},
   { id:"interv_especie", nombre:"Intervalos: especie", preguntas:[
-    {q:"Según su especie, los intervalos pueden ser…", o:["largos o cortos","Mayores, menores, Justos, Aumentados o Disminuidos","fuertes o débiles","simples o dobles"], c:1,
+    {q:"Según su especie, los intervalos pueden ser…", o:["largos o cortos","fuertes o débiles","Mayores, menores, Justos, Aumentados o Disminuidos","simples o dobles"], c:2,
      exp:"La especie depende del número de tonos y semitonos. Pueden ser Mayores, menores, Justos, Aumentados o Disminuidos."},
     {q:"La 5.ª con sonidos naturales es Justa, salvo una excepción. ¿Cuál?", o:["DO-SOL","SI-FA (5.ª disminuida)","RE-LA","MI-SI"], c:1,
      exp:"La 5.ª natural es Justa (3T+1ST), salvo SI-FA, que es 5.ª disminuida (2T+2ST)."},
-    {q:"La 4.ª con sonidos naturales es Justa, salvo…", o:["DO-FA","RE-SOL","FA-SI (4.ª aumentada)","MI-LA"], c:2,
+    {q:"La 4.ª con sonidos naturales es Justa, salvo…", o:["DO-FA","FA-SI (4.ª aumentada)","RE-SOL","MI-LA"], c:1,
      exp:"La 4.ª natural es Justa (2T+1ST), salvo FA-SI, que es 4.ª aumentada (3T)."}
   ]},
   { id:"alteraciones", nombre:"Las alteraciones", preguntas:[
-    {q:"El sostenido (#) hace que el sonido…", o:["baje 1 semitono","suba 1 semitono","no cambie","suba 1 tono"], c:1,
+    {q:"El sostenido (#) hace que el sonido…", o:["baje 1 semitono","no cambie","suba 1 tono","suba 1 semitono"], c:3,
      exp:"El sostenido (#) sube el sonido 1 semitono. El bemol (b) lo baja 1 semitono."},
-    {q:"¿Qué alteración anula (quita) cualquier otra alteración?", o:["el sostenido","el bemol","el becuadro","el doble bemol"], c:2,
+    {q:"¿Qué alteración anula (quita) cualquier otra alteración?", o:["el sostenido","el bemol","el doble bemol","el becuadro"], c:3,
      exp:"El becuadro anula cualquier alteración anterior y devuelve la nota a su sonido natural."},
     {q:"El doble bemol (bb) hace que el sonido…", o:["baje 1 semitono","baje 2 semitonos","suba 2 semitonos","no cambie"], c:1,
      exp:"El doble bemol baja el sonido 2 semitonos. El doble sostenido (x) lo sube 2 semitonos."}
   ]},
   { id:"semitonos", nombre:"Semitono, unísono y enarmonía", preguntas:[
-    {q:"El semitono cromático se produce entre 2 notas…", o:["de distinto nombre","del mismo nombre y diferente sonido","iguales","muy lejanas"], c:1,
+    {q:"El semitono cromático se produce entre 2 notas…", o:["del mismo nombre y diferente sonido","de distinto nombre","iguales","muy lejanas"], c:0,
      exp:"Cromático = mismo nombre, distinto sonido (ej. DO y DO#). Diatónico = distinto nombre, distinto sonido (ej. MI y FA)."},
-    {q:"Dos notas enarmónicas son…", o:["iguales en todo","de distinto nombre pero igual sonido","de igual nombre y sonido","muy diferentes"], c:1,
+    {q:"Dos notas enarmónicas son…", o:["iguales en todo","de igual nombre y sonido","muy diferentes","de distinto nombre pero igual sonido"], c:3,
      exp:"Las notas enarmónicas tienen distinto nombre pero suenan igual (ej. DO# y REb)."},
-    {q:"El unísono está formado por 2 notas…", o:["de distinto sonido","de igual nombre y sonido, que suenan a la vez","muy separadas","enarmónicas"], c:1,
+    {q:"El unísono está formado por 2 notas…", o:["de distinto sonido","muy separadas","de igual nombre y sonido, que suenan a la vez","enarmónicas"], c:2,
      exp:"El unísono son 2 notas de igual nombre y sonido sonando a la vez."}
   ]},
   { id:"tempo", nombre:"Tempo (términos italianos)", preguntas:[
     {q:"¿Qué es el \u201Ctempo\u201D (aire o movimiento)?", o:["La intensidad del sonido","La velocidad con la que se interpreta una obra","La tonalidad","El compás"], c:1,
      exp:"El tempo (aire o movimiento) es la velocidad con la que interpretamos una obra musical. No confundir con los matices, que son la intensidad."},
-    {q:"El término italiano \u201CAllegro\u201D significa…", o:["muy lento","despacio","animado","tranquilo"], c:2,
+    {q:"El término italiano \u201CAllegro\u201D significa…", o:["muy lento","animado","despacio","tranquilo"], c:1,
      exp:"Allegro = animado. De más lento a más rápido: Largo, Adagio, Andante, Moderato, Allegro, Presto."},
-    {q:"¿Cuál de estos términos indica el movimiento MÁS lento?", o:["Allegro","Andante","Largo","Moderato"], c:2,
+    {q:"¿Cuál de estos términos indica el movimiento MÁS lento?", o:["Largo","Allegro","Andante","Moderato"], c:0,
      exp:"Largo = muy lento. Andante es tranquilo, Moderato moderado y Allegro animado."}
   ]},
   { id:"agogica", nombre:"La agógica", preguntas:[
-    {q:"¿Qué estudia la agógica?", o:["las alteraciones","los cambios de velocidad en una obra","las tonalidades","los matices de intensidad"], c:1,
+    {q:"¿Qué estudia la agógica?", o:["las alteraciones","las tonalidades","los cambios de velocidad en una obra","los matices de intensidad"], c:2,
      exp:"La agógica estudia los cambios de velocidad dentro de una obra musical."},
     {q:"El término \u201Critardando\u201D (rit.) indica…", o:["aumentar la velocidad","disminuir la velocidad","aumentar la intensidad","repetir"], c:1,
      exp:"Ritardando (o rallentando) = ir disminuyendo la velocidad. Accelerando es lo contrario: aumentar la velocidad."},
-    {q:"La indicación \u201CA Tempo\u201D sirve para…", o:["ir más rápido","restablecer el movimiento (volver a la velocidad de antes)","parar la obra","subir el volumen"], c:1,
+    {q:"La indicación \u201CA Tempo\u201D sirve para…", o:["restablecer el movimiento (volver a la velocidad de antes)","ir más rápido","parar la obra","subir el volumen"], c:0,
      exp:"A Tempo restablece el movimiento después de haberlo cambiado (por ejemplo, tras un ritardando o un accelerando)."}
   ]}
 ];
@@ -401,7 +413,7 @@ const TEMAS = [
 /* ============================================================
    MOTOR DEL REPASO
    ============================================================ */
-const CLAVE = "andre_examen_musica_progreso";
+const CLAVE = "andre_mus_teoria_nivel1_v1";
 let estado = null; // {temaIdx, intento, resultados:[{tries,acertado}], inicio, segundos}
 let cronometro = null;
 
