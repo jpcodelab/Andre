@@ -316,6 +316,12 @@ let tapHits = 0;
 let tapMisses = 0;
 let strongTimesMs = [];
 let tapActive = false;
+// TAP_TOLERANCE_MS: ventana de acierto para el tap en tiempo real (±ms).
+// Justificación: a BPM=88 un pulso dura 60/88×1000 ≈ 682 ms.
+// ±220 ms ≈ 32% del pulso, lo que cubre la latencia motora típica de un niño
+// (reacción ~150 ms + tiempo de impulso ~50 ms) con margen. Reducir por debajo
+// de ~150 ms haría la tarea injustamente difícil; superar ~300 ms mezclaría
+// golpes de tiempos adyacentes.
 const TAP_TOLERANCE_MS = 220;
 
 function initTapBlock() {
