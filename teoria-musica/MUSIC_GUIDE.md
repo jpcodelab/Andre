@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.0 · Julio 2026
+> Referenciado desde CLAUDE.md. Versión: 1.1 · Julio 2026
 
 ---
 
@@ -163,30 +163,64 @@ function isoLocal(d) {
 
 ---
 
-## 4. Vocabulario de topics
+## 4. Vocabulario de topics — modelo de dos niveles
 
-Valores controlados para el campo `topic`. Ampliar aquí antes de usar valores
-nuevos. Formato: minúsculas, guion bajo como separador.
+### 4.1 Modelo
 
-### Compás y pulso
-`compas_2` `compas_3` `compas_4` `compas_3-8` `compas_2-8` `compas_6-8`
-`compas_simple` `compas_compuesto` `tiempo_fuerte` `tiempo_debil`
+Los topics funcionan con dos niveles de granularidad:
 
-### Ritmo
-`sincopa` `contratiempo` `ritmo_normal` `puntillo` `negra_puntillo`
-`corchea` `tresillo` `figura_valor`
+| Nivel | Dónde vive | Propósito |
+|---|---|---|
+| **topic granular** | campo `topic` de cada ítem en el JSON de sesión | Identifica exactamente qué subconcepto se evaluó |
+| **topic_group** | `topics_map.json` (fichero de mapeo externo) | Agrupación para análisis y diagnóstico entre sesiones |
 
-### Tonalidad y grados
-`grado_I` … `grado_VII` `grados_tonales` `grados_modales`
-`tonalidad_mayor` `tonalidad_menor` `relativas` `mi_m` `re_m`
-`orden_sostenidos` `orden_bemoles` `armadura`
+Los ids granulares **no cambian** en los ficheros evaluativos. El mapeo
+`granular → group` se mantiene en `teoria-musica/topics_map.json`.
 
-### Expresión
-`matiz` `matiz_dificil` `articulacion` `tenuto` `acento` `picado`
-`tempo` `agogica` `metronomo`
+Para obtener el grupo de un topic al analizar un registro:
+```js
+const map = JSON.parse(fs.readFileSync('teoria-musica/topics_map.json', 'utf8'));
+const group = map[item.topic]; // undefined si el topic no está en el mapa
+```
 
-### Intervalos y alturas
-`intervalo` `semitono` `clave_sol` `clave_fa`
+### 4.2 Grupos válidos
+
+| Grupo | Descripción |
+|---|---|
+| `compas_pulso` | Clasificación de compases, tiempos fuertes/débiles |
+| `ritmo` | Figuras, silencios, puntillo, tresillo, síncopa, contratiempo |
+| `tonalidad_grados` | Armaduras, tonalidades mayor/menor, relativas |
+| `grados` | Grados de la escala, función tonal/modal |
+| `expresion` | Matices, articulación, tempo, agógica, metrónomo |
+| `intervalos_alturas` | Intervalos, semitonos, claves |
+| `lectura_notas` | Lectura de notas en el pentagrama |
+| `alteraciones` | Sostenidos, bemoles, becuadros |
+| `enarmonia` | Enarmonía y semitonos enarmónicos |
+| `anacrusa` | Anacrusa |
+| `repeticion` | Signos de repetición, barras, Da Capo, al Segno |
+| `unidad_tiempo` | Unidad de tiempo en compases simples y compuestos |
+| `compas_9-8` | Compás de 9/8 |
+| `compas_12-8` | Compás de 12/8 |
+
+Antes de usar un topic granular nuevo en un fichero evaluativo:
+1. Decidir a qué grupo pertenece.
+2. Añadir la entrada en `topics_map.json`.
+3. Si el grupo no existe, añadirlo a `_valid_groups` en el mapa **y** a esta tabla.
+4. Verificar con `node teoria-musica/tests/check_topics_map.js`.
+
+### 4.3 Topics granulares en uso
+
+Los topics granulares reales provienen de dos fuentes:
+- **Teoria** (`mus_teoria_*`): campo `id` dentro del array `TEMAS`.
+- **Dictado / Audición** (`mus_dictado_*`, `mus_audicion_*`): campo `topic`
+  en los ítems construidos en tiempo de ejecución.
+
+Algunos topics se construyen dinámicamente (p. ej. `'compas_' + beats` en
+fuerte-débil). Estos se declaran explícitamente en `topics_map.json` aunque
+el análisis estático no los detecte como usados.
+
+La lista completa y su mapeo a grupos se encuentra en `topics_map.json`.
+El script `tests/check_topics_map.js` verifica la integridad del mapa.
 
 ---
 
