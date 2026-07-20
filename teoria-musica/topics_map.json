@@ -1,10 +1,14 @@
 {
   "_comment": "Mapeo de topic granular (usado en ítems JSON de sesión) → topic_group (para análisis). Ver MUSIC_GUIDE.md §4.",
-  "_version": "1.0",
+  "_version": "1.1",
   "_valid_groups": [
     "compas_pulso", "ritmo", "tonalidad_grados", "expresion", "intervalos_alturas",
     "anacrusa", "repeticion", "alteraciones", "enarmonia", "lectura_notas",
     "unidad_tiempo", "compas_9-8", "compas_12-8", "grados"
+  ],
+  "_dynamic_topics": [
+    "compas_2",
+    "ritmo_normal"
   ],
 
   "agogica":              "expresion",

@@ -1,7 +1,7 @@
 # CLAUDE.md — Proyecto André: Biblioteca de Juegos Educativos
 
 > Documento de contexto para Claude Code. Leer antes de cualquier sesión de trabajo.
-> Última actualización: julio 2026 (rev. 3)
+> Última actualización: julio 2026 (rev. 4)
 
 ---
 
@@ -71,15 +71,17 @@ CEIP Rosa Luxemburgo (Madrid, Comunidad de Madrid).
 - Foco en: past simple, comparatives, reading comprehension, vocabulary.
 
 ### Lenguaje Musical
-- Teoría musical de 5º de Primaria (LOMLOE).
-- Los repasos usan test adaptativo: hasta 3 intentos por tema, feedback inmediato,
-  progreso guardado en localStorage, registro de sesión copiable al final.
+- Especificación completa en `teoria-musica/MUSIC_GUIDE.md` — leer antes de crear o modificar cualquier herramienta de música.
+- Las herramientas pertenecen a una de 5 categorías (§1 MUSIC_GUIDE): `teoria` · `mapa` · `dictado` · `audicion` · `util`.
+- Los repasos (`teoria`) usan test adaptativo: hasta 3 intentos por tema, feedback inmediato,
+  progreso guardado en localStorage, registro de sesión copiable al final (schema JSON §3 MUSIC_GUIDE).
 - Los mapas son fichas de una o dos páginas para imprimir — no son juegos interactivos.
 - Los dictados rítmicos y las herramientas de discriminación auditiva usan Web Audio API
   (sin ficheros de audio externos) — requieren Chrome/Edge; no funcionan offline ni son imprimibles.
-- Secuencia natural de los repasos: Nivel 1 → Nivel 2 → Nivel 3 → Final → Compás → Gran Repaso 1 → Gran Repaso 2 → Dictado S1 → Dictado S2.
-- Secuencia de discriminación auditiva (nueva rama, independiente de los repasos teóricos):
+- Secuencia natural de los repasos (§6 MUSIC_GUIDE): N1 → N2 → N3 → Final → Compás → GR1 → GR2 → Dictado S1 → Dictado S2.
+- Secuencia de discriminación auditiva (rama independiente, §6 MUSIC_GUIDE):
   Fuerte/Débil (Paso 1) → ¿Con el fuerte o en el hueco? (Paso 2) → Síncopa vs Contratiempo (Paso 3).
+- Topics de sesión: vocabulario de dos niveles — topic granular en el JSON + grupo vía `topics_map.json` (§4 MUSIC_GUIDE).
 
 ---
 
@@ -98,9 +100,13 @@ Andre/
 ├── provincias_espana_v4.html          # Juego de geografía — 50 provincias, 5 modos
 │
 ├── teoria-musica/                     # Lenguaje Musical 5º Primaria
+│   ├── MUSIC_GUIDE.md                        # Especificación de herramientas de música (v1.1)
+│   ├── topics_map.json                       # Mapeo topic granular → group (§4 MUSIC_GUIDE)
+│   │
 │   ├── mus_mapa_grados-tonalidades_v1.html   # Mapa imprimible: grados y tonalidades
 │   ├── mus_mapa_compas_v1.html               # Mapa imprimible: el compás
 │   ├── mus_mapa_resto-temario_v1.html        # Mapa imprimible: teoría general
+│   │
 │   ├── mus_teoria_nivel1_v1.html             # Repaso nivel 1 · 26 temas
 │   ├── mus_teoria_nivel2_v1.html             # Repaso nivel 2 · 23 temas · partituras SVG
 │   ├── mus_teoria_nivel3_v1.html             # Repaso nivel 3 · 19 temas
@@ -108,11 +114,20 @@ Andre/
 │   ├── mus_teoria_compas_v1.html             # Repaso compás · 22 temas
 │   ├── mus_teoria_gran-repaso1_v1.html       # Gran repaso 1 · 40 temas
 │   ├── mus_teoria_gran-repaso2_v1.html       # Gran repaso 2 · 40 temas (por unidad)
+│   │
 │   ├── mus_dictado_simple-s1_v1.html         # Dictado rítmico S1 · 4/4 y 3/4 · Web Audio API
 │   ├── mus_dictado_simple-s2_v1.html         # Dictado rítmico S2 · foco corchea por posición
+│   │
 │   ├── mus_audicion_fuerte-debil_v1.html     # Discriminación auditiva · Paso 1 · Tiempos fuertes/débiles
 │   ├── mus_audicion_puente-sincopa_v1.html   # Discriminación auditiva · Paso 2 · Ritmo normal/contratiempo/síncopa
-│   └── mus_audicion_sincopa-contratiempo_v1.html  # Discriminación auditiva · Paso 3 · Síncopa vs contratiempo · 12 preguntas
+│   ├── mus_audicion_sincopa-contratiempo_v1.html  # Discriminación auditiva · Paso 3 · Síncopa vs contratiempo · 12 preguntas
+│   │
+│   └── tests/                                # Scripts de validación (node)
+│       ├── check_topics_map.js               # Verifica integridad de topics_map.json
+│       ├── check_phase_c.js                  # Verifica infraestructura de feedback §3
+│       ├── check_answer_distribution.js      # Verifica distribución de respuestas correctas
+│       ├── check_dictado_patterns.js         # Verifica suma de tokens en dictados
+│       └── check_audicion_patterns.js        # Verifica patrones rítmicos en audición
 │
 ├── CLAUDE.md                          # Este fichero — contexto para Claude Code
 └── README.md                          # Descripción pública del repositorio

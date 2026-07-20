@@ -41,6 +41,9 @@ if (!fs.existsSync(MAP_FILE)) {
 
 const mapRaw = JSON.parse(fs.readFileSync(MAP_FILE, 'utf8'));
 const VALID_GROUPS = new Set(mapRaw._valid_groups || []);
+// Dynamic topics: built at runtime (e.g. 'compas_' + beats). They cannot be
+// found by static analysis but are declared in _dynamic_topics for traceability.
+const DYNAMIC_TOPICS = new Set(mapRaw._dynamic_topics || []);
 // Strip metadata keys (underscore-prefixed)
 const topicMap = {};
 for (const [k, v] of Object.entries(mapRaw)) {
@@ -99,6 +102,11 @@ for (const file of EVALUATIVE_FILES) {
   for (const id of extractTopicIds(content)) usedIds.add(id);
 }
 
+// Pre-seed dynamic topics so they are not reported as orphans.
+// These are constructed at runtime (e.g. 'compas_' + beats) and cannot
+// be found by static analysis, but are declared in _dynamic_topics.
+for (const id of DYNAMIC_TOPICS) usedIds.add(id);
+
 // ---------------------------------------------------------------------------
 // Checks
 // ---------------------------------------------------------------------------
@@ -139,23 +147,19 @@ if (bBad === 0) {
   console.log('  FALLA — ' + bBad + ' entries con grupo inválido');
 }
 
-// (c) No orphan entries in the map (entries not used in any file)
+// (c) No orphan entries in the map (entries not used in any file or in _dynamic_topics)
 console.log('\n--- (c) Entries del mapa → ninguna huérfana ---');
 let cOrphan = 0;
 const mapKeys = Object.keys(topicMap).sort();
 for (const k of mapKeys) {
   if (!usedIds.has(k)) {
-    console.log('  HUÉRFANA: ' + k + ' (grupo: ' + topicMap[k] + ')');
+    console.log('  FALLA — HUÉRFANA: ' + k + ' (grupo: ' + topicMap[k] + ') — añadir a _dynamic_topics o eliminar del mapa');
     cOrphan++;
-    // Not a hard failure — warn only (the map may intentionally include
-    // §4-vocab entries that will be used by future tools)
+    failures++;
   }
 }
 if (cOrphan === 0) {
-  console.log('  OK — no hay entradas huérfanas');
-} else {
-  console.log('  AVISO — ' + cOrphan + ' entrada(s) en el mapa sin uso actual (¿futura herramienta?)');
-  // Orphans are warnings, not failures, to allow forward-declaring topics
+  console.log('  OK — no hay entradas huérfanas (' + DYNAMIC_TOPICS.size + ' topic(s) dinámico(s) declarado(s) en _dynamic_topics)');
 }
 
 // ---------------------------------------------------------------------------

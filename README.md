@@ -14,9 +14,11 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 | `provincias_espana_v4.html` | 🗺️ Geografía · Social Science | Geografía | infinito |
 | `andre-novela-v4.html` | 📖 Novela Interactiva | Mates + Lengua + Inglés | ~45 min |
 
+---
+
 ## 🎵 Lenguaje Musical
 
-### Mapas de repaso (imprimibles)
+### 🖨️ Mapas (imprimibles)
 
 | Archivo | Contenido |
 |---------|-----------|
@@ -24,7 +26,9 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 | `teoria-musica/mus_mapa_compas_v1.html` | Compás simple/compuesto, trampas FA–SI |
 | `teoria-musica/mus_mapa_resto-temario_v1.html` | Figuras, matices, articulación, tempo… |
 
-### Repasos interactivos (test adaptativo con localStorage)
+### 🎯 Repasos teóricos (test adaptativo · guarda progreso · sin audio)
+
+Secuencia pedagógica: N1 → N2 → N3 → Final → Compás → GR1 → GR2
 
 | Archivo | Temas | Foco |
 |---------|-------|------|
@@ -35,16 +39,21 @@ Colección de recursos educativos interactivos para André, alumno de 5º de Pri
 | `teoria-musica/mus_teoria_compas_v1.html` | 22 | Foco intensivo en compás |
 | `teoria-musica/mus_teoria_gran-repaso1_v1.html` | 40 | Barrido completo con partituras |
 | `teoria-musica/mus_teoria_gran-repaso2_v1.html` | 40 | Preguntas nuevas por unidad (U10–U15 + U1–5) |
-| `teoria-musica/mus_dictado_simple-s1_v1.html` | — | Dictado rítmico · Sesión 1 (4/4 y 3/4, Web Audio API) |
-| `teoria-musica/mus_dictado_simple-s2_v1.html` | — | Dictado rítmico · Sesión 2 (foco en corchea por posición) |
 
-### Discriminación auditiva — síncopa y contratiempo (Web Audio API)
+### 🎧 Dictados rítmicos (Web Audio API · requieren audio · S1 → S2)
 
-Secuencia progresiva de 3 herramientas. Requieren sonido activo y Chrome/Edge. No funcionan offline.
+| Archivo | Sesión | Descripción |
+|---------|--------|-------------|
+| `teoria-musica/mus_dictado_simple-s1_v1.html` | S1 | Dictado rítmico 4/4 y 3/4 — negra, dos corcheas, silencio, blanca |
+| `teoria-musica/mus_dictado_simple-s2_v1.html` | S2 | Foco en corchea rotando por posición del compás |
+
+### 👂 Discriminación auditiva (Web Audio API · requieren audio · Paso 1 → 2 → 3)
+
+Secuencia progresiva. Cada herramienta necesita sonido activo y Chrome o Edge. No funcionan offline.
 
 | Archivo | Paso | Descripción |
 |---------|------|-------------|
-| `teoria-musica/mus_audicion_fuerte-debil_v1.html` | 1 — Prerrequisito | Tiempos fuertes y débiles: escucha guiada, tap en tiempo real, rejilla, clasificación de compases 2/3/4 |
+| `teoria-musica/mus_audicion_fuerte-debil_v1.html` | 1 — Prerrequisito | Tiempos fuertes/débiles: escucha guiada, tap en tiempo real, rejilla, clasificación de compases 2/3/4 |
 | `teoria-musica/mus_audicion_puente-sincopa_v1.html` | 2 — Puente | ¿Con el fuerte o en el hueco? Ritmo normal vs contratiempo (Fase 1) y síncopa como tercera opción (Fase 2) |
 | `teoria-musica/mus_audicion_sincopa-contratiempo_v1.html` | 3 — Consolidación | Síncopa vs Contratiempo: 12 preguntas con metrónomo + nota, tres opciones, rejilla explicativa |
 
@@ -95,7 +104,7 @@ Secuencia progresiva de 3 herramientas. Requieren sonido activo y Chrome/Edge. N
 
 Descarga cualquier archivo `.html` y ábrelo en el navegador del móvil o tablet. Funciona sin conexión — ideal para avión o tren. Los repasos de música guardan el progreso y el registro de sesión en localStorage.
 
-> **Excepción:** Los dictados rítmicos y las herramientas de discriminación auditiva usan Web Audio API y **requieren sonido activo y Chrome/Edge**. No funcionan offline ni son imprimibles.
+> **Excepción — audio:** Los dictados rítmicos y las herramientas de discriminación auditiva usan Web Audio API. Necesitan sonido activo y Chrome o Edge; **no funcionan offline**. La primera carga requiere conexión a internet para las Google Fonts; visitas posteriores pueden funcionar sin red si el navegador las tiene en caché.
 
 ## 👩‍🏫 Tutoras
 

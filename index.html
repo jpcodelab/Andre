@@ -118,11 +118,12 @@ body {
 .subject-nav a:hover { background: var(--border); color: var(--text); }
 .subject-nav a.active { color: #fff; border-color: transparent; }
 .subject-nav a[href="#juegos"].active         { background: var(--red); }
-.subject-nav a[href="#musica"].active         { background: #e65100; }
-.subject-nav a[href="#musica-teoria"].active  { background: #e65100; }
-.subject-nav a[href="#musica-dictado"].active   { background: #1565c0; }
-.subject-nav a[href="#musica-auditiva"].active { background: #e65100; }
-.subject-nav a[href="#como-usar"].active       { background: var(--mid); }
+.subject-nav a[href="#musica"].active       { background: #e65100; }
+.subject-nav a[href="#mus-mapas"].active    { background: #e65100; }
+.subject-nav a[href="#mus-repaso"].active   { background: #e65100; }
+.subject-nav a[href="#mus-dictado"].active  { background: #1565c0; }
+.subject-nav a[href="#mus-auditiva"].active { background: #e65100; }
+.subject-nav a[href="#como-usar"].active    { background: var(--mid); }
 
 /* ── SECTION HEADER ── */
 .section-hdr {
@@ -421,9 +422,10 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 <nav class="subject-nav">
   <a href="#juegos">🎮 Juegos del Cole</a>
   <a href="#musica">🎵 Escuela de Música</a>
-  <a href="#musica-teoria">🎺 Teoría Musical</a>
-  <a href="#musica-dictado">🎧 Dictado Rítmico</a>
-  <a href="#musica-auditiva">👂 Discriminación Auditiva</a>
+  <a href="#mus-mapas">🖨️ Mapas</a>
+  <a href="#mus-repaso">🎯 Repasos</a>
+  <a href="#mus-dictado">🎧 Dictados</a>
+  <a href="#mus-auditiva">👂 Auditiva</a>
   <a href="#como-usar">ℹ️ Cómo usar</a>
 </nav>
 
@@ -600,17 +602,12 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
   <h2>Escuela de Música 🎵</h2>
   <span>3 mapas · 7 repasos · 2 dictados · 3 auditivas · Lenguaje Musical 5º</span>
 </div>
-<p class="section-desc">Todo el material de repaso para la escuela de música. Los mapas son para imprimir; los repasos son tests adaptativos que guardan tu progreso. El dictado necesita sonido.</p>
+<p class="section-desc">Todo el material de repaso para la escuela de música. Los mapas son fichas para imprimir. Los repasos teóricos son tests adaptativos que guardan el progreso. Los dictados y la discriminación auditiva usan Web Audio API y necesitan sonido activo (Chrome o Edge).</p>
 
-<!-- ── SUBSECCIÓN A: TEORÍA MUSICAL ── -->
-<div class="subsection-hdr" id="musica-teoria">
-  <h3>🎵 Teoría Musical</h3>
-  <span>Mapas imprimibles + Repasos interactivos</span>
-</div>
-
-<!-- Mapas de repaso -->
-<div class="subgroup-hdr">
-  <span>🖨️ Mapas de repaso · abre e imprime</span>
+<!-- ── MAPAS ── -->
+<div class="subsection-hdr mus" id="mus-mapas">
+  <h3>🖨️ Mapas</h3>
+  <span>Fichas imprimibles · abre e imprime · A4</span>
 </div>
 
 <div class="grid tight">
@@ -684,9 +681,10 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 
 </div>
 
-<!-- Repasos interactivos -->
-<div class="subgroup-hdr">
-  <span>🎯 Repasos interactivos · test con feedback inmediato</span>
+<!-- ── REPASOS TEÓRICOS ── -->
+<div class="subsection-hdr mus" id="mus-repaso">
+  <h3>🎯 Repasos teóricos</h3>
+  <span>Test adaptativo · sin audio · guarda progreso · N1→N2→N3→Final→Compás→GR1→GR2</span>
 </div>
 
 <div class="grid">
@@ -846,10 +844,10 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 
 </div>
 
-<!-- ── SUBSECCIÓN B: DICTADO RÍTMICO ── -->
-<div class="subsection-hdr dit" id="musica-dictado">
-  <h3>🎧 Dictado Rítmico</h3>
-  <span>Requiere audio · Chrome/Edge recomendado</span>
+<!-- ── DICTADOS RÍTMICOS ── -->
+<div class="subsection-hdr dit" id="mus-dictado">
+  <h3>🎧 Dictados rítmicos</h3>
+  <span>Requiere audio · Chrome/Edge · S1 → S2</span>
 </div>
 
 <div class="audio-aviso-wrap">
@@ -862,8 +860,8 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     <div class="card-accent dit"></div>
     <div class="card-body">
       <div class="card-badge badge-dit">🎧 Dictado Rítmico</div>
-      <span class="card-icon">🎧</span>
-      <div class="card-title">Dictado rítmico · Sesión 1</div>
+      <span class="card-icon">1️⃣</span>
+      <div class="card-title">Dictado rítmico · S1</div>
       <p class="card-desc">
         Dictado rítmico con audio (Web Audio API). Bloque 1 en 4/4 y Bloque 2
         en 3/4. Figuras: negra, dos corcheas, silencio de negra y blanca.
@@ -876,6 +874,7 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
         <span class="subj">Negra</span>
         <span class="subj">Corcheas</span>
         <span class="subj">Silencios</span>
+        <span class="subj">🔊 Requiere audio</span>
       </div>
     </div>
     <div class="card-footer">
@@ -888,8 +887,8 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
     <div class="card-accent dit"></div>
     <div class="card-body">
       <div class="card-badge badge-dit">🎧 Dictado Rítmico</div>
-      <span class="card-icon">🥁</span>
-      <div class="card-title">Dictado rítmico · Sesión 2</div>
+      <span class="card-icon">2️⃣</span>
+      <div class="card-title">Dictado rítmico · S2</div>
       <p class="card-desc">
         Repaso focalizado en mantener el pulso cuando una sola pareja de
         corcheas interrumpe un compás de negras. La corchea rota por cada
@@ -899,6 +898,7 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
         <span class="subj">Pulso</span>
         <span class="subj">Corcheas</span>
         <span class="subj">Posición</span>
+        <span class="subj">🔊 Requiere audio</span>
       </div>
     </div>
     <div class="card-footer">
@@ -909,10 +909,10 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 
 </div>
 
-<!-- ── SUBSECCIÓN C: DISCRIMINACIÓN AUDITIVA ── -->
-<div class="subsection-hdr mus" id="musica-auditiva">
-  <h3>👂 Discriminación Auditiva</h3>
-  <span>Secuencia progresiva · síncopa y contratiempo · Requiere audio</span>
+<!-- ── DISCRIMINACIÓN AUDITIVA ── -->
+<div class="subsection-hdr mus" id="mus-auditiva">
+  <h3>👂 Discriminación auditiva</h3>
+  <span>Requiere audio · Chrome/Edge · Paso 1 → 2 → 3</span>
 </div>
 
 <div class="audio-aviso-wrap">
@@ -937,6 +937,7 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
         <span class="subj">Tap</span>
         <span class="subj">Compás</span>
         <span class="subj">Escucha activa</span>
+        <span class="subj">🔊 Requiere audio</span>
       </div>
     </div>
     <div class="card-footer">
@@ -960,6 +961,7 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
         <span class="subj">Contratiempo</span>
         <span class="subj">Síncopa</span>
         <span class="subj">Ritmo normal</span>
+        <span class="subj">🔊 Requiere audio</span>
       </div>
     </div>
     <div class="card-footer">
@@ -983,6 +985,7 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
         <span class="subj">Síncopa</span>
         <span class="subj">Contratiempo</span>
         <span class="subj">12 preguntas</span>
+        <span class="subj">🔊 Requiere audio</span>
       </div>
     </div>
     <div class="card-footer">
@@ -1035,12 +1038,13 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
 (function () {
   /* ── Nav active state ── */
   const idToHref = {
-    'juegos':           '#juegos',
-    'musica':           '#musica',
-    'musica-teoria':    '#musica-teoria',
-    'musica-dictado':   '#musica-dictado',
-    'musica-auditiva':  '#musica-auditiva',
-    'como-usar':        '#como-usar',
+    'juegos':        '#juegos',
+    'musica':        '#musica',
+    'mus-mapas':     '#mus-mapas',
+    'mus-repaso':    '#mus-repaso',
+    'mus-dictado':   '#mus-dictado',
+    'mus-auditiva':  '#mus-auditiva',
+    'como-usar':     '#como-usar',
   };
 
   const ids = Object.keys(idToHref);
