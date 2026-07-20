@@ -112,6 +112,15 @@
   }
   .btn-marca.bien.activo{background:var(--ok); color:#fff; border-color:var(--ok);}
   .btn-marca.repasar.activo{background:var(--rep); color:#fff; border-color:var(--rep);}
+  .btn-marca:disabled{opacity:.4; cursor:not-allowed;}
+
+  .transcribe-hint{font-size:.85rem; color:var(--gris); margin:12px 0 6px; border-top:1px dashed var(--linea); padding-top:10px;}
+  .transcribe-figs{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;}
+  .btn-fig{font-family:inherit; font-size:.82rem; cursor:pointer; border-radius:14px; padding:5px 12px; border:1.5px solid var(--acento); background:#fff; color:var(--acento);}
+  .btn-fig:hover{background:var(--acento-suave);}
+  .btn-fig-undo{border-color:var(--gris); color:var(--gris);}
+  .transcrito-pista{display:flex; align-items:flex-end; gap:4px; flex-wrap:wrap; min-height:44px; padding:8px; background:#fbfbfb; border:1px dashed var(--linea); border-radius:8px; margin-bottom:4px;}
+  .transcrito-vacio{font-size:.82rem; color:#aaa; align-self:center;}
 
   .pie{margin-top:42px; border-top:1px solid var(--linea); padding-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
   .btn-reset{font-family:inherit; font-size:.85rem; background:none; border:1px solid var(--linea); color:var(--gris); border-radius:18px; padding:6px 14px; cursor:pointer;}
@@ -130,6 +139,7 @@
     Cómo funciona: André pulsa <strong>Escuchar</strong> (las veces que necesite), escribe el ritmo
     en su papel, y solo después pulsa <strong>Ver solución</strong> para comparar. No se da la respuesta antes.
     Antes de cada ritmo suena un compás de pulso (clic) para marcar el tempo.
+    Luego toca las mismas figuras que anotó en su papel antes de marcar si lo tuvo bien.
   </p>
 
   <div class="barra-control">
@@ -355,72 +365,131 @@ function tarjetaEjemplo(ej, etiqueta){
   </div>`;
 }
 
+/* estado[id] puede ser el string legacy 'bien'/'repasar' o un objeto
+   {mark, time_sec, transcrito:[...]}. Este helper normaliza la lectura. */
+function obtenerEstadoItem(id){
+  let e = estado[id];
+  if (typeof e === 'string') e = { mark: e, transcrito: [] };
+  if (!e) e = { transcrito: [] };
+  if (!Array.isArray(e.transcrito)) e.transcrito = [];
+  return e;
+}
+
 function tarjetaCelda(tokens, compas, id){
-  const marca = estado[id] || null;
+  const marca = obtenerEstadoItem(id).mark || null;
+  const figBtns = ['negra','corcheas','silencio','blanca'].map(t=>
+    `<button class="btn-fig" onclick="addFig('${id}','${t}')">${TOKEN_NOMBRE[t]}</button>`).join('')
+    + `<button class="btn-fig btn-fig-undo" onclick="undoFig('${id}')">← Deshacer</button>`;
   return `
   <div class="celda" id="card-${id}">
     <div class="celda-cab">
       <span class="celda-num">Nº ${id.split('-')[1]}</span>
-      <button class="btn btn-oir" onclick='tocarCelda(${JSON.stringify(tokens)}, ${compas})'>▶ Escuchar</button>
+      <button class="btn btn-oir" onclick='escucharItem("${id}", ${JSON.stringify(tokens)}, ${compas})'>▶ Escuchar</button>
     </div>
     <p class="escribe">Escribe el ritmo en tu papel. Cuando termines, pulsa "Ver solución".</p>
     <button class="btn btn-sol" style="margin-top:10px" onclick="verSolucion('${id}')">Ver solución</button>
     <div class="solucion" id="sol-${id}">
       <div class="pentagrama-rit">${dibujaRitmo(tokens)}</div>
       <div class="sol-nombres">${nombresRitmo(tokens)}</div>
+      <p class="transcribe-hint">Antes de marcar, toca aquí las mismas figuras que anotaste en tu papel (en orden):</p>
+      <div class="transcribe-figs">${figBtns}</div>
+      <div class="transcrito-pista" id="transcrito-${id}"></div>
       <div class="marcar">
-        <button class="btn-marca bien ${marca==='bien'?'activo':''}" onclick="marcar('${id}','bien')">✓ Lo tuve bien</button>
-        <button class="btn-marca repasar ${marca==='repasar'?'activo':''}" onclick="marcar('${id}','repasar')">✗ A repasar</button>
+        <button class="btn-marca bien ${marca==='bien'?'activo':''}" id="mbien-${id}" disabled onclick="marcar('${id}','bien')">✓ Lo tuve bien</button>
+        <button class="btn-marca repasar ${marca==='repasar'?'activo':''}" id="mrep-${id}" disabled onclick="marcar('${id}','repasar')">✗ A repasar</button>
       </div>
     </div>
   </div>`;
 }
 
+function pintarTranscrito(id){
+  const e = obtenerEstadoItem(id);
+  const cont = document.getElementById('transcrito-'+id);
+  if (cont) cont.innerHTML = e.transcrito.length ? dibujaRitmo(e.transcrito) : '<span class="transcrito-vacio">(toca las figuras que escribiste)</span>';
+  const puedeMarcar = e.transcrito.length > 0;
+  const bBien = document.getElementById('mbien-'+id), bRep = document.getElementById('mrep-'+id);
+  if (bBien) bBien.disabled = !puedeMarcar;
+  if (bRep) bRep.disabled = !puedeMarcar;
+}
+
+function addFig(id, tok){
+  const e = obtenerEstadoItem(id);
+  e.transcrito.push(tok);
+  estado[id] = e;
+  guardar();
+  pintarTranscrito(id);
+}
+
+function undoFig(id){
+  const e = obtenerEstadoItem(id);
+  if (!e.transcrito.length) return;
+  e.transcrito.pop();
+  estado[id] = e;
+  guardar();
+  pintarTranscrito(id);
+}
+
 function pintar(){
   leyenda();
   let html1 = tarjetaEjemplo(EJEMPLO_1, 'Bloque 1');
-  BLOQUE_1.forEach((tk,i)=>{ html1 += tarjetaCelda(tk, 4, 'b1-'+(i+1)); });
+  const ids1 = BLOQUE_1.map((tk,i)=>{ const id='b1-'+(i+1); html1 += tarjetaCelda(tk, 4, id); return id; });
   document.getElementById('bloque1').innerHTML = html1;
 
   let html2 = tarjetaEjemplo(EJEMPLO_2, 'Bloque 2');
-  BLOQUE_2.forEach((tk,i)=>{ html2 += tarjetaCelda(tk, 3, 'b2-'+(i+1)); });
+  const ids2 = BLOQUE_2.map((tk,i)=>{ const id='b2-'+(i+1); html2 += tarjetaCelda(tk, 3, id); return id; });
   document.getElementById('bloque2').innerHTML = html2;
 
-  // si una celda ya estaba marcada en sesión previa, mostrar su solución
-  Object.keys(estado).forEach(id=>{
-    const sol = document.getElementById('sol-'+id);
-    if(sol) sol.classList.add('visible');
+  // si una celda ya tenía datos de una sesión previa, mostrar su solución y transcripción
+  ids1.concat(ids2).forEach(id=>{
+    const e = obtenerEstadoItem(id);
+    if (e.mark || e.transcrito.length) {
+      const sol = document.getElementById('sol-'+id);
+      if (sol) sol.classList.add('visible');
+    }
+    pintarTranscrito(id);
   });
   actualizaProgreso();
 }
 
 function verSolucion(id){
+  captureSessionStart();
+  if (!itemFirstPlay[id]) itemFirstPlay[id] = Date.now();
   const sol = document.getElementById('sol-'+id);
   if(sol) sol.classList.add('visible');
 }
 
 function marcar(id, valor){
-  estado[id] = (estado[id]===valor) ? null : valor;  // volver a pulsar = desmarcar
-  if(estado[id]===null) delete estado[id];
+  const e = obtenerEstadoItem(id);
+  if (!e.transcrito.length) return; // debe transcribir antes de autoevaluarse
+  if (e.mark === valor) { delete e.mark; delete e.time_sec; }
+  else {
+    e.mark = valor;
+    e.time_sec = itemFirstPlay[id] ? Math.round((Date.now()-itemFirstPlay[id])/1000) : 0;
+  }
+  estado[id] = e;
   guardar();
   // refrescar botones de esa tarjeta
   const card = document.getElementById('card-'+id);
   card.querySelectorAll('.btn-marca').forEach(b=>b.classList.remove('activo'));
-  if(estado[id]==='bien') card.querySelector('.btn-marca.bien').classList.add('activo');
-  if(estado[id]==='repasar') card.querySelector('.btn-marca.repasar').classList.add('activo');
+  if(e.mark==='bien') card.querySelector('.btn-marca.bien').classList.add('activo');
+  if(e.mark==='repasar') card.querySelector('.btn-marca.repasar').classList.add('activo');
   actualizaProgreso();
+}
+
+function contarHechos(){
+  return Object.keys(estado).filter(k=>obtenerEstadoItem(k).mark).length;
 }
 
 function actualizaProgreso(){
   const total = BLOQUE_1.length + BLOQUE_2.length; // 9
-  const hechos = Object.keys(estado).filter(k=>estado[k]).length;
+  const hechos = contarHechos();
   document.getElementById('progresoTxt').textContent = `Marcados: ${hechos} / ${total}`;
   document.getElementById('progresoRelleno').style.width = (hechos/total*100)+'%';
 }
 
 function resetTodo(){
   if(confirm('¿Borrar todas las marcas y empezar de nuevo?')){
-    estado = {}; guardar(); sessionStart = null;
+    estado = {}; guardar(); sessionStart = null; itemFirstPlay = {};
     document.getElementById('resumen-section').style.display = 'none';
     document.getElementById('mood-section').style.display = '';
     document.getElementById('registro-final').innerHTML = '';
@@ -429,20 +498,19 @@ function resetTodo(){
 }
 
 /* ===================== SESSION TRACKING ===================== */
+let itemFirstPlay = {};
 function captureSessionStart() {
   if (!sessionStart) sessionStart = new Date();
 }
-
-// Hook into tocarCelda and verSolucion to capture session start
-var _origTocarCelda = tocarCelda;
-tocarCelda = function() { captureSessionStart(); return _origTocarCelda.apply(this, arguments); };
-var _origVerSolucion = verSolucion;
-verSolucion = function() { captureSessionStart(); return _origVerSolucion.apply(this, arguments); };
+function escucharItem(id, tokens, compas){
+  captureSessionStart();
+  if (!itemFirstPlay[id]) itemFirstPlay[id] = Date.now();
+  return tocarCelda(tokens, compas);
+}
 
 function checkShowResumen() {
   var total = BLOQUE_1.length + BLOQUE_2.length;
-  var hechos = Object.keys(estado).filter(function(k){ return estado[k]; }).length;
-  if (hechos >= total) {
+  if (contarHechos() >= total) {
     document.getElementById('resumen-section').style.display = '';
   }
 }
@@ -469,41 +537,47 @@ function buildSessionData(moodVal) {
 
   BLOQUE_1.forEach(function(tokens, i) {
     var cellId = "b1-" + (i+1);
-    var mark = state[cellId];
+    var raw = state[cellId];
+    if (typeof raw === 'string') raw = { mark: raw, transcrito: [] };
+    var mark = raw && raw.mark;
     if (!mark) return;
     var isCorrect = (mark === "bien");
     total++;
     if (isCorrect) { correct++; blocks[0].correct++; }
     blocks[0].total++;
+    var transcrito = (raw.transcrito && raw.transcrito.length) ? raw.transcrito.join(' ') : mark;
     items.push({
       n: items.length + 1,
       block: "bloque_1",
       topic: "compas_4",
       expected: tokens.join(' '),
-      answered: mark,
+      answered: transcrito,
       correct: isCorrect,
       attempts: 1,
-      time_sec: 0
+      time_sec: raw.time_sec || 0
     });
   });
 
   BLOQUE_2.forEach(function(tokens, i) {
     var cellId = "b2-" + (i+1);
-    var mark = state[cellId];
+    var raw = state[cellId];
+    if (typeof raw === 'string') raw = { mark: raw, transcrito: [] };
+    var mark = raw && raw.mark;
     if (!mark) return;
     var isCorrect = (mark === "bien");
     total++;
     if (isCorrect) { correct++; blocks[1].correct++; }
     blocks[1].total++;
+    var transcrito = (raw.transcrito && raw.transcrito.length) ? raw.transcrito.join(' ') : mark;
     items.push({
       n: items.length + 1,
       block: "bloque_2",
       topic: "compas_3",
       expected: tokens.join(' '),
-      answered: mark,
+      answered: transcrito,
       correct: isCorrect,
       attempts: 1,
-      time_sec: 0
+      time_sec: raw.time_sec || 0
     });
   });
 
