@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.1 · Julio 2026
+> Referenciado desde CLAUDE.md. Versión: 1.2 · Julio 2026
 
 ---
 
@@ -108,7 +108,9 @@ Las 3 líneas humanas permiten lectura rápida sin parsear. El delimitador
       "answered": "tiempo_2",
       "correct": false,
       "attempts": 1,
-      "time_sec": 12
+      "time_sec": 12,
+      "listens": 2,
+      "listen_sec": 7
     }
   ],
   "mood": 2
@@ -125,8 +127,25 @@ Reglas:
   valores del vocabulario de topics cuando aplique, o texto corto.
 - `attempts`: nº de intentos hasta acertar o agotar (los repasos adaptativos
   ya permiten hasta 3).
-- `time_sec`: segundos desde que la pregunta se mostró hasta la respuesta
-  final. Redondeado a entero.
+- `time_sec`: segundos **de razonamiento**, no de reloj. Se mide desde que la
+  interfaz de respuesta queda habilitada (es decir, tras la primera
+  reproducción completa, no al pintar la pregunta) hasta el clic en
+  "Comprobar", **descontando** el tiempo de las reproducciones posteriores.
+  Redondeado a entero. Un `time_sec` de 0 en todos los ítems es un fallo de
+  instrumentación, no un dato.
+- `listens`: número de veces que se reprodujo el estímulo en ese ítem.
+  Obligatorio en `dictado` y `audicion`; opcional en `teoria`.
+- `listen_sec`: segundos totales de reproducción en ese ítem, redondeado a
+  entero. Separar escucha de razonamiento evita confundir "lento" con
+  "dudoso": son diagnósticos distintos y piden material distinto.
+- `answered`: la respuesta **real** del alumno, expresada en el vocabulario de
+  la herramienta (mismo formato que `expected`), nunca un genérico del tipo
+  `"bien"` / `"mal"` / `"ok"`. En preguntas de opción múltiple se registra el
+  contenido de la opción elegida, no su índice ni su posición.
+- `correct` puede ser `null` en ítems de bloques de calentamiento o
+  calibración (no evaluados). El `score` agrega **únicamente** los ítems con
+  `correct` booleano; `blocks` con `total: 0` se omiten del array. El ítem se
+  registra igualmente: saber si André hizo la calibración es un dato.
 - `mood`: autoevaluación de André al final, entero 1-3
   (1 = difícil/frustrante, 2 = normal, 3 = fácil/divertido). Pregunta única:
   "¿Cómo te has sentido?" con 3 botones (emoji + texto). Opcional responder:
@@ -201,6 +220,7 @@ const group = map[item.topic]; // undefined si el topic no está en el mapa
 | `unidad_tiempo` | Unidad de tiempo en compases simples y compuestos |
 | `compas_9-8` | Compás de 9/8 |
 | `compas_12-8` | Compás de 12/8 |
+| `compas_6-8` | Compás de 6/8 |
 
 Antes de usar un topic granular nuevo en un fichero evaluativo:
 1. Decidir a qué grupo pertenece.
@@ -241,6 +261,8 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
 - [ ] Histórico append en `andre_music_history`.
 - [ ] Cada pregunta tiene exactamente una respuesta correcta.
 - [ ] La respuesta correcta no es deducible por longitud, posición u orden fijo.
+- [ ] `time_sec` medido según §3.2 y verificado ≠ 0 en el test.
+- [ ] `answered` en el vocabulario de la herramienta, verificado en el test.
 
 ### Con patrones rítmicos (`dictado`, `audicion`)
 - [ ] **Verificación matemática**: cada patrón suma exactamente el compás declarado.
@@ -252,6 +274,8 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
   (un `.js` por herramienta, ejecutable con node).
 - [ ] Tolerancias de timing (si hay interacción en tiempo real) documentadas
   en comentario junto a la constante.
+- [ ] El script de test valida además un registro de sesión real pasado como
+      argumento (`node tests/test_x.js data/YYYY-MM-DD_x.json`).
 
 ### Imprimibles (`mapa`)
 - [ ] Media query `@media print` con resultado correcto en A4.
