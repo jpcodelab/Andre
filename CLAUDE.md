@@ -1,7 +1,7 @@
 # CLAUDE.md — Proyecto André: Biblioteca de Juegos Educativos
 
 > Documento de contexto para Claude Code. Leer antes de cualquier sesión de trabajo.
-> Última actualización: julio 2026 (rev. 4)
+> Última actualización: 21 de julio de 2026 (rev. 5)
 
 ---
 
@@ -85,57 +85,7 @@ CEIP Rosa Luxemburgo (Madrid, Comunidad de Madrid).
 
 ---
 
-## 4. Estructura de archivos del proyecto
-
-```
-Andre/
-├── index.html                         # Biblioteca: portal con nav por secciones
-│                                      # Secciones: Juegos · Lenguaje Musical
-│                                      # Para añadir sección: nuevo id= + entrada en <nav.subject-nav>
-├── andre-novela-v4.html               # Novela interactiva (~45 min, 11 desafíos)
-│                                      # Universo: Stranger Things · localStorage
-├── andre-stranger-things.html         # Juego de medidas (Stranger Things)
-├── starwars-lengua.html               # Juego de lengua castellana (Star Wars)
-├── andre-english-upsidedown.html      # Juego de inglés (Stranger Things)
-├── provincias_espana_v4.html          # Juego de geografía — 50 provincias, 5 modos
-│
-├── teoria-musica/                     # Lenguaje Musical 5º Primaria
-│   ├── MUSIC_GUIDE.md                        # Especificación de herramientas de música (v1.1)
-│   ├── topics_map.json                       # Mapeo topic granular → group (§4 MUSIC_GUIDE)
-│   │
-│   ├── mus_mapa_grados-tonalidades_v1.html   # Mapa imprimible: grados y tonalidades
-│   ├── mus_mapa_compas_v1.html               # Mapa imprimible: el compás
-│   ├── mus_mapa_resto-temario_v1.html        # Mapa imprimible: teoría general
-│   │
-│   ├── mus_teoria_nivel1_v1.html             # Repaso nivel 1 · 26 temas
-│   ├── mus_teoria_nivel2_v1.html             # Repaso nivel 2 · 23 temas · partituras SVG
-│   ├── mus_teoria_nivel3_v1.html             # Repaso nivel 3 · 19 temas
-│   ├── mus_teoria_repaso-final_v1.html       # Repaso final · 26 temas
-│   ├── mus_teoria_compas_v1.html             # Repaso compás · 22 temas
-│   ├── mus_teoria_gran-repaso1_v1.html       # Gran repaso 1 · 40 temas
-│   ├── mus_teoria_gran-repaso2_v1.html       # Gran repaso 2 · 40 temas (por unidad)
-│   │
-│   ├── mus_dictado_simple-s1_v1.html         # Dictado rítmico S1 · 4/4 y 3/4 · Web Audio API
-│   ├── mus_dictado_simple-s2_v1.html         # Dictado rítmico S2 · foco corchea por posición
-│   │
-│   ├── mus_audicion_fuerte-debil_v1.html     # Discriminación auditiva · Paso 1 · Tiempos fuertes/débiles
-│   ├── mus_audicion_puente-sincopa_v1.html   # Discriminación auditiva · Paso 2 · Ritmo normal/contratiempo/síncopa
-│   ├── mus_audicion_sincopa-contratiempo_v1.html  # Discriminación auditiva · Paso 3 · Síncopa vs contratiempo · 12 preguntas
-│   │
-│   └── tests/                                # Scripts de validación (node)
-│       ├── check_topics_map.js               # Verifica integridad de topics_map.json
-│       ├── check_phase_c.js                  # Verifica infraestructura de feedback §3
-│       ├── check_answer_distribution.js      # Verifica distribución de respuestas correctas
-│       ├── check_dictado_patterns.js         # Verifica suma de tokens en dictados
-│       └── check_audicion_patterns.js        # Verifica patrones rítmicos en audición
-│
-├── CLAUDE.md                          # Este fichero — contexto para Claude Code
-└── README.md                          # Descripción pública del repositorio
-```
-
----
-
-## 5. Convenciones de código
+## 4. Convenciones de código
 
 ### Tecnología
 - HTML5 semántico — sin frameworks (no React, no Vue, no Svelte).
@@ -160,9 +110,9 @@ Andre/
   - `.en`  — azul (English)
   - `.geo` — verde `#2e7d32` (Geografía)
   - `.mus` — naranja `#e65100` (Lenguaje Musical)
-- Para añadir un color nuevo: definir `.card-accent.X`, `.badge-X` y `.card-cta.X`.
-- La barra `<nav class="subject-nav">` es sticky (z-index:100); enlaza secciones por `id`; añadir entrada al agregar sección nueva.
-- Un IntersectionObserver en `<script>` marca con `.active` el enlace de nav de la sección visible. Estilos: `.subject-nav a[href="#juegos"].active` (rojo) y `.subject-nav a[href="#musica"].active` (naranja).
+- La barra `<nav class="subject-nav">` es sticky (z-index:100) y enlaza secciones por `id`.
+  El scroll-highlight lo gestiona un IntersectionObserver — ver skill `add-section`
+  para los pasos exactos al añadir una sección.
 - Los sub-encabezados `.subgroup-hdr` separan tipos o asignaturas dentro de una sección.
 - La sección "Los Juegos" usa subgrupos por asignatura: Matemáticas · Lengua · Inglés/SS/NS · Geografía · Novela.
 
@@ -186,9 +136,30 @@ Andre/
 3. Feedback inmediato tras cada respuesta.
 4. Pantalla de cierre con puntuación y mensaje de Blanca o Rocío.
 
+### Organización de carpetas
+- Raíz: `index.html` (portada) + juegos de una sola asignatura.
+- Subcarpeta por asignatura con ≥2 ficheros: `teoria-musica/`.
+- `teoria-musica/` incluye además `MUSIC_GUIDE.md`, `topics_map.json`, `tests/`, `data/`.
+- Nombres de carpeta con guión, nunca espacio.
+
+### Mapeo juego → asignatura (los nombres no son autoexplicativos)
+| Fichero | Asignatura | Universo |
+|---|---|---|
+| `andre-novela-v4` | transversal (11 desafíos, ~45 min) | Stranger Things |
+| `andre-stranger-things` | matemáticas — medidas | Stranger Things |
+| `starwars-lengua` | lengua castellana | Star Wars |
+| `andre-english-upsidedown` | inglés | Stranger Things |
+| `provincias_espana_v4` | geografía — 50 provincias, 5 modos | — |
+
+### Scripts de `teoria-musica/tests/`
+- `check_topics_map.js` — integridad de `topics_map.json` (§4 MUSIC_GUIDE)
+- `check_phase_c.js` — infraestructura de feedback (§3 MUSIC_GUIDE)
+- `check_answer_distribution.js` — la correcta no es deducible por posición
+- `check_dictado_patterns.js` / `check_audicion_patterns.js` — suma de pulsos por compás
+
 ---
 
-## 6. Próximas mejoras sugeridas
+## 5. Próximas mejoras sugeridas
 
 ### Contenido nuevo
 - [ ] Juego de fracciones con método Singapur (modelos de barras interactivos)
@@ -209,7 +180,7 @@ Andre/
 
 ---
 
-## 7. Flujo de trabajo con Claude Code
+## 6. Flujo de trabajo con Claude Code
 
 Cuando empieces una sesión nueva en este proyecto:
 
@@ -217,11 +188,7 @@ Cuando empieces una sesión nueva en este proyecto:
 2. Puedes pedir: "Crea un nuevo juego de [materia] con universo [temático]"
    o "Añade los ficheros de [asignatura] a la biblioteca" y Claude Code
    tendrá todo el contexto necesario.
-3. Para añadir una nueva sección al index.html:
-   - Crear carpeta `nombre-asignatura/` (sin espacios)
-   - Añadir entrada en `<nav class="subject-nav">` con `href="#id-seccion"`
-   - Añadir bloque `<div class="section-hdr" id="id-seccion">` + grid de tarjetas
-   - Definir color `.X` en CSS si es una categoría nueva
+3. Para añadir una nueva sección al index.html, usa el skill `add-section`.
 4. Tras cada sesión: `git add . && git commit -m "descripción" && git push`
    para publicar los cambios en GitHub Pages.
 
