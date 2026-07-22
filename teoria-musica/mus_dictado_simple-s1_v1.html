@@ -114,6 +114,16 @@
   .btn-marca.repasar.activo{background:var(--rep); color:#fff; border-color:var(--rep);}
   .btn-marca:disabled{opacity:.4; cursor:not-allowed;}
 
+  .contraste{margin-top:14px; padding-top:12px; border-top:1px dashed var(--linea);}
+  .contraste-cols{display:flex; gap:14px; flex-wrap:wrap;}
+  .contraste-col{flex:1; min-width:140px;}
+  .contraste-etq{font-size:.78rem; color:var(--gris); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;}
+  .contraste-suma{font-size:.9rem; font-weight:600; margin-top:6px;}
+  .contraste-suma.ok{color:var(--ok);}
+  .contraste-suma.mal{color:var(--rep);}
+  .contraste-pregunta{font-size:.9rem; font-weight:600; margin-top:12px;}
+  .contraste-aviso{font-size:.88rem; color:var(--rep); font-weight:600; margin-top:6px;}
+
   .transcribe-hint{font-size:.85rem; color:var(--gris); margin:12px 0 6px; border-top:1px dashed var(--linea); padding-top:10px;}
   .transcribe-figs{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;}
   .btn-fig{font-family:inherit; font-size:.82rem; cursor:pointer; border-radius:14px; padding:5px 12px; border:1.5px solid var(--acento); background:#fff; color:var(--acento);}
@@ -125,6 +135,16 @@
   .pie{margin-top:42px; border-top:1px solid var(--linea); padding-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
   .btn-reset{font-family:inherit; font-size:.85rem; background:none; border:1px solid var(--linea); color:var(--gris); border-radius:18px; padding:6px 14px; cursor:pointer;}
   .pie .recordatorio{font-size:.85rem; color:var(--gris); font-style:italic; max-width:440px;}
+  .navbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px;
+  }
+  .navbar button, .navbar a {
+    font-family: inherit; font-size: 0.9em; padding: 8px 14px;
+    border: 2px solid #666; border-radius: 8px; background: #fff;
+    color: #000; text-decoration: none; cursor: pointer; display: inline-block;
+  }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
 </style>
 </head>
 <body>
@@ -186,6 +206,11 @@
     <p class="recordatorio">Cierre de sesión: repasad juntos solo las que André marcó "A repasar".</p>
   </div>
 
+  <div class="navbar">
+    <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+    <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+  </div>
+
 </div>
 
 <script>
@@ -201,6 +226,11 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+document.getElementById('btn-reset').addEventListener('click', function () {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_mus_dictado_simple-s1_v1'); } catch (e) { /* sin persistencia */ }
+  location.reload();
+});
 function isoLocal(d) {
   const pad = n => String(n).padStart(2, '0');
   const off = -d.getTimezoneOffset();
@@ -240,6 +270,17 @@ const TOKEN_AUDIO = {
   silencio: [{on:false, d:1}],
   blanca:   [{on:true,  d:2}]
 };
+
+/* Duración en tiempos de cada figura, derivada de TOKEN_AUDIO (nunca hardcodeada
+   aparte): la suma de los d de sus onsets/silencios. */
+const TOKEN_DURACION = {};
+Object.keys(TOKEN_AUDIO).forEach(tok => {
+  TOKEN_DURACION[tok] = TOKEN_AUDIO[tok].reduce((acc, ev) => acc + ev.d, 0);
+});
+function sumaTiempos(tokens){
+  return tokens.reduce((acc, t) => acc + (TOKEN_DURACION[t] || 0), 0);
+}
+function compasDeId(id){ return id.indexOf('b1-') === 0 ? 4 : 3; }
 
 let TEMPO = 69;
 function setTempo(btn, bpm){
@@ -389,14 +430,30 @@ function tarjetaCelda(tokens, compas, id){
     <p class="escribe">Escribe el ritmo en tu papel. Cuando termines, pulsa "Ver solución".</p>
     <button class="btn btn-sol" style="margin-top:10px" onclick="verSolucion('${id}')">Ver solución</button>
     <div class="solucion" id="sol-${id}">
-      <div class="pentagrama-rit">${dibujaRitmo(tokens)}</div>
-      <div class="sol-nombres">${nombresRitmo(tokens)}</div>
       <p class="transcribe-hint">Antes de marcar, toca aquí las mismas figuras que anotaste en tu papel (en orden):</p>
       <div class="transcribe-figs">${figBtns}</div>
       <div class="transcrito-pista" id="transcrito-${id}"></div>
+
+      <div class="contraste" id="contraste-${id}">
+        <div class="contraste-cols">
+          <div class="contraste-col">
+            <p class="contraste-etq">Tu transcripción</p>
+            <p class="contraste-suma" id="contraste-suma-mia-${id}">—</p>
+          </div>
+          <div class="contraste-col">
+            <p class="contraste-etq">El correcto</p>
+            <div class="pentagrama-rit">${dibujaRitmo(tokens)}</div>
+            <p class="sol-nombres">${nombresRitmo(tokens)}</p>
+            <p class="contraste-suma">El correcto suma: ${compas} tiempos</p>
+          </div>
+        </div>
+        <p class="contraste-pregunta">Cuenta los tiempos de cada uno. ¿Coinciden exactamente?</p>
+        <p class="contraste-aviso" id="contraste-aviso-${id}"></p>
+      </div>
+
       <div class="marcar">
         <button class="btn-marca bien ${marca==='bien'?'activo':''}" id="mbien-${id}" disabled onclick="marcar('${id}','bien')">✓ Lo tuve bien</button>
-        <button class="btn-marca repasar ${marca==='repasar'?'activo':''}" id="mrep-${id}" disabled onclick="marcar('${id}','repasar')">✗ A repasar</button>
+        <button class="btn-marca repasar ${marca==='repasar'?'activo':''}" id="mrep-${id}" disabled onclick="marcar('${id}','repasar')">🔁 A repasar</button>
       </div>
     </div>
   </div>`;
@@ -406,10 +463,31 @@ function pintarTranscrito(id){
   const e = obtenerEstadoItem(id);
   const cont = document.getElementById('transcrito-'+id);
   if (cont) cont.innerHTML = e.transcrito.length ? dibujaRitmo(e.transcrito) : '<span class="transcrito-vacio">(toca las figuras que escribiste)</span>';
-  const puedeMarcar = e.transcrito.length > 0;
+
+  const compas = compasDeId(id);
+  const suma = sumaTiempos(e.transcrito);
+  const hayTranscrito = e.transcrito.length > 0;
+  const sumaCoincide = hayTranscrito && suma === compas;
+
+  const sumaMiaEl = document.getElementById('contraste-suma-mia-'+id);
+  if (sumaMiaEl) {
+    sumaMiaEl.textContent = hayTranscrito ? `Tu transcripción suma: ${suma} tiempos` : '—';
+    sumaMiaEl.classList.toggle('ok', sumaCoincide);
+    sumaMiaEl.classList.toggle('mal', hayTranscrito && !sumaCoincide);
+  }
+  const avisoEl = document.getElementById('contraste-aviso-'+id);
+  if (avisoEl) {
+    avisoEl.textContent = (hayTranscrito && !sumaCoincide)
+      ? `⚠️ Tu transcripción no suma los ${compas} tiempos del compás — cuéntalos otra vez. Esto va a repaso.`
+      : '';
+  }
+
+  // Bloqueo: solo se puede marcar "bien" si la transcripción existe Y suma
+  // exactamente los tiempos del compás. "A repasar" solo exige transcripción
+  // (permite autoevaluarse mal aunque la suma ya esté bien).
   const bBien = document.getElementById('mbien-'+id), bRep = document.getElementById('mrep-'+id);
-  if (bBien) bBien.disabled = !puedeMarcar;
-  if (bRep) bRep.disabled = !puedeMarcar;
+  if (bBien) bBien.disabled = !sumaCoincide;
+  if (bRep) bRep.disabled = !hayTranscrito;
 }
 
 function addFig(id, tok){
@@ -461,6 +539,9 @@ function verSolucion(id){
 function marcar(id, valor){
   const e = obtenerEstadoItem(id);
   if (!e.transcrito.length) return; // debe transcribir antes de autoevaluarse
+  // Bloqueo duro: "bien" nunca es válido si la transcripción no suma los
+  // tiempos del compás, sea cual sea el estado real de los botones en pantalla.
+  if (valor === 'bien' && sumaTiempos(e.transcrito) !== compasDeId(id)) return;
   if (e.mark === valor) { delete e.mark; delete e.time_sec; }
   else {
     e.mark = valor;
@@ -587,6 +668,7 @@ function buildSessionData(moodVal) {
     schema: "andre-music-log/v1",
     tool: "mus_dictado_simple-s1_v1",
     category: "dictado",
+    scoring: "self_guarded",
     session: { start: isoLocal(startDate), end: isoLocal(now), duration_sec: durationSec },
     score: { correct: correct, total: total, pct: pct },
     blocks: blocks,

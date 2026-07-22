@@ -1,0 +1,40 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_teoria_nivel2_v1",
+  "category": "teoria",
+  "scoring": "auto",
+  "_migration_note": "scoring añadido retroactivamente (MUSIC_GUIDE v1.3) — este registro se generó antes de que el campo existiera.",
+  "session": {
+    "start": "2026-07-21T09:33:18+01:00",
+    "end": "2026-07-21T09:48:16+01:00",
+    "duration_sec": 898
+  },
+  "score": { "correct": 21, "total": 23, "pct": 91.3 },
+  "blocks": [],
+  "items": [
+    { "n": 1, "block": "", "topic": "leer1", "expected": "SOL", "answered": "SOL", "correct": true, "attempts": 1, "time_sec": 3 },
+    { "n": 2, "block": "", "topic": "leer2", "expected": "DO", "answered": "DO", "correct": true, "attempts": 1, "time_sec": 1 },
+    { "n": 3, "block": "", "topic": "int_orden", "expected": "3.ª", "answered": "3.ª", "correct": true, "attempts": 1, "time_sec": 5 },
+    { "n": 4, "block": "", "topic": "int_especie", "expected": "4.ª aumentada", "answered": "4.ª aumentada", "correct": true, "attempts": 1, "time_sec": 10 },
+    { "n": 5, "block": "", "topic": "arm_mayor", "expected": "RE Mayor", "answered": "SOL Mayor", "correct": false, "attempts": 3, "time_sec": 45 },
+    { "n": 6, "block": "", "topic": "arm_menor", "expected": "SI menor", "answered": "MI menor", "correct": false, "attempts": 3, "time_sec": 310 },
+    { "n": 7, "block": "", "topic": "arm_relativas", "expected": "SOL M y MI m", "answered": "SOL M y MI m", "correct": true, "attempts": 1, "time_sec": 39 },
+    { "n": 8, "block": "", "topic": "compas_clasif", "expected": "compuesto ternario", "answered": "compuesto ternario", "correct": true, "attempts": 1, "time_sec": 11 },
+    { "n": 9, "block": "", "topic": "compas_ut", "expected": "negra con puntillo", "answered": "negra con puntillo", "correct": true, "attempts": 1, "time_sec": 14 },
+    { "n": 10, "block": "", "topic": "artic_id", "expected": "picado (staccato)", "answered": "picado (staccato)", "correct": true, "attempts": 1, "time_sec": 17 },
+    { "n": 11, "block": "", "topic": "artic_efecto", "expected": "reduce su valor a la mitad (corta y separada)", "answered": "reduce su valor a la mitad (corta y separada)", "correct": true, "attempts": 1, "time_sec": 10 },
+    { "n": 12, "block": "", "topic": "alteraciones", "expected": "la sube 1 semitono", "answered": "la sube 1 semitono", "correct": true, "attempts": 1, "time_sec": 13 },
+    { "n": 13, "block": "", "topic": "semitono_tipo", "expected": "cromático", "answered": "cromático", "correct": true, "attempts": 1, "time_sec": 11 },
+    { "n": 14, "block": "", "topic": "enarmonia", "expected": "unísono", "answered": "unísono", "correct": true, "attempts": 2, "time_sec": 14 },
+    { "n": 15, "block": "", "topic": "grado_aplic", "expected": "V", "answered": "V", "correct": true, "attempts": 1, "time_sec": 19 },
+    { "n": 16, "block": "", "topic": "tresillo", "expected": "con un número 3 encima de las figuras", "answered": "con un número 3 encima de las figuras", "correct": true, "attempts": 3, "time_sec": 116 },
+    { "n": 17, "block": "", "topic": "figura_punt", "expected": "3 corcheas", "answered": "3 corcheas", "correct": true, "attempts": 1, "time_sec": 8 },
+    { "n": 18, "block": "", "topic": "sincopa", "expected": "síncopa", "answered": "síncopa", "correct": true, "attempts": 1, "time_sec": 9 },
+    { "n": 19, "block": "", "topic": "contratiempo", "expected": "contratiempo", "answered": "contratiempo", "correct": true, "attempts": 1, "time_sec": 8 },
+    { "n": 20, "block": "", "topic": "anacrusa", "expected": "sin acento", "answered": "sin acento", "correct": true, "attempts": 3, "time_sec": 35 },
+    { "n": 21, "block": "", "topic": "tempo", "expected": "Allegro", "answered": "Allegro", "correct": true, "attempts": 2, "time_sec": 26 },
+    { "n": 22, "block": "", "topic": "agogica", "expected": "A Tempo", "answered": "A Tempo", "correct": true, "attempts": 1, "time_sec": 14 },
+    { "n": 23, "block": "", "topic": "repeticion", "expected": "volver al principio y tocar hasta donde diga Fine", "answered": "volver al principio y tocar hasta donde diga Fine", "correct": true, "attempts": 1, "time_sec": 19 }
+  ],
+  "mood": 3
+}

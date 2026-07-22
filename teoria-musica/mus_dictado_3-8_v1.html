@@ -49,6 +49,16 @@
   .hide { display:none; }
   table { border-collapse:collapse; width:100%; font-size:.92rem; margin:.5rem 0; }
   td, th { border:1px solid var(--line); padding:.35rem .5rem; text-align:left; }
+  .navbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px;
+  }
+  .navbar button, .navbar a {
+    font-family: inherit; font-size: 0.9em; padding: 8px 14px;
+    border: 2px solid #666; border-radius: 8px; background: #fff;
+    color: #000; text-decoration: none; cursor: pointer; display: inline-block;
+  }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
 </style>
 </head>
 <body>
@@ -132,6 +142,11 @@
   <textarea id="log" readonly></textarea>
   <button class="primary" id="btn-copy">Copiar registro</button>
   <span class="count" id="copy-info"></span>
+</div>
+
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
 </div>
 
 </div>
@@ -639,6 +654,7 @@ function finish() {
     schema: 'andre-music-log/v1',
     tool: 'mus_dictado_3-8_v1',
     category: 'dictado',
+    scoring: 'auto',
     session: {
       start: isoLocal(sessionStart),
       end: isoLocal(end),
@@ -695,6 +711,12 @@ $('btn-copy').addEventListener('click', function () {
   } catch (e) {
     $('copy-info').textContent = 'Selecciona el texto y cópialo a mano.';
   }
+});
+
+document.getElementById('btn-reset').addEventListener('click', function () {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_mus_dictado_3-8_v1'); } catch (e) { /* sin persistencia */ }
+  location.reload();
 });
 </script>
 </body>

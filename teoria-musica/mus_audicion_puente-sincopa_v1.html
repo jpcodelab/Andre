@@ -455,7 +455,7 @@ function buildSessionData(moodVal) {
     };
   });
   return {
-    schema: 'andre-music-log/v1', tool: 'mus_audicion_puente-sincopa_v1', category: 'audicion',
+    schema: 'andre-music-log/v1', tool: 'mus_audicion_puente-sincopa_v1', category: 'audicion', scoring: 'auto',
     session: {start: isoLocal(startDate), end: isoLocal(now), duration_sec: durationSec},
     score: {correct: totalCorrect, total: totalItems, pct: pct},
     blocks: blocks, items: items, mood: moodVal

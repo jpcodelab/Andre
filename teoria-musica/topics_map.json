@@ -17,6 +17,7 @@
   "alteraciones":         "alteraciones",
   "alteraciones_dir":     "alteraciones",
   "anacrusa":             "anacrusa",
+  "armadura_conteo":      "tonalidad_grados",
   "arm_mayor":            "tonalidad_grados",
   "arm_mayor_dir":        "tonalidad_grados",
   "arm_menor":            "tonalidad_grados",

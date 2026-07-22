@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Con el fuerte o en el hueco? — Refuerzo</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: #ffffff; color: #000000; font-family: 'Lora', serif;
+    max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; line-height: 1.5;
+  }
+  h1 { font-size: 1.35em; margin-bottom: 2px; }
+  h2 { font-size: 1.1em; margin-bottom: 4px; }
+  .subtitle { color: #444; margin-top: 0; font-size: 0.95em; }
+  .card { border: 2px solid #000; border-radius: 10px; padding: 18px; margin: 16px 0; }
+  .warning-box {
+    border: 2px dashed #a33; background: #fdf3f3; border-radius: 8px;
+    padding: 10px 14px; font-size: 0.9em; margin: 12px 0;
+  }
+  button {
+    font-family: 'Lora', serif; font-size: 1em; padding: 10px 16px;
+    border: 2px solid #000; border-radius: 8px; background: #fff; cursor: pointer;
+    margin: 6px 6px 6px 0;
+  }
+  button:hover { background: #f0f0f0; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .play-btn { background: #eef6ff; }
+  .option-btn { display: block; width: 100%; text-align: left; margin: 8px 0; }
+  .option-btn.correct { background: #d9f2d9; border-color: #2a7a2a; }
+  .option-btn.incorrect { background: #f7d9d9; border-color: #a33; }
+  .feedback { margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 0.95em; }
+  .feedback.ok { background: #eaf7ea; }
+  .feedback.bad { background: #fdeaea; }
+  .progress { font-size: 0.9em; color: #444; margin-bottom: 6px; }
+  textarea {
+    width: 100%; height: 240px; font-family: monospace; font-size: 0.8em;
+    padding: 8px; border: 2px solid #000; border-radius: 6px;
+  }
+  .mood-btns button { font-size: 1.3em; }
+  .hidden { display: none; }
+  .navbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px;
+  }
+  .navbar button, .navbar a {
+    font-family: 'Lora', serif; font-size: 0.9em; padding: 8px 14px;
+    border: 2px solid #666; border-radius: 8px; background: #fff;
+    color: #000; text-decoration: none; cursor: pointer; display: inline-block;
+  }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
+  .done-banner {
+    background: #eaf7ea; border: 2px solid #2a7a2a; border-radius: 8px;
+    padding: 10px 14px; font-size: 0.9em; margin: 12px 0;
+  }
+
+  .diagram { display: flex; gap: 6px; margin: 10px 0; }
+  .slot {
+    width: 56px; height: 56px; border: 2px solid #999; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75em; color: #666; position: relative; background: #fafafa;
+  }
+  .slot.strong { border-color: #000; border-width: 3px; font-weight: 700; color: #000; }
+  .slot.tone { background: #ffe08a; }
+  .slot.tone-continued { background: #ffe08a; border-left: none; }
+  .slot .tag { position: absolute; bottom: -18px; font-size: 0.65em; color: #777; }
+
+  .explain-block { border-left: 4px solid #999; padding-left: 12px; margin: 18px 0; }
+  .step-nav { text-align: right; }
+</style>
+</head>
+<body>
+
+<h1>¿Con el fuerte o en el hueco? 🎧</h1>
+<p class="subtitle">Refuerzo — Normal, Contratiempo y Síncopa</p>
+
+<div class="warning-box">🔊 Esta actividad necesita sonido. Sube el volumen antes de empezar. No funciona sin conexión.</div>
+
+<div id="done-banner" class="done-banner hidden"></div>
+
+<!-- ===================== EXPLICACIÓN ===================== -->
+<div id="screen-explain" class="card">
+  <p>Vamos a trabajar en <strong>compás de 2/4</strong>: cada compás tiene <strong>2 tiempos</strong>,
+  y cada tiempo se parte por la mitad. Se cuenta así: <strong>«1 – y – 2 – y»</strong>.
+  La campanita 🔔 suena <strong>solo en el 1 y en el 2</strong> — dos campanitas por compás, no cuatro.
+  Los «y» son los huecos que quedan en medio.</p>
+  <p>Antes de cada ejemplo oirás <strong>dos campanitas solas</strong> de preparación,
+  para tener el pulso en la cabeza antes de que entre la nota.</p>
+
+  <div class="explain-block">
+    <h2>0. Primero, solo el pulso</h2>
+    <p>Escucha la campanita sola: dos compases, <strong>4 campanitas</strong> en total.
+    La del 1 suena un poco más aguda porque es el tiempo más fuerte. Cuenta en voz alta
+    «1 – y – 2 – y» mientras la oyes.</p>
+    <button class="play-btn" id="btn-pulse">🔊 Escuchar solo el pulso</button>
+  </div>
+
+  <div class="explain-block">
+    <h2>1. Normal</h2>
+    <p>Suenan <strong>dos negras</strong>: una nota empieza en el <strong>1</strong> y otra en el <strong>2</strong>,
+    justo con cada campanita. Cada nota dura un tiempo entero, sin huecos.<br>
+    Cuenta: <strong>«1 – y – 2 – y»</strong> → nota en el 1, nota en el 2.</p>
+    <div class="diagram" id="diagram-normal"></div>
+    <button class="play-btn" data-play="normal">🔊 Escuchar Normal</button>
+  </div>
+
+  <div class="explain-block">
+    <h2>2. Contratiempo</h2>
+    <p>En el <strong>1</strong> y en el <strong>2</strong> hay <strong>silencio</strong>: cuando suena la campanita,
+    no hay nota. Las notas son cortas y caen <strong>solo en los «y»</strong>.<br>
+    Cuenta: <strong>«1 – y – 2 – y»</strong> → silencio, nota, silencio, nota.</p>
+    <div class="diagram" id="diagram-contratiempo"></div>
+    <button class="play-btn" data-play="contratiempo">🔊 Escuchar Contratiempo</button>
+  </div>
+
+  <div class="explain-block">
+    <h2>3. Síncopa</h2>
+    <p>Fórmula <strong>corta – larga – corta</strong>. Empieza una nota corta en el <strong>1</strong>,
+    luego entra una nota <strong>larga en el primer «y»</strong> que <strong>sigue sonando cuando llega la
+    campanita del 2</strong> — ahí no hay golpe nuevo, el sonido la atraviesa — y termina con otra corta en el último «y».<br>
+    Cuenta: <strong>«1 – y – 2 – y»</strong> → la nota del «y» se come el 2.</p>
+    <div class="diagram" id="diagram-sincopa"></div>
+    <button class="play-btn" data-play="sincopa">🔊 Escuchar Síncopa</button>
+  </div>
+
+  <div class="explain-block">
+    <h2>Compara los tres seguidos</h2>
+    <p>Pulsa y escucha los tres, uno detrás de otro, para notar la diferencia.</p>
+    <button class="play-btn" id="btn-compare">🔊 Escuchar Normal → Contratiempo → Síncopa</button>
+  </div>
+
+  <p style="margin-top:18px;"><strong>Truco — fíjate solo en la campanita del 2:</strong><br>
+  ¿Empieza una nota nueva justo ahí? → <strong>Normal</strong>.<br>
+  ¿Hay silencio ahí? → <strong>Contratiempo</strong>.<br>
+  ¿Hay una nota que ya venía sonando y sigue por encima? → <strong>Síncopa</strong>.</p>
+
+  <div class="step-nav">
+    <button id="btn-to-fase1">Ya lo tengo claro → Empezar Fase 1</button>
+  </div>
+</div>
+
+<!-- ===================== FASE 1 recordatorio ===================== -->
+<div id="screen-fase1-intro" class="card hidden">
+  <h2>Fase 1: Normal vs Contratiempo</h2>
+  <p>8 sonidos. Solo hay dos opciones: <strong>Normal</strong> o <strong>Contratiempo</strong>. Escucha bien si la nota
+  cae con la campanita o en el hueco.</p>
+  <button id="btn-start-fase1">Empezar Fase 1</button>
+</div>
+
+<!-- ===================== FASE 2 recordatorio ===================== -->
+<div id="screen-fase2-intro" class="card hidden">
+  <h2>Fase 2: Normal vs Contratiempo vs Síncopa</h2>
+  <p>Ahora entran las tres. Recuerda la trampa: confundir <strong>Normal</strong> con <strong>Síncopa</strong>.
+  Las dos tienen nota sonando en el 2 — pero en <strong>Normal</strong> ahí <em>empieza</em> una nota nueva,
+  y en <strong>Síncopa</strong> ahí <em>sigue</em> la que ya venía del «y». Escucha si hay golpe nuevo o no.</p>
+  <button id="btn-start-fase2">Empezar Fase 2</button>
+</div>
+
+<!-- ===================== QUIZ ===================== -->
+<div id="screen-quiz" class="card hidden">
+  <div class="progress" id="progress"></div>
+  <div style="text-align:center; margin:14px 0;">
+    <button class="play-btn" id="btn-replay">🔊 Escuchar</button>
+    <span id="replay-count" style="font-size:0.8em; color:#666;"></span>
+  </div>
+  <p id="quiz-question" style="font-weight:600; text-align:center;">¿Qué has oído?</p>
+  <div id="quiz-options"></div>
+  <div id="quiz-feedback"></div>
+  <button id="btn-next" class="hidden">Siguiente →</button>
+</div>
+
+<!-- ===================== MOOD ===================== -->
+<div id="screen-mood" class="card hidden">
+  <p style="font-weight:600;">¿Cómo te has sentido con este repaso?</p>
+  <div class="mood-btns">
+    <button data-mood="1">😣 Difícil</button>
+    <button data-mood="2">🙂 Normal</button>
+    <button data-mood="3">😄 Fácil</button>
+  </div>
+</div>
+
+<!-- ===================== FINAL ===================== -->
+<div id="screen-final" class="card hidden">
+  <h2>¡Resumen para André!</h2>
+  <div id="final-summary"></div>
+  <p style="margin-top:16px; font-weight:600;">Para papá — copia esto y pégalo en el chat:</p>
+  <textarea id="final-textarea" readonly></textarea>
+  <p class="warning-box" id="storage-warning" style="display:none;">
+    ⚠️ No se pudo guardar el histórico en este ordenador. Copia igualmente el texto de arriba.
+  </p>
+</div>
+
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Helper de timestamp con zona horaria (MUSIC_GUIDE §3.4) ----------
+  function isoLocal(d) {
+    const pad = n => String(n).padStart(2, '0');
+    const off = -d.getTimezoneOffset();
+    const sign = off >= 0 ? '+' : '-';
+    const abs = Math.abs(off);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+      + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+      + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+  }
+
+  const TOOL_NAME = "mus_audicion_puente-sincopa_v2";
+  const STORAGE_KEY = "andre_" + TOOL_NAME;
+  const HISTORY_KEY = "andre_music_history";
+  const COMPLETED_KEY = "andre_music_completed";
+  const TOOL_TITLE = "¿Con el fuerte o en el hueco? (refuerzo v2)";
+
+  // ---------- Registro de completado (leído por index.html) ----------
+  function readCompleted() {
+    try { return JSON.parse(localStorage.getItem(COMPLETED_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+
+  function markCompleted(sessionJson) {
+    try {
+      const reg = readCompleted();
+      reg[TOOL_NAME] = {
+        title: TOOL_TITLE,
+        date: sessionJson.session.end,
+        correct: sessionJson.score.correct,
+        total: sessionJson.score.total,
+        pct: sessionJson.score.pct,
+        times: (reg[TOOL_NAME] && reg[TOOL_NAME].times ? reg[TOOL_NAME].times : 0) + 1
+      };
+      localStorage.setItem(COMPLETED_KEY, JSON.stringify(reg));
+      return true;
+    } catch (e) { return false; }
+  }
+
+  (function showPreviousBanner() {
+    const reg = readCompleted();
+    const prev = reg[TOOL_NAME];
+    if (!prev) return;
+    const el = document.getElementById('done-banner');
+    const d = new Date(prev.date);
+    const pad = n => String(n).padStart(2, '0');
+    const human = isNaN(d) ? prev.date : `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+    el.innerHTML = `✅ Ya completaste este ejercicio el <strong>${human}</strong> (${prev.correct}/${prev.total}). Puedes repetirlo cuando quieras.`;
+    el.classList.remove('hidden');
+  })();
+
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* sin persistencia */ }
+    location.reload();
+  });
+
+  // =====================================================================
+  // MODELO RÍTMICO
+  // Compás de 2/4: 2 tiempos (negras), subdivididos en 4 corcheas (slots 0-3).
+  //   slot 0 = tiempo 1  (FUERTE)   slot 1 = "y" (débil)
+  //   slot 2 = tiempo 2  (fuerte)   slot 3 = "y" (débil)
+  // Se cuenta en voz alta: "1 - y - 2 - y".
+  // Solo hay 2 campanitas por compás (en los slots 0 y 2), NO 4.
+  //
+  // Un "attack" es {start, dur} en corcheas. Duraciones + silencios = 4.
+  //
+  // Definiciones (MUSIC_GUIDE §5):
+  //   normal        → ataques en los tiempos, cada nota dura el tiempo entero (negra).
+  //   contratiempo  → tiempos en SILENCIO, notas cortas solo en los "y".
+  //   sincopa       → fórmula estándar corchea–negra–corchea: la negra empieza
+  //                    en un "y" y atraviesa el tiempo 2 sin nuevo ataque ahí.
+  // =====================================================================
+  const PATTERNS = {
+    // negra + negra: ataque en el 1 y en el 2, sonando todo el tiempo
+    normal:       { attacks: [{ start: 0, dur: 2 }, { start: 2, dur: 2 }] },
+    // silencio en 1 y en 2; corcheas en los "y"
+    contratiempo: { attacks: [{ start: 1, dur: 1 }, { start: 3, dur: 1 }] },
+    // corchea (1) + negra sincopada (y→2) + corchea (y)
+    sincopa:      { attacks: [{ start: 0, dur: 1 }, { start: 1, dur: 2 }, { start: 3, dur: 1 }] }
+  };
+  const STRONG_SLOTS = [0, 2];
+  const SLOT_LABELS = ["1", "y", "2", "y"];
+  const TOTAL_SLOTS = 4;
+
+  // Tolerancia de timing: no hay interacción en tiempo real (el alumno
+  // responde después de escuchar, no durante), por eso no aplica una
+  // tolerancia de sincronización aquí; solo el tempo de reproducción, que
+  // varía ligeramente entre ítems (ver EIGHTH_MS_OPTIONS) para dar variedad
+  // sin afectar la estructura del patrón.
+  const EIGHTH_MS_OPTIONS = [360, 400, 440];
+
+  // ---------- Audio ----------
+  let audioCtx = null;
+  function ensureAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function scheduleClick(ctx, atTime, accent) {
+    // Click de referencia (la "campanita"). Debe seguir siendo audible aunque
+    // coincida con una nota: por eso va agudo (spectro separado del tono),
+    // con ganancia alta y ataque muy corto.
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = accent ? 2200 : 1800;
+    const g = accent ? 0.34 : 0.30;
+    gain.gain.setValueAtTime(0.0001, atTime);
+    gain.gain.linearRampToValueAtTime(g, atTime + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.0001, atTime + 0.05);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(atTime);
+    osc.stop(atTime + 0.06);
+  }
+
+  function scheduleTone(ctx, atTime, durSec, freq) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    const attack = 0.015;
+    const release = Math.min(0.08, durSec * 0.3);
+    const peak = 0.16; // bajado de 0.22 para no enmascarar el click
+    gain.gain.setValueAtTime(0.0001, atTime);
+    gain.gain.linearRampToValueAtTime(peak, atTime + attack);
+    gain.gain.setValueAtTime(peak, Math.max(atTime + attack, atTime + durSec - release));
+    gain.gain.exponentialRampToValueAtTime(0.0001, atTime + durSec);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(atTime);
+    osc.stop(atTime + durSec + 0.02);
+  }
+
+  function playPattern(type, opts) {
+    opts = opts || {};
+    const ctx = ensureAudioCtx();
+    const eighthMs = opts.eighthMs || EIGHTH_MS_OPTIONS[Math.floor(Math.random() * EIGHTH_MS_OPTIONS.length)];
+    const eighthSec = eighthMs / 1000;
+    const freq = opts.freq || 330; // Mi4: más grave, se separa mejor del click agudo
+    const countIn = (opts.countIn === false) ? 0 : 2; // nº de pulsos de preparación
+
+    // Entrada en claro: se oyen los pulsos solos antes del patrón, para que
+    // André tenga el pulso instalado en la cabeza ANTES de que entre la nota.
+    const patternStart = ctx.currentTime + 0.08 + countIn * 2 * eighthSec;
+
+    for (let i = 0; i < countIn; i++) {
+      scheduleClick(ctx, ctx.currentTime + 0.08 + i * 2 * eighthSec, false);
+    }
+
+    // Campanita de referencia en los pulsos fuertes durante el patrón
+    STRONG_SLOTS.forEach((slot, idx) => {
+      scheduleClick(ctx, patternStart + slot * eighthSec, idx === 0);
+    });
+
+    // Nota(s) del patrón
+    PATTERNS[type].attacks.forEach(a => {
+      scheduleTone(ctx, patternStart + a.start * eighthSec, a.dur * eighthSec, freq);
+    });
+
+    return (countIn * 2 + TOTAL_SLOTS) * eighthSec * 1000;
+  }
+
+  function playSequence(types, gapMs) {
+    let delay = 0;
+    types.forEach(t => {
+      setTimeout(() => playPattern(t, {}), delay);
+      delay += ((2 * 2 + TOTAL_SLOTS) * 440) + gapMs;
+    });
+  }
+
+  // ---------- Diagramas visuales ----------
+  function renderDiagram(containerId, type) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = '';
+    const slotState = new Array(TOTAL_SLOTS).fill('rest');
+    PATTERNS[type].attacks.forEach(a => {
+      for (let i = a.start; i < a.start + a.dur; i++) slotState[i] = (i === a.start) ? 'tone' : 'tone-continued';
+    });
+    for (let i = 0; i < TOTAL_SLOTS; i++) {
+      const div = document.createElement('div');
+      div.className = 'slot' + (STRONG_SLOTS.includes(i) ? ' strong' : '') +
+        (slotState[i] === 'tone' ? ' tone' : slotState[i] === 'tone-continued' ? ' tone-continued' : '');
+      div.textContent = slotState[i] === 'rest' ? '·' : (slotState[i] === 'tone' ? '♪' : '—');
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = SLOT_LABELS[i] + (STRONG_SLOTS.includes(i) ? ' 🔔' : '');
+      div.appendChild(tag);
+      el.appendChild(div);
+    }
+  }
+
+  renderDiagram('diagram-normal', 'normal');
+  renderDiagram('diagram-contratiempo', 'contratiempo');
+  renderDiagram('diagram-sincopa', 'sincopa');
+
+  document.querySelectorAll('[data-play]').forEach(btn => {
+    btn.addEventListener('click', () => playPattern(btn.getAttribute('data-play'), {}));
+  });
+  document.getElementById('btn-compare').addEventListener('click', () => {
+    playSequence(['normal', 'contratiempo', 'sincopa'], 700);
+  });
+
+  // Solo el pulso, sin ninguna nota: 2 compases = 4 campanitas
+  document.getElementById('btn-pulse').addEventListener('click', () => {
+    const ctx = ensureAudioCtx();
+    const eighthSec = 0.44;
+    for (let c = 0; c < 2; c++) {
+      STRONG_SLOTS.forEach((slot, idx) => {
+        scheduleClick(ctx, ctx.currentTime + 0.08 + (c * TOTAL_SLOTS + slot) * eighthSec, idx === 0);
+      });
+    }
+  });
+
+  // ---------- Navegación entre pantallas ----------
+  const screens = {
+    explain: document.getElementById('screen-explain'),
+    fase1intro: document.getElementById('screen-fase1-intro'),
+    fase2intro: document.getElementById('screen-fase2-intro'),
+    quiz: document.getElementById('screen-quiz'),
+    mood: document.getElementById('screen-mood'),
+    final: document.getElementById('screen-final')
+  };
+  function showOnly(name) {
+    Object.keys(screens).forEach(k => screens[k].classList.toggle('hidden', k !== name));
+  }
+
+  document.getElementById('btn-to-fase1').addEventListener('click', () => showOnly('fase1intro'));
+  document.getElementById('btn-start-fase1').addEventListener('click', () => { showOnly('quiz'); renderQuestion(); });
+  document.getElementById('btn-start-fase2').addEventListener('click', () => { showOnly('quiz'); renderQuestion(); });
+
+  // ---------- Banco de preguntas ----------
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const OPTS_2 = ["Normal", "Contratiempo"];
+  const OPTS_3 = ["Normal", "Contratiempo", "Síncopa"];
+  function typeLabel(t) { return t === "normal" ? "Normal" : t === "contratiempo" ? "Contratiempo" : "Síncopa"; }
+
+  // Fase 1: 8 items, 4 normal / 4 contratiempo (maintenance)
+  const fase1Types = shuffle([
+    "normal", "normal", "normal", "normal",
+    "contratiempo", "contratiempo", "contratiempo", "contratiempo"
+  ]);
+  // Fase 2: 12 items, foco reforzado en normal<->sincopa (5+5), contratiempo ligero (2)
+  const fase2Types = shuffle([
+    "normal", "normal", "normal", "normal", "normal",
+    "sincopa", "sincopa", "sincopa", "sincopa", "sincopa",
+    "contratiempo", "contratiempo"
+  ]);
+
+  const QUEUE = [
+    ...fase1Types.map(t => ({ block: "fase_1", options: OPTS_2, type: t })),
+    ...fase2Types.map(t => ({ block: "fase_2", options: OPTS_3, type: t }))
+  ];
+  const BLOCK_LABELS = {
+    fase_1: "Fase 1: Normal vs Contratiempo",
+    fase_2: "Fase 2: Normal vs Contratiempo vs Síncopa"
+  };
+
+  let qi = 0;
+  let itemStartTime = 0;
+  let replayCount = 0;
+  const MAX_REPLAYS = 3;
+  const results = [];
+  const sessionStart = new Date();
+
+  function renderQuestion() {
+    const item = QUEUE[qi];
+    itemStartTime = Date.now();
+    replayCount = 0;
+
+    document.getElementById('progress').textContent =
+      `${BLOCK_LABELS[item.block]} · Pregunta ${(qi < fase1Types.length ? qi + 1 : qi - fase1Types.length + 1)} de ${(item.block === 'fase_1' ? fase1Types.length : fase2Types.length)}`;
+
+    document.getElementById('quiz-feedback').innerHTML = '';
+    document.getElementById('btn-next').classList.add('hidden');
+    updateReplayLabel();
+
+    const optsWrap = document.getElementById('quiz-options');
+    optsWrap.innerHTML = '';
+    shuffle(item.options).forEach(optText => {
+      const b = document.createElement('button');
+      b.className = 'option-btn';
+      b.textContent = optText;
+      b.addEventListener('click', () => handleAnswer(optText, item, b));
+      optsWrap.appendChild(b);
+    });
+
+    // Reproducción automática de la primera escucha
+    playPattern(item.type, {});
+    replayCount = 1;
+    updateReplayLabel();
+  }
+
+  function updateReplayLabel() {
+    const remaining = MAX_REPLAYS - replayCount;
+    document.getElementById('replay-count').textContent =
+      remaining > 0 ? `(te quedan ${remaining} repeticion(es))` : '(sin más repeticiones)';
+    document.getElementById('btn-replay').disabled = remaining <= 0;
+  }
+
+  document.getElementById('btn-replay').addEventListener('click', () => {
+    if (replayCount >= MAX_REPLAYS) return;
+    playPattern(QUEUE[qi].type, {});
+    replayCount++;
+    updateReplayLabel();
+  });
+
+  function handleAnswer(chosen, item, btnEl) {
+    const isCorrect = chosen === typeLabel(item.type);
+    const timeSec = Math.round((Date.now() - itemStartTime) / 1000);
+    const allButtons = document.querySelectorAll('#quiz-options .option-btn');
+    allButtons.forEach(b => b.disabled = true);
+
+    const feedbackEl = document.getElementById('quiz-feedback');
+    if (isCorrect) {
+      btnEl.classList.add('correct');
+      feedbackEl.innerHTML = `<div class="feedback ok">✅ ¡Correcto! ${explanationFor(item.type)}</div>`;
+    } else {
+      btnEl.classList.add('incorrect');
+      feedbackEl.innerHTML = `<div class="feedback bad">❌ Era <strong>${typeLabel(item.type)}</strong>. ${explanationFor(item.type)}</div>`;
+    }
+
+    results.push({
+      n: results.length + 1,
+      block: item.block,
+      topic: item.type === "normal" ? "ritmo_normal" : item.type,
+      expected: typeLabel(item.type),
+      answered: chosen,
+      correct: isCorrect,
+      attempts: 1,
+      time_sec: timeSec
+    });
+
+    document.getElementById('btn-next').classList.remove('hidden');
+  }
+
+  function explanationFor(type) {
+    if (type === "normal") return "Dos negras: empezaba una nota nueva justo en el 1 y otra en el 2.";
+    if (type === "contratiempo") return "En el 1 y en el 2 había silencio; las notas caían solo en los «y».";
+    return "Corta–larga–corta: la nota larga empezaba en el «y» y seguía sonando por encima del 2, sin golpe nuevo.";
+  }
+
+  document.getElementById('btn-next').addEventListener('click', () => {
+    qi++;
+    if (qi < QUEUE.length) {
+      if (qi === fase1Types.length) {
+        showOnly('fase2intro');
+      } else {
+        renderQuestion();
+      }
+    } else {
+      showOnly('mood');
+    }
+  });
+
+  let moodValue = null;
+  document.querySelectorAll('.mood-btns button').forEach(b => {
+    b.addEventListener('click', () => {
+      moodValue = parseInt(b.getAttribute('data-mood'), 10);
+      showFinal();
+    });
+  });
+
+  function showFinal() {
+    showOnly('final');
+    const sessionEnd = new Date();
+    const correctCount = results.filter(r => r.correct).length;
+    const total = results.length;
+    const pct = Math.round((correctCount / total) * 1000) / 10;
+
+    const blockIds = ["fase_1", "fase_2"];
+    const blocks = blockIds.map(bId => {
+      const items = results.filter(r => r.block === bId);
+      const c = items.filter(r => r.correct).length;
+      return { id: bId, label: BLOCK_LABELS[bId], correct: c, total: items.length };
+    });
+
+    // Diagnóstico rápido normal<->sincopa dentro de fase_2
+    const fase2Items = results.filter(r => r.block === "fase_2");
+    const normalSincopaConfusions = fase2Items.filter(r =>
+      !r.correct && (
+        (r.expected === "Normal" && r.answered === "Síncopa") ||
+        (r.expected === "Síncopa" && r.answered === "Normal")
+      )
+    ).length;
+
+    let summaryHtml = `<p><strong>Resultado: ${correctCount} de ${total} (${pct}%)</strong></p><ul>`;
+    blocks.forEach(b => { summaryHtml += `<li>${b.label}: ${b.correct}/${b.total}</li>`; });
+    summaryHtml += `</ul>`;
+    if (normalSincopaConfusions > 0) {
+      summaryHtml += `<p>💡 Todavía se confunden algunas veces Normal y Síncopa. Vuelve a escuchar esos dos ejemplos del principio cuando quieras repasar.</p>`;
+    } else if (blocks[1].total > 0 && blocks[1].correct === blocks[1].total) {
+      summaryHtml += `<p>🎉 ¡Perfecto en la Fase 2! Ya se puede pasar al siguiente paso: Síncopa vs Contratiempo.</p>`;
+    }
+    document.getElementById('final-summary').innerHTML = summaryHtml;
+
+    const sessionJson = {
+      schema: "andre-music-log/v1",
+      tool: TOOL_NAME,
+      category: "audicion",
+      scoring: "auto",
+      session: {
+        start: isoLocal(sessionStart),
+        end: isoLocal(sessionEnd),
+        duration_sec: Math.round((sessionEnd - sessionStart) / 1000)
+      },
+      score: { correct: correctCount, total: total, pct: pct },
+      blocks: blocks,
+      items: results,
+      mood: moodValue
+    };
+
+    const humanHeader =
+      `¿Con el fuerte o en el hueco? (refuerzo v2) · ${formatDateHuman(sessionEnd)}\n` +
+      `Resultado: ${correctCount} de ${total} (${pct}%)\n` +
+      `Bloques: ${blocks.map(b => b.label + " " + b.correct + "/" + b.total).join(' · ')}\n` +
+      `---JSON---\n` +
+      JSON.stringify(sessionJson, null, 0);
+
+    document.getElementById('final-textarea').value = humanHeader;
+
+    try {
+      const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      hist.push(sessionJson);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionJson));
+    } catch (e) {
+      document.getElementById('storage-warning').style.display = 'block';
+    }
+    if (!markCompleted(sessionJson)) {
+      document.getElementById('storage-warning').style.display = 'block';
+    }
+  }
+
+  function formatDateHuman(d) {
+    const pad = n => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  showOnly('explain');
+})();
+</script>
+
+</body>
+</html>
