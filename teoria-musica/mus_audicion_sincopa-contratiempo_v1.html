@@ -85,6 +85,16 @@
   }
   .legend span { display: inline-block; margin-right: 14px; font-size: 13px; }
   .swatch { display:inline-block; width:12px; height:12px; margin-right:4px; vertical-align:middle; border:1px solid #999; }
+  .navbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px;
+  }
+  .navbar button, .navbar a {
+    font-family: inherit; font-size: 0.9em; padding: 8px 14px;
+    border: 2px solid #666; border-radius: 8px; background: #fff;
+    color: #000; text-decoration: none; cursor: pointer; display: inline-block;
+  }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
 </style>
 </head>
 <body>
@@ -161,6 +171,11 @@
   <div id="registro-final"></div>
   <br>
   <button onclick="location.reload()">Repetir sesión</button>
+
+  <div class="navbar">
+    <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+    <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+  </div>
 </div>
 
 <script>
@@ -176,6 +191,11 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+document.getElementById('btn-reset').addEventListener('click', function () {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_mus_audicion_sincopa-contratiempo_v1'); } catch (e) { /* sin persistencia */ }
+  location.reload();
+});
 function isoLocal(d) {
   const pad = n => String(n).padStart(2, '0');
   const off = -d.getTimezoneOffset();
@@ -417,7 +437,7 @@ function buildSessionData(moodVal) {
     };
   });
   return {
-    schema: 'andre-music-log/v1', tool: 'mus_audicion_sincopa-contratiempo_v1', category: 'audicion',
+    schema: 'andre-music-log/v1', tool: 'mus_audicion_sincopa-contratiempo_v1', category: 'audicion', scoring: 'auto',
     session: {start: isoLocal(startDate), end: isoLocal(now), duration_sec: durationSec},
     score: {correct: score, total: items.length, pct: pct},
     blocks: [], items: sessionItems, mood: moodVal

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refuerzo: Armaduras (1 vs 2 sostenidos)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: #ffffff;
+    color: #000000;
+    font-family: 'Lora', serif;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+    line-height: 1.5;
+  }
+  h1 { font-size: 1.4em; margin-bottom: 4px; }
+  .subtitle { color: #444; margin-top: 0; font-size: 0.95em; }
+  .card {
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 18px 0;
+  }
+  .staff-wrap { text-align: center; margin: 14px 0; }
+  svg { max-width: 100%; }
+  .clef-label { font-size: 0.85em; color: #333; margin-top: 4px; }
+  button {
+    font-family: 'Lora', serif;
+    font-size: 1em;
+    padding: 10px 16px;
+    border: 2px solid #000;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    margin: 6px 6px 6px 0;
+  }
+  button:hover { background: #f0f0f0; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .option-btn { display: block; width: 100%; text-align: left; margin: 8px 0; }
+  .option-btn.correct { background: #d9f2d9; border-color: #2a7a2a; }
+  .option-btn.incorrect { background: #f7d9d9; border-color: #a33; }
+  .feedback { margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 0.95em; }
+  .feedback.ok { background: #eaf7ea; }
+  .feedback.bad { background: #fdeaea; }
+  .progress { font-size: 0.9em; color: #444; margin-bottom: 6px; }
+  textarea {
+    width: 100%; height: 220px; font-family: monospace; font-size: 0.8em;
+    padding: 8px; border: 2px solid #000; border-radius: 6px;
+  }
+  .mood-btns button { font-size: 1.3em; }
+  .warning { font-size: 0.85em; color: #a33; margin-top: 10px; }
+  .hidden { display: none; }
+  .navbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px;
+  }
+  .navbar button, .navbar a {
+    font-family: 'Lora', serif; font-size: 0.9em; padding: 8px 14px;
+    border: 2px solid #666; border-radius: 8px; background: #fff;
+    color: #000; text-decoration: none; cursor: pointer; display: inline-block;
+  }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
+  .done-banner {
+    background: #eaf7ea; border: 2px solid #2a7a2a; border-radius: 8px;
+    padding: 10px 14px; font-size: 0.9em; margin: 12px 0;
+  }
+  .example-row { display: flex; justify-content: space-around; flex-wrap: wrap; }
+  .example-item { text-align: center; margin: 10px; }
+</style>
+</head>
+<body>
+
+<h1>Refuerzo: Armaduras 🎼</h1>
+<p class="subtitle">1 sostenido frente a 2 sostenidos — ¿SOL Mayor o RE Mayor?</p>
+
+<div id="done-banner" class="done-banner hidden"></div>
+
+<!-- ===================== PANTALLA 0: EJEMPLO ===================== -->
+<div id="screen-intro" class="card">
+  <p><strong>Antes de empezar:</strong> cada armadura sirve para <strong>dos tonalidades a la vez</strong>:
+  una Mayor y su <strong>relativa menor</strong>. Comparten las mismas alteraciones, así que lo primero
+  siempre es lo mismo: <em>contar cuántos sostenidos hay y dónde están</em>.</p>
+  <div class="example-row" id="example-row"></div>
+  <p style="margin-top:14px;">
+    👉 El primer sostenido siempre está <strong>sobre la línea de arriba del todo</strong> (es el Fa#).<br>
+    👉 Si aparece un <strong>segundo</strong> sostenido, está <strong>más abajo, en el espacio entre la 4.ª
+    y la 3.ª línea</strong> (es el Do#).<br>
+    Contar bien esos dos sostenidos es la clave para no confundir SOL Mayor con RE Mayor.
+  </p>
+  <p style="margin-top:14px;">
+    👉 Para pasar de la Mayor a su <strong>relativa menor</strong>, baja <strong>tres semitonos</strong>
+    (una 3.ª menor) desde la tónica Mayor:<br>
+    DO → LA · SOL → MI · RE → SI.<br>
+    Esto ya lo dominas — aquí lo que se entrena es <strong>no equivocarte al contar las alteraciones</strong>
+    antes de decir el nombre.
+  </p>
+  <button id="btn-start">Empezar (9 preguntas)</button>
+</div>
+
+<!-- ===================== PANTALLA 1: PREGUNTAS ===================== -->
+<div id="screen-quiz" class="card hidden">
+  <div class="progress" id="progress"></div>
+  <div class="staff-wrap" id="quiz-staff"></div>
+  <p id="quiz-question" style="font-weight:600;"></p>
+  <div id="quiz-options"></div>
+  <div id="quiz-feedback"></div>
+  <button id="btn-next" class="hidden">Siguiente →</button>
+</div>
+
+<!-- ===================== PANTALLA 2: MOOD ===================== -->
+<div id="screen-mood" class="card hidden">
+  <p style="font-weight:600;">¿Cómo te has sentido con este repaso?</p>
+  <div class="mood-btns">
+    <button data-mood="1">😣 Difícil</button>
+    <button data-mood="2">🙂 Normal</button>
+    <button data-mood="3">😄 Fácil</button>
+  </div>
+</div>
+
+<!-- ===================== PANTALLA 3: FINAL ===================== -->
+<div id="screen-final" class="card hidden">
+  <h2 style="font-size:1.1em;">¡Resumen para André!</h2>
+  <div id="final-summary"></div>
+  <p style="margin-top:16px; font-weight:600;">Para papá — copia esto y pégalo en el chat:</p>
+  <textarea id="final-textarea" readonly></textarea>
+  <p class="warning" id="storage-warning" style="display:none;">
+    ⚠️ No se pudo guardar el histórico en este ordenador. Copia igualmente el texto de arriba.
+  </p>
+</div>
+
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Helper de timestamp con zona horaria (MUSIC_GUIDE §3.4) ----------
+  function isoLocal(d) {
+    const pad = n => String(n).padStart(2, '0');
+    const off = -d.getTimezoneOffset();
+    const sign = off >= 0 ? '+' : '-';
+    const abs = Math.abs(off);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+      + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+      + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+  }
+
+  const TOOL_NAME = "mus_teoria_armadura-refuerzo_v1";
+  const STORAGE_KEY = "andre_" + TOOL_NAME;
+  const HISTORY_KEY = "andre_music_history";
+  const COMPLETED_KEY = "andre_music_completed";
+  const TOOL_TITLE = "Refuerzo Armaduras (1 vs 2 sostenidos)";
+
+  // ---------- Registro de completado (leído por index.html) ----------
+  function readCompleted() {
+    try { return JSON.parse(localStorage.getItem(COMPLETED_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+
+  function markCompleted(sessionJson) {
+    try {
+      const reg = readCompleted();
+      reg[TOOL_NAME] = {
+        title: TOOL_TITLE,
+        date: sessionJson.session.end,
+        correct: sessionJson.score.correct,
+        total: sessionJson.score.total,
+        pct: sessionJson.score.pct,
+        times: (reg[TOOL_NAME] && reg[TOOL_NAME].times ? reg[TOOL_NAME].times : 0) + 1
+      };
+      localStorage.setItem(COMPLETED_KEY, JSON.stringify(reg));
+      return true;
+    } catch (e) { return false; }
+  }
+
+  // ---------- Banner si ya lo completó antes ----------
+  (function showPreviousBanner() {
+    const reg = readCompleted();
+    const prev = reg[TOOL_NAME];
+    if (!prev) return;
+    const el = document.getElementById('done-banner');
+    const d = new Date(prev.date);
+    const pad = n => String(n).padStart(2, '0');
+    const human = isNaN(d) ? prev.date : `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+    el.innerHTML = `✅ Ya completaste este ejercicio el <strong>${human}</strong> (${prev.correct}/${prev.total}). Puedes repetirlo cuando quieras.`;
+    el.classList.remove('hidden');
+  })();
+
+  // ---------- Reiniciar ----------
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* sin persistencia */ }
+    location.reload();
+  });
+
+  // ---------- Geometría del pentagrama ----------
+  // Clave de Sol. Líneas de arriba a abajo:
+  // y=32 (5ª línea, FA5) · y=48 (4ª, RE5) · y=64 (3ª central, SI4)
+  // y=80 (2ª, SOL4) · y=96 (1ª, MI4)
+  const LINE_Y = [32, 48, 64, 80, 96];
+  const FSHARP_Y = 32; // Fa#5 -> SOBRE la 5ª línea (la de arriba del todo)
+  const CSHARP_Y = 56; // Do#5 -> en el espacio entre la 4ª y la 3ª línea
+
+  // Sostenido dibujado con líneas, centrado exactamente en (cx, cy).
+  // No se usa el carácter "♯" porque su línea base depende de la fuente
+  // y descoloca el símbolo respecto al pentagrama.
+  function sharpGlyph(cx, cy) {
+    return (
+      `<g stroke="black" fill="none" stroke-linecap="round">` +
+      `<line x1="${cx - 3.2}" y1="${cy - 9}" x2="${cx - 3.2}" y2="${cy + 9}" stroke-width="1.7"/>` +
+      `<line x1="${cx + 3.2}" y1="${cy - 11}" x2="${cx + 3.2}" y2="${cy + 7}" stroke-width="1.7"/>` +
+      `<line x1="${cx - 6.5}" y1="${cy - 1.5}" x2="${cx + 6.5}" y2="${cy - 4.5}" stroke-width="2.8"/>` +
+      `<line x1="${cx - 6.5}" y1="${cy + 6.5}" x2="${cx + 6.5}" y2="${cy + 3.5}" stroke-width="2.8"/>` +
+      `</g>`
+    );
+  }
+
+  function buildStaffSVG(numSharps, opts) {
+    opts = opts || {};
+    const width = opts.width || 220;
+    const height = 130;
+    let svg = `<svg viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">`;
+    LINE_Y.forEach(y => {
+      svg += `<line x1="20" y1="${y}" x2="${width - 20}" y2="${y}" stroke="black" stroke-width="1.5"/>`;
+    });
+    // Clave de Sol (glifo unicode; su posición no afecta a la lectura de la armadura)
+    svg += `<text x="24" y="92" font-size="70" font-family="serif">&#119070;</text>`;
+    // Sostenidos de la armadura, en su altura exacta
+    let x = 82;
+    if (numSharps >= 1) { svg += sharpGlyph(x, FSHARP_Y); x += 20; }
+    if (numSharps >= 2) { svg += sharpGlyph(x, CSHARP_Y); }
+    svg += `</svg>`;
+    return svg;
+  }
+
+  // ---------- Pantalla de ejemplo ----------
+  const examples = [
+    { n: 0, label: "0 sostenidos → DO Mayor / LA menor" },
+    { n: 1, label: "1 sostenido (Fa#) → SOL Mayor / MI menor" },
+    { n: 2, label: "2 sostenidos (Fa#, Do#) → RE Mayor / SI menor" }
+  ];
+  const exRow = document.getElementById('example-row');
+  examples.forEach(ex => {
+    const div = document.createElement('div');
+    div.className = 'example-item';
+    div.innerHTML = buildStaffSVG(ex.n, { width: 170 }) + `<div class="clef-label">${ex.label}</div>`;
+    exRow.appendChild(div);
+  });
+
+  // ---------- Banco de preguntas ----------
+  // topics: "armadura_conteo" (nuevo, pendiente de añadir a topics_map.json, grupo sugerido: tonalidad_grados)
+  //         "arm_mayor", "arm_menor" (ya existentes en topics_map.json)
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const ITEMS = [
+    // Bloque conteo: identificar nº de alteraciones + par de tonalidades
+    {
+      block: "conteo", topic: "armadura_conteo", sharps: 0,
+      question: "Mira la armadura. ¿Cuántas alteraciones tiene y a qué tonalidades corresponde?",
+      options: ["0 alteraciones — DO Mayor / LA menor", "1 alteración — SOL Mayor / MI menor", "2 alteraciones — RE Mayor / SI menor"],
+      correct: "0 alteraciones — DO Mayor / LA menor"
+    },
+    {
+      block: "conteo", topic: "armadura_conteo", sharps: 1,
+      question: "Mira la armadura. ¿Cuántas alteraciones tiene y a qué tonalidades corresponde?",
+      options: ["0 alteraciones — DO Mayor / LA menor", "1 alteración — SOL Mayor / MI menor", "2 alteraciones — RE Mayor / SI menor"],
+      correct: "1 alteración — SOL Mayor / MI menor"
+    },
+    {
+      block: "conteo", topic: "armadura_conteo", sharps: 2,
+      question: "Mira la armadura. ¿Cuántas alteraciones tiene y a qué tonalidades corresponde?",
+      options: ["0 alteraciones — DO Mayor / LA menor", "1 alteración — SOL Mayor / MI menor", "2 alteraciones — RE Mayor / SI menor"],
+      correct: "2 alteraciones — RE Mayor / SI menor"
+    },
+    // Bloque mayor: nombrar la tonalidad mayor
+    {
+      block: "mayor", topic: "arm_mayor", sharps: 2,
+      question: "¿Qué tonalidad MAYOR es esta armadura?",
+      options: ["DO Mayor", "SOL Mayor", "RE Mayor"],
+      correct: "RE Mayor"
+    },
+    {
+      block: "mayor", topic: "arm_mayor", sharps: 0,
+      question: "¿Qué tonalidad MAYOR es esta armadura?",
+      options: ["DO Mayor", "SOL Mayor", "RE Mayor"],
+      correct: "DO Mayor"
+    },
+    {
+      block: "mayor", topic: "arm_mayor", sharps: 1,
+      question: "¿Qué tonalidad MAYOR es esta armadura?",
+      options: ["DO Mayor", "SOL Mayor", "RE Mayor"],
+      correct: "SOL Mayor"
+    },
+    // Bloque menor: nombrar la relativa menor
+    {
+      block: "menor", topic: "arm_menor", sharps: 1,
+      question: "¿Qué tonalidad menor (relativa) es esta armadura?",
+      options: ["LA menor", "MI menor", "SI menor"],
+      correct: "MI menor"
+    },
+    {
+      block: "menor", topic: "arm_menor", sharps: 2,
+      question: "¿Qué tonalidad menor (relativa) es esta armadura?",
+      options: ["LA menor", "MI menor", "SI menor"],
+      correct: "SI menor"
+    },
+    {
+      block: "menor", topic: "arm_menor", sharps: 0,
+      question: "¿Qué tonalidad menor (relativa) es esta armadura?",
+      options: ["LA menor", "MI menor", "SI menor"],
+      correct: "LA menor"
+    }
+  ];
+
+  const quizOrder = shuffle(ITEMS.map((_, i) => i)); // orden aleatorio de preguntas
+  let qi = 0;
+  let attemptsThisItem = 0;
+  let itemStartTime = 0;
+  const results = []; // items del JSON final
+  const sessionStart = new Date();
+
+  const screenIntro = document.getElementById('screen-intro');
+  const screenQuiz = document.getElementById('screen-quiz');
+  const screenMood = document.getElementById('screen-mood');
+  const screenFinal = document.getElementById('screen-final');
+
+  document.getElementById('btn-start').addEventListener('click', () => {
+    screenIntro.classList.add('hidden');
+    screenQuiz.classList.remove('hidden');
+    renderQuestion();
+  });
+
+  function renderQuestion() {
+    const item = ITEMS[quizOrder[qi]];
+    attemptsThisItem = 0;
+    itemStartTime = Date.now();
+
+    document.getElementById('progress').textContent = `Pregunta ${qi + 1} de ${ITEMS.length}`;
+    document.getElementById('quiz-staff').innerHTML = buildStaffSVG(item.sharps, { width: 220 });
+    document.getElementById('quiz-question').textContent = item.question;
+    document.getElementById('quiz-feedback').innerHTML = '';
+    document.getElementById('btn-next').classList.add('hidden');
+
+    const optsWrap = document.getElementById('quiz-options');
+    optsWrap.innerHTML = '';
+    const shuffledOpts = shuffle(item.options);
+    shuffledOpts.forEach(optText => {
+      const b = document.createElement('button');
+      b.className = 'option-btn';
+      b.textContent = optText;
+      b.addEventListener('click', () => handleAnswer(optText, item, b));
+      optsWrap.appendChild(b);
+    });
+  }
+
+  function handleAnswer(chosen, item, btnEl) {
+    attemptsThisItem++;
+    const isCorrect = chosen === item.correct;
+    const feedbackEl = document.getElementById('quiz-feedback');
+    const allButtons = document.querySelectorAll('#quiz-options .option-btn');
+
+    if (isCorrect) {
+      btnEl.classList.add('correct');
+      allButtons.forEach(b => b.disabled = true);
+      feedbackEl.innerHTML = `<div class="feedback ok">✅ ¡Correcto! ${explanationFor(item)}</div>`;
+      finishItem(item, chosen, true);
+    } else {
+      btnEl.classList.add('incorrect');
+      btnEl.disabled = true;
+      if (attemptsThisItem >= 3) {
+        allButtons.forEach(b => b.disabled = true);
+        feedbackEl.innerHTML = `<div class="feedback bad">❌ La respuesta correcta era: <strong>${item.correct}</strong>. ${explanationFor(item)}</div>`;
+        finishItem(item, chosen, false);
+      } else {
+        feedbackEl.innerHTML = `<div class="feedback bad">❌ Vuelve a mirar cuántos sostenidos hay y dónde están. Te quedan ${3 - attemptsThisItem} intento(s).</div>`;
+      }
+    }
+  }
+
+  function explanationFor(item) {
+    if (item.sharps === 0) return "Armadura vacía = DO Mayor / LA menor.";
+    if (item.sharps === 1) return "Un sostenido (Fa#, sobre la línea de arriba) = SOL Mayor / MI menor.";
+    return "Dos sostenidos (Fa# arriba y Do# entre la 4.ª y la 3.ª línea) = RE Mayor / SI menor.";
+  }
+
+  function finishItem(item, answered, correct) {
+    const timeSec = Math.round((Date.now() - itemStartTime) / 1000);
+    results.push({
+      n: results.length + 1,
+      block: item.block,
+      topic: item.topic,
+      expected: item.correct,
+      answered: answered,
+      correct: correct,
+      attempts: attemptsThisItem,
+      time_sec: timeSec
+    });
+    document.getElementById('btn-next').classList.remove('hidden');
+  }
+
+  document.getElementById('btn-next').addEventListener('click', () => {
+    qi++;
+    if (qi < ITEMS.length) {
+      renderQuestion();
+    } else {
+      screenQuiz.classList.add('hidden');
+      screenMood.classList.remove('hidden');
+    }
+  });
+
+  let moodValue = null;
+  document.querySelectorAll('.mood-btns button').forEach(b => {
+    b.addEventListener('click', () => {
+      moodValue = parseInt(b.getAttribute('data-mood'), 10);
+      screenMood.classList.add('hidden');
+      showFinal();
+    });
+  });
+
+  function showFinal() {
+    screenFinal.classList.remove('hidden');
+    const sessionEnd = new Date();
+    const correctCount = results.filter(r => r.correct).length;
+    const total = results.length;
+    const pct = Math.round((correctCount / total) * 1000) / 10;
+
+    // Resumen por bloque
+    const blockNames = { conteo: "Contar sostenidos", mayor: "Nombrar tonalidad Mayor", menor: "Nombrar relativa menor" };
+    const blocks = ["conteo", "mayor", "menor"].map(bId => {
+      const items = results.filter(r => r.block === bId);
+      const c = items.filter(r => r.correct).length;
+      return { id: bId, label: blockNames[bId], correct: c, total: items.length };
+    });
+
+    const summaryDiv = document.getElementById('final-summary');
+    let summaryHtml = `<p><strong>Resultado: ${correctCount} de ${total} (${pct}%)</strong></p><ul>`;
+    blocks.forEach(b => {
+      summaryHtml += `<li>${b.label}: ${b.correct}/${b.total}</li>`;
+    });
+    summaryHtml += `</ul>`;
+    if (blocks.find(b => b.id === "conteo" && b.correct < b.total)) {
+      summaryHtml += `<p>💡 Sigue practicando: mira siempre primero <strong>cuántos</strong> sostenidos hay antes de decidir la tonalidad.</p>`;
+    } else {
+      summaryHtml += `<p>🎉 ¡Has distinguido bien 1 y 2 sostenidos! Ya puedes avanzar a Nivel 3.</p>`;
+    }
+    summaryDiv.innerHTML = summaryHtml;
+
+    const sessionJson = {
+      schema: "andre-music-log/v1",
+      tool: TOOL_NAME,
+      category: "teoria",
+      scoring: "auto",
+      session: {
+        start: isoLocal(sessionStart),
+        end: isoLocal(sessionEnd),
+        duration_sec: Math.round((sessionEnd - sessionStart) / 1000)
+      },
+      score: { correct: correctCount, total: total, pct: pct },
+      blocks: blocks.map(b => ({ id: b.id, label: b.label, correct: b.correct, total: b.total })),
+      items: results,
+      mood: moodValue
+    };
+
+    const humanHeader =
+      `Refuerzo Armaduras (1 vs 2 sostenidos) · ${formatDateHuman(sessionEnd)}\n` +
+      `Resultado: ${correctCount} de ${total} (${pct}%)\n` +
+      `Bloques: ${blocks.map(b => b.label + " " + b.correct + "/" + b.total).join(' · ')}\n` +
+      `---JSON---\n` +
+      JSON.stringify(sessionJson, null, 0);
+
+    document.getElementById('final-textarea').value = humanHeader;
+
+    try {
+      const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      hist.push(sessionJson);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionJson));
+    } catch (e) {
+      document.getElementById('storage-warning').style.display = 'block';
+    }
+    if (!markCompleted(sessionJson)) {
+      document.getElementById('storage-warning').style.display = 'block';
+    }
+  }
+
+  function formatDateHuman(d) {
+    const pad = n => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+})();
+</script>
+
+</body>
+</html>

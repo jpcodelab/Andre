@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.1 · Julio 2026
+> Referenciado desde CLAUDE.md. Versión: 1.3 · Julio 2026
 
 ---
 
@@ -108,7 +108,9 @@ Las 3 líneas humanas permiten lectura rápida sin parsear. El delimitador
       "answered": "tiempo_2",
       "correct": false,
       "attempts": 1,
-      "time_sec": 12
+      "time_sec": 12,
+      "listens": 2,
+      "listen_sec": 7
     }
   ],
   "mood": 2
@@ -125,8 +127,25 @@ Reglas:
   valores del vocabulario de topics cuando aplique, o texto corto.
 - `attempts`: nº de intentos hasta acertar o agotar (los repasos adaptativos
   ya permiten hasta 3).
-- `time_sec`: segundos desde que la pregunta se mostró hasta la respuesta
-  final. Redondeado a entero.
+- `time_sec`: segundos **de razonamiento**, no de reloj. Se mide desde que la
+  interfaz de respuesta queda habilitada (es decir, tras la primera
+  reproducción completa, no al pintar la pregunta) hasta el clic en
+  "Comprobar", **descontando** el tiempo de las reproducciones posteriores.
+  Redondeado a entero. Un `time_sec` de 0 en todos los ítems es un fallo de
+  instrumentación, no un dato.
+- `listens`: número de veces que se reprodujo el estímulo en ese ítem.
+  Obligatorio en `dictado` y `audicion`; opcional en `teoria`.
+- `listen_sec`: segundos totales de reproducción en ese ítem, redondeado a
+  entero. Separar escucha de razonamiento evita confundir "lento" con
+  "dudoso": son diagnósticos distintos y piden material distinto.
+- `answered`: la respuesta **real** del alumno, expresada en el vocabulario de
+  la herramienta (mismo formato que `expected`), nunca un genérico del tipo
+  `"bien"` / `"mal"` / `"ok"`. En preguntas de opción múltiple se registra el
+  contenido de la opción elegida, no su índice ni su posición.
+- `correct` puede ser `null` en ítems de bloques de calentamiento o
+  calibración (no evaluados). El `score` agrega **únicamente** los ítems con
+  `correct` booleano; `blocks` con `total: 0` se omiten del array. El ítem se
+  registra igualmente: saber si André hizo la calibración es un dato.
 - `mood`: autoevaluación de André al final, entero 1-3
   (1 = difícil/frustrante, 2 = normal, 3 = fácil/divertido). Pregunta única:
   "¿Cómo te has sentido?" con 3 botones (emoji + texto). Opcional responder:
@@ -160,6 +179,84 @@ function isoLocal(d) {
     + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
 }
 ```
+
+### 3.5 Registro de completado — `andre_music_completed`
+
+Además del histórico append-only en `andre_music_history` (§3.3), cada
+herramienta evaluativa escribe también en `andre_music_completed` un registro
+**mutable, por herramienta**, para que `index.html` pinte una marca de
+"completado" en la tarjeta correspondiente sin tener que leer y agregar todo
+el histórico.
+
+Clave: `andre_music_completed` — una única clave global compartida por todas
+las herramientas (a diferencia de `andre_mus_[tool]`, no lleva el nombre de
+fichero).
+
+Forma del objeto (se sobrescribe la entrada de esa herramienta en cada sesión):
+
+```json
+{
+  "mus_teoria_armadura-refuerzo_v1": {
+    "title": "Refuerzo Armaduras (1 vs 2 sostenidos)",
+    "date": "2026-07-21T10:15:03+01:00",
+    "correct": 8,
+    "total": 9,
+    "pct": 88.9,
+    "times": 2
+  }
+}
+```
+
+- `date`: el `session.end` de esa sesión, en el mismo formato ISO local con
+  offset que produce `isoLocal` (§3.4) — nunca un timestamp crudo distinto.
+- `times`: contador de finalizaciones de esa herramienta; se incrementa leyendo
+  el valor anterior de la misma clave (nunca se recalcula desde
+  `andre_music_history`).
+- **Quién escribe**: la propia herramienta, al final de la pantalla de
+  resultado, inmediatamente después del append a `andre_music_history`.
+  Envolver en try/catch igual que el histórico (§3.3); un fallo aquí no debe
+  impedir que la sesión siga siendo copiable a mano.
+- **Quién lee**: únicamente `index.html`, en un script al final del `<body>`
+  que decora con ✅ + fecha `dd/mm/aaaa` (+ "completado N veces" si
+  `times > 1`) cada tarjeta cuyo `data-tool="[fichero sin .html]"` coincida
+  con una clave del registro.
+- **Regla dura**: `andre_music_history` no se borra nunca desde ningún sitio,
+  ni desde una herramienta ni desde el índice. El botón "Reiniciar progreso"
+  del índice borra únicamente `andre_music_completed` (las marcas visuales) —
+  son registros con propósito y ciclo de vida distintos.
+
+### 3.6 Modo de puntuación — `scoring`
+
+El episodio del 21/07 con `mus_dictado_simple-s1_v1` destapó una grieta: dos
+herramientas de la misma categoría evaluativa (`dictado`) pueden calcular
+`correct` de formas radicalmente distintas — una comparando contra la
+respuesta esperada, otra dejando que el propio André se autoevalúe. Al leer
+un registro no había forma de saber cuál de las dos había sido. `scoring`
+lo hace explícito.
+
+Campo obligatorio a nivel raíz del JSON de sesión (`andre-music-log/v1`):
+
+```json
+"scoring": "self"
+```
+
+Valores válidos:
+
+| Valor | Significa |
+|---|---|
+| `"auto"` | `correct` sale de comparar la respuesta contra la esperada — corrección algorítmica real. Es el valor por defecto para `teoria` y `audicion`, y para cualquier `dictado` que compare de verdad (p. ej. `mus_dictado_3-8_v1`). |
+| `"self"` | `correct` es la autoevaluación de André (p. ej. botones "Lo tuve bien" / "A repasar"), sin ninguna comparación algorítmica detrás. |
+| `"self_guarded"` | Autoevaluación, pero con al menos un bloqueo automático que impide autocalificarse "bien" cuando la respuesta falla una condición objetiva y verificable (p. ej. la suma de tiempos no coincide con el compás). No es corrección completa: el error grosero se bloquea por código, el error fino se sigue dejando a criterio de André. |
+
+Toda herramienta evaluativa debe declarar `scoring` — lo verifica
+`tests/check_scoring.js`.
+
+**Nota sobre dictados con `scoring: "self"` o `"self_guarded"`**: un `pct`
+alto en uno de estos registros mide **autopercepción**, no rendimiento
+medido. No debe tratarse con el mismo criterio que un `"auto"` a la hora de
+decidir si André avanza al siguiente material (§6) — un 90% autoevaluado con
+guardas parciales no es evidencia tan fuerte como un 90% de corrección
+algorítmica completa.
 
 ---
 
@@ -201,6 +298,7 @@ const group = map[item.topic]; // undefined si el topic no está en el mapa
 | `unidad_tiempo` | Unidad de tiempo en compases simples y compuestos |
 | `compas_9-8` | Compás de 9/8 |
 | `compas_12-8` | Compás de 12/8 |
+| `compas_6-8` | Compás de 6/8 |
 
 Antes de usar un topic granular nuevo en un fichero evaluativo:
 1. Decidir a qué grupo pertenece.
@@ -232,6 +330,10 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
 - [ ] JS extraído pasa `node --check` sin errores.
 - [ ] Nombre de fichero y clave localStorage siguen la convención §2.
 - [ ] Si usa audio: advertencia visible "necesita sonido" en la pantalla inicial.
+- [ ] Barra de navegación al final del `<body>` (`.navbar`): botón
+      "🔄 Reiniciar ejercicio" (confirm + borra solo la clave propia
+      `andre_[tool]` + `location.reload()`) y enlace "🏠 Volver al índice" a
+      `../index.html#lenguaje-musical` (ruta relativa desde `teoria-musica/`).
 
 ### Evaluativas (`teoria`, `dictado`, `audicion`)
 - [ ] Ejemplo o demo antes de la primera pregunta evaluada.
@@ -241,6 +343,10 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
 - [ ] Histórico append en `andre_music_history`.
 - [ ] Cada pregunta tiene exactamente una respuesta correcta.
 - [ ] La respuesta correcta no es deducible por longitud, posición u orden fijo.
+- [ ] `time_sec` medido según §3.2 y verificado ≠ 0 en el test.
+- [ ] `answered` en el vocabulario de la herramienta, verificado en el test.
+- [ ] Declara `"scoring"` (`self` / `self_guarded` / `auto`) en el JSON de
+      sesión — verificado en el test (§3.6).
 
 ### Con patrones rítmicos (`dictado`, `audicion`)
 - [ ] **Verificación matemática**: cada patrón suma exactamente el compás declarado.
@@ -252,6 +358,8 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
   (un `.js` por herramienta, ejecutable con node).
 - [ ] Tolerancias de timing (si hay interacción en tiempo real) documentadas
   en comentario junto a la constante.
+- [ ] El script de test valida además un registro de sesión real pasado como
+      argumento (`node tests/test_x.js data/YYYY-MM-DD_x.json`).
 
 ### Imprimibles (`mapa`)
 - [ ] Media query `@media print` con resultado correcto en A4.

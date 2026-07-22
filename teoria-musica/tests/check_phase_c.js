@@ -133,7 +133,7 @@ EVALUATIVE_FILES.forEach(file => {
 // Shared DOM/localStorage mock used by every simulation below.
 const DOM_MOCK = `
   var document = {
-    getElementById: function() { return { classList: { add: function(){}, remove: function(){} }, style: {}, innerHTML: '', textContent: '', value: '', disabled: false, querySelectorAll: function(){ return []; }, select: function(){} }; },
+    getElementById: function() { return { classList: { add: function(){}, remove: function(){}, toggle: function(){} }, style: {}, innerHTML: '', textContent: '', value: '', disabled: false, querySelectorAll: function(){ return []; }, select: function(){}, addEventListener: function(){} }; },
     querySelectorAll: function() { return { forEach: function(){} }; },
     createElement: function() { return { className: '', textContent: '', onclick: null, innerHTML: '', insertAdjacentHTML: function(){}, appendChild: function(){} }; }
   };

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Sigue sonando o hay silencio?</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: #ffffff; color: #000000; font-family: 'Lora', serif;
+    max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; line-height: 1.5;
+  }
+  h1 { font-size: 1.35em; margin-bottom: 2px; }
+  h2 { font-size: 1.1em; margin-bottom: 4px; }
+  .subtitle { color: #444; margin-top: 0; font-size: 0.95em; }
+  .card { border: 2px solid #000; border-radius: 10px; padding: 18px; margin: 16px 0; }
+  .warning-box { border: 2px dashed #a33; background: #fdf3f3; border-radius: 8px; padding: 10px 14px; font-size: 0.9em; margin: 12px 0; }
+  .done-banner { background: #eaf7ea; border: 2px solid #2a7a2a; border-radius: 8px; padding: 10px 14px; font-size: 0.9em; margin: 12px 0; }
+  button { font-family: 'Lora', serif; font-size: 1em; padding: 10px 16px; border: 2px solid #000; border-radius: 8px; background: #fff; cursor: pointer; margin: 6px 6px 6px 0; }
+  button:hover { background: #f0f0f0; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .play-btn { background: #eef6ff; }
+  .option-btn { display: block; width: 100%; text-align: left; margin: 8px 0; }
+  .option-btn.correct { background: #d9f2d9; border-color: #2a7a2a; }
+  .option-btn.incorrect { background: #f7d9d9; border-color: #a33; }
+  .feedback { margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 0.95em; }
+  .feedback.ok { background: #eaf7ea; }
+  .feedback.bad { background: #fdeaea; }
+  .progress { font-size: 0.9em; color: #444; margin-bottom: 6px; }
+  textarea { width: 100%; height: 240px; font-family: monospace; font-size: 0.8em; padding: 8px; border: 2px solid #000; border-radius: 6px; }
+  .mood-btns button { font-size: 1.3em; }
+  .hidden { display: none; }
+  .explain-block { border-left: 4px solid #999; padding-left: 12px; margin: 18px 0; }
+  .step-nav { text-align: right; }
+  .navbar { display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px; }
+  .navbar button, .navbar a { font-family: 'Lora', serif; font-size: 0.9em; padding: 8px 14px; border: 2px solid #666; border-radius: 8px; background: #fff; color: #000; text-decoration: none; cursor: pointer; display: inline-block; }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
+  .beat-row { display: flex; gap: 6px; margin: 10px 0 26px; }
+  .beat {
+    width: 80px; height: 52px; border: 2px solid #999; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    font-size: 0.8em; background: #fafafa;
+  }
+  .beat.strong { border-color: #000; border-width: 3px; font-weight: 700; }
+  .beat.tone { background: #ffe08a; }
+  .beat.tone-cont { background: #ffe08a; border-left: 2px dashed #c8a13a; }
+  .beat.silence { background: #f0f0f0; color: #999; }
+  .beat .tag { position: absolute; bottom: -20px; font-size: 0.7em; color: #777; left: 0; right: 0; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>¿Sigue sonando o hay silencio? 🎧</h1>
+<p class="subtitle">Nota larga (blanca) · Nota + silencio · Silencio + nota</p>
+
+<div class="warning-box">🔊 Esta actividad necesita sonido. Sube el volumen antes de empezar. No funciona sin conexión.</div>
+
+<div id="done-banner" class="done-banner hidden"></div>
+
+<!-- ===================== EXPLICACIÓN ===================== -->
+<div id="screen-explain" class="card">
+  <p>Trabajamos en <strong>compás de 2/4</strong>: 2 tiempos. La campanita 🔔 marca el
+  <strong>tiempo 1</strong> y el <strong>tiempo 2</strong>. Vas a decidir una sola cosa cada vez:
+  <strong>¿en el tiempo 2 el sonido SIGUE, o hay SILENCIO?</strong></p>
+  <p>Antes de cada ejemplo oirás <strong>dos campanitas de preparación</strong>.</p>
+
+  <div class="explain-block">
+    <h2>1. Nota larga (blanca)</h2>
+    <p>Una sola nota que <strong>empieza en el 1 y sigue sonando durante el 2</strong>.
+    No hay golpe nuevo en el 2: el mismo sonido continúa. Dura <strong>2 tiempos</strong>.</p>
+    <div class="beat-row" id="d-larga"></div>
+    <button class="play-btn" data-play="larga">🔊 Escuchar nota larga</button>
+  </div>
+
+  <div class="explain-block">
+    <h2>2. Nota + silencio</h2>
+    <p>Una nota <strong>corta en el 1</strong> (dura 1 tiempo) y luego <strong>silencio en el 2</strong>.
+    El sonido para. Cuando llega la campanita del 2, no hay nada sonando.</p>
+    <div class="beat-row" id="d-corta"></div>
+    <button class="play-btn" data-play="corta_silencio">🔊 Escuchar nota + silencio</button>
+  </div>
+
+  <div class="explain-block">
+    <h2>3. Silencio + nota</h2>
+    <p>Al revés: <strong>silencio en el 1</strong> y una nota <strong>corta en el 2</strong>.
+    Empieza en silencio y el sonido llega en el segundo tiempo.</p>
+    <div class="beat-row" id="d-silencio"></div>
+    <button class="play-btn" data-play="silencio_corta">🔊 Escuchar silencio + nota</button>
+  </div>
+
+  <div class="explain-block">
+    <h2>Compara los tres</h2>
+    <button class="play-btn" id="btn-compare">🔊 Larga → Nota+silencio → Silencio+nota</button>
+  </div>
+
+  <p style="margin-top:18px;"><strong>La trampa a evitar:</strong> una <em>nota larga</em> y una
+  <em>nota + silencio</em> empiezan igual, con un golpe en el 1. La diferencia está <strong>en el tiempo 2</strong>:
+  si el sonido sigue ahí → larga (blanca); si hay silencio ahí → nota + silencio.
+  ¡No te fíes solo del principio, escucha qué pasa en el 2!</p>
+
+  <div class="step-nav"><button id="btn-start">Empezar (10 preguntas)</button></div>
+</div>
+
+<!-- ===================== QUIZ ===================== -->
+<div id="screen-quiz" class="card hidden">
+  <div class="progress" id="progress"></div>
+  <div style="text-align:center; margin:14px 0;">
+    <button class="play-btn" id="btn-replay">🔊 Escuchar</button>
+    <span id="replay-count" style="font-size:0.8em; color:#666;"></span>
+  </div>
+  <p id="quiz-question" style="font-weight:600; text-align:center;">¿Qué has oído?</p>
+  <div id="quiz-options"></div>
+  <div id="quiz-feedback"></div>
+  <button id="btn-next" class="hidden">Siguiente →</button>
+</div>
+
+<!-- ===================== MOOD ===================== -->
+<div id="screen-mood" class="card hidden">
+  <p style="font-weight:600;">¿Cómo te has sentido con este repaso?</p>
+  <div class="mood-btns">
+    <button data-mood="1">😣 Difícil</button>
+    <button data-mood="2">🙂 Normal</button>
+    <button data-mood="3">😄 Fácil</button>
+  </div>
+</div>
+
+<!-- ===================== FINAL ===================== -->
+<div id="screen-final" class="card hidden">
+  <h2>¡Resumen para André!</h2>
+  <div id="final-summary"></div>
+  <p style="margin-top:16px; font-weight:600;">Para papá — copia esto y pégalo en el chat:</p>
+  <textarea id="final-textarea" readonly></textarea>
+  <p class="warning-box" id="storage-warning" style="display:none;">
+    ⚠️ No se pudo guardar el histórico en este ordenador. Copia igualmente el texto de arriba.
+  </p>
+</div>
+
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  function isoLocal(d) {
+    const pad = n => String(n).padStart(2, '0');
+    const off = -d.getTimezoneOffset();
+    const sign = off >= 0 ? '+' : '-';
+    const abs = Math.abs(off);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+      + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+      + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+  }
+
+  const TOOL_NAME = "mus_audicion_silencio-sostenido_v1";
+  const STORAGE_KEY = "andre_" + TOOL_NAME;
+  const HISTORY_KEY = "andre_music_history";
+  const COMPLETED_KEY = "andre_music_completed";
+  const TOOL_TITLE = "¿Sigue sonando o hay silencio?";
+
+  // ---------- Registro de completado ----------
+  function readCompleted() {
+    try { return JSON.parse(localStorage.getItem(COMPLETED_KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function markCompleted(sessionJson) {
+    try {
+      const reg = readCompleted();
+      reg[TOOL_NAME] = {
+        title: TOOL_TITLE, date: sessionJson.session.end,
+        correct: sessionJson.score.correct, total: sessionJson.score.total, pct: sessionJson.score.pct,
+        times: (reg[TOOL_NAME] && reg[TOOL_NAME].times ? reg[TOOL_NAME].times : 0) + 1
+      };
+      localStorage.setItem(COMPLETED_KEY, JSON.stringify(reg));
+      return true;
+    } catch (e) { return false; }
+  }
+  (function showPreviousBanner() {
+    const prev = readCompleted()[TOOL_NAME];
+    if (!prev) return;
+    const el = document.getElementById('done-banner');
+    const d = new Date(prev.date);
+    const pad = n => String(n).padStart(2, '0');
+    const human = isNaN(d) ? prev.date : `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+    el.innerHTML = `✅ Ya completaste este ejercicio el <strong>${human}</strong> (${prev.correct}/${prev.total}). Puedes repetirlo cuando quieras.`;
+    el.classList.remove('hidden');
+  })();
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* sin persistencia */ }
+    location.reload();
+  });
+
+  // =====================================================================
+  // MODELO — compás de 2/4, 2 tiempos (negras) = 4 corcheas (slots 0-3).
+  // Tiempos fuertes con campanita: slots 0 y 2.
+  //   larga           → 1 nota que ocupa los 2 tiempos (blanca): start 0, dur 4.
+  //   corta_silencio  → negra en el 1 (start 0, dur 2), silencio en el 2.
+  //   silencio_corta  → silencio en el 1, negra en el 2 (start 2, dur 2).
+  // Verificado en teoria-musica/tests/check_silencio_sostenido_v1.js.
+  // =====================================================================
+  const PATTERNS = {
+    larga:          { attacks: [{ start: 0, dur: 4 }], label: "Nota larga (blanca, 2 tiempos)" },
+    corta_silencio: { attacks: [{ start: 0, dur: 2 }], label: "Nota (1 tiempo) + silencio" },
+    silencio_corta: { attacks: [{ start: 2, dur: 2 }], label: "Silencio + nota (1 tiempo)" }
+  };
+  const STRONG_SLOTS = [0, 2];
+  const TOTAL_SLOTS = 4;
+  const EIGHTH_MS_OPTIONS = [400, 440, 480];
+
+  // ---------- Audio (motor validado del refuerzo de síncopa) ----------
+  let audioCtx = null;
+  function ensureAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function scheduleClick(ctx, atTime, accent) {
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = accent ? 2200 : 1800;
+    const g = accent ? 0.34 : 0.30;
+    gain.gain.setValueAtTime(0.0001, atTime);
+    gain.gain.linearRampToValueAtTime(g, atTime + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.0001, atTime + 0.05);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(atTime); osc.stop(atTime + 0.06);
+  }
+  function scheduleTone(ctx, atTime, durSec, freq) {
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    const attack = 0.015, release = Math.min(0.08, durSec * 0.25), peak = 0.16;
+    gain.gain.setValueAtTime(0.0001, atTime);
+    gain.gain.linearRampToValueAtTime(peak, atTime + attack);
+    gain.gain.setValueAtTime(peak, Math.max(atTime + attack, atTime + durSec - release));
+    gain.gain.exponentialRampToValueAtTime(0.0001, atTime + durSec);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(atTime); osc.stop(atTime + durSec + 0.02);
+  }
+  function playPattern(type, opts) {
+    opts = opts || {};
+    const ctx = ensureAudioCtx();
+    const eighthMs = opts.eighthMs || EIGHTH_MS_OPTIONS[Math.floor(Math.random() * EIGHTH_MS_OPTIONS.length)];
+    const eighthSec = eighthMs / 1000;
+    const freq = opts.freq || 330;
+    const countIn = 2;
+    const patternStart = ctx.currentTime + 0.08 + countIn * 2 * eighthSec;
+    for (let i = 0; i < countIn; i++) scheduleClick(ctx, ctx.currentTime + 0.08 + i * 2 * eighthSec, false);
+    STRONG_SLOTS.forEach((slot, idx) => scheduleClick(ctx, patternStart + slot * eighthSec, idx === 0));
+    PATTERNS[type].attacks.forEach(a => scheduleTone(ctx, patternStart + a.start * eighthSec, a.dur * eighthSec, freq));
+    return (countIn * 2 + TOTAL_SLOTS) * eighthSec * 1000;
+  }
+  function playSequence(types, gapMs) {
+    let delay = 0;
+    types.forEach(t => { setTimeout(() => playPattern(t, {}), delay); delay += ((2 * 2 + TOTAL_SLOTS) * 460) + gapMs; });
+  }
+
+  // ---------- Diagramas ----------
+  function renderDiagram(id, type) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    // 2 casillas grandes = tiempo 1 y tiempo 2
+    const beatState = ['silence', 'silence']; // por tiempo
+    PATTERNS[type].attacks.forEach(a => {
+      const startBeat = Math.floor(a.start / 2);
+      const endBeat = Math.floor((a.start + a.dur - 1) / 2);
+      for (let b = startBeat; b <= endBeat; b++) beatState[b] = (b === startBeat) ? 'tone' : 'tone-cont';
+    });
+    for (let b = 0; b < 2; b++) {
+      const div = document.createElement('div');
+      const st = beatState[b];
+      div.className = 'beat strong' + (st === 'tone' ? ' tone' : st === 'tone-cont' ? ' tone-cont' : ' silence');
+      div.textContent = st === 'silence' ? 'silencio' : (st === 'tone' ? '♪ suena' : '… sigue');
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = 'tiempo ' + (b + 1) + ' 🔔';
+      div.appendChild(tag);
+      el.appendChild(div);
+    }
+  }
+  renderDiagram('d-larga', 'larga');
+  renderDiagram('d-corta', 'corta_silencio');
+  renderDiagram('d-silencio', 'silencio_corta');
+
+  document.querySelectorAll('[data-play]').forEach(btn => {
+    btn.addEventListener('click', () => playPattern(btn.getAttribute('data-play'), {}));
+  });
+  document.getElementById('btn-compare').addEventListener('click', () => {
+    playSequence(['larga', 'corta_silencio', 'silencio_corta'], 700);
+  });
+
+  // ---------- Navegación ----------
+  const screens = {
+    explain: document.getElementById('screen-explain'),
+    quiz: document.getElementById('screen-quiz'),
+    mood: document.getElementById('screen-mood'),
+    final: document.getElementById('screen-final')
+  };
+  function showOnly(name) { Object.keys(screens).forEach(k => screens[k].classList.toggle('hidden', k !== name)); }
+
+  // ---------- Banco de preguntas ----------
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+  function labelOf(t) { return PATTERNS[t].label; }
+
+  // Topics granulares (→ grupo "ritmo" en topics_map.json):
+  //   larga → dur_larga · corta_silencio → dur_corta_silencio · silencio_corta → dur_silencio_corta
+  const TOPIC = { larga: "dur_larga", corta_silencio: "dur_corta_silencio", silencio_corta: "dur_silencio_corta" };
+
+  // Bloque 1 (binario nuclear): larga vs corta_silencio — 5 ítems (3+2)
+  const block1 = shuffle(["larga", "larga", "larga", "corta_silencio", "corta_silencio"])
+    .map(t => ({ block: "bloque_1", options: ["larga", "corta_silencio"], type: t }));
+  // Bloque 2 (añade silencio_corta): las tres — 5 ítems (2 larga, 2 corta_silencio, 1 silencio_corta... reforzando)
+  const block2 = shuffle(["larga", "larga", "corta_silencio", "corta_silencio", "silencio_corta"])
+    .map(t => ({ block: "bloque_2", options: ["larga", "corta_silencio", "silencio_corta"], type: t }));
+
+  const QUEUE = block1.concat(block2);
+  const BLOCK_LABELS = { bloque_1: "Bloque 1: ¿Larga o cortada?", bloque_2: "Bloque 2: ¿Dónde está el sonido?" };
+  const block1Count = block1.length;
+
+  let qi = 0, itemStartTime = 0, replayCount = 0;
+  const MAX_REPLAYS = 3;
+  const results = [];
+  const sessionStart = new Date();
+
+  document.getElementById('btn-start').addEventListener('click', () => { showOnly('quiz'); renderQuestion(); });
+
+  function renderQuestion() {
+    const item = QUEUE[qi];
+    itemStartTime = Date.now();
+    replayCount = 0;
+    const idxInBlock = (item.block === "bloque_1" ? qi + 1 : qi - block1Count + 1);
+    const totalInBlock = (item.block === "bloque_1" ? block1.length : block2.length);
+    document.getElementById('progress').textContent = `${BLOCK_LABELS[item.block]} · Pregunta ${idxInBlock} de ${totalInBlock}`;
+    document.getElementById('quiz-feedback').innerHTML = '';
+    document.getElementById('btn-next').classList.add('hidden');
+    updateReplayLabel();
+
+    const optsWrap = document.getElementById('quiz-options');
+    optsWrap.innerHTML = '';
+    shuffle(item.options).forEach(optType => {
+      const b = document.createElement('button');
+      b.className = 'option-btn';
+      b.textContent = labelOf(optType);
+      b.addEventListener('click', () => handleAnswer(optType, item, b));
+      optsWrap.appendChild(b);
+    });
+    playPattern(item.type, {});
+    replayCount = 1;
+    updateReplayLabel();
+  }
+  function updateReplayLabel() {
+    const remaining = MAX_REPLAYS - replayCount;
+    document.getElementById('replay-count').textContent = remaining > 0 ? `(te quedan ${remaining} repetición(es))` : '(sin más repeticiones)';
+    document.getElementById('btn-replay').disabled = remaining <= 0;
+  }
+  document.getElementById('btn-replay').addEventListener('click', () => {
+    if (replayCount >= MAX_REPLAYS) return;
+    playPattern(QUEUE[qi].type, {});
+    replayCount++; updateReplayLabel();
+  });
+
+  function handleAnswer(chosenType, item, btnEl) {
+    const isCorrect = chosenType === item.type;
+    const timeSec = Math.round((Date.now() - itemStartTime) / 1000);
+    document.querySelectorAll('#quiz-options .option-btn').forEach(b => b.disabled = true);
+    const fb = document.getElementById('quiz-feedback');
+    if (isCorrect) {
+      btnEl.classList.add('correct');
+      fb.innerHTML = `<div class="feedback ok">✅ ¡Correcto! ${explain(item.type)}</div>`;
+    } else {
+      btnEl.classList.add('incorrect');
+      fb.innerHTML = `<div class="feedback bad">❌ Era <strong>${labelOf(item.type)}</strong>. ${explain(item.type)}</div>`;
+    }
+    results.push({
+      n: results.length + 1, block: item.block, topic: TOPIC[item.type],
+      expected: labelOf(item.type), answered: labelOf(chosenType),
+      correct: isCorrect, attempts: 1, time_sec: timeSec
+    });
+    document.getElementById('btn-next').classList.remove('hidden');
+  }
+  function explain(type) {
+    if (type === "larga") return "El sonido seguía sonando en el tiempo 2, sin golpe nuevo: una blanca.";
+    if (type === "corta_silencio") return "Sonaba en el 1 y en el 2 había silencio.";
+    return "En el 1 había silencio y la nota llegaba en el 2.";
+  }
+
+  document.getElementById('btn-next').addEventListener('click', () => {
+    qi++;
+    if (qi < QUEUE.length) renderQuestion();
+    else showOnly('mood');
+  });
+
+  let moodValue = null;
+  document.querySelectorAll('.mood-btns button').forEach(b => {
+    b.addEventListener('click', () => { moodValue = parseInt(b.getAttribute('data-mood'), 10); showFinal(); });
+  });
+
+  function showFinal() {
+    showOnly('final');
+    const sessionEnd = new Date();
+    const correctCount = results.filter(r => r.correct).length;
+    const total = results.length;
+    const pct = Math.round((correctCount / total) * 1000) / 10;
+    const blocks = ["bloque_1", "bloque_2"].map(bId => {
+      const items = results.filter(r => r.block === bId);
+      return { id: bId, label: BLOCK_LABELS[bId], correct: items.filter(r => r.correct).length, total: items.length };
+    });
+
+    // ¿Persiste la confusión larga <-> corta_silencio? (el error nuclear del dictado)
+    const coreConfusions = results.filter(r => !r.correct && (
+      (r.expected === PATTERNS.larga.label && r.answered === PATTERNS.corta_silencio.label) ||
+      (r.expected === PATTERNS.corta_silencio.label && r.answered === PATTERNS.larga.label)
+    )).length;
+
+    let html = `<p><strong>Resultado: ${correctCount} de ${total} (${pct}%)</strong></p><ul>`;
+    blocks.forEach(b => { html += `<li>${b.label}: ${b.correct}/${b.total}</li>`; });
+    html += `</ul>`;
+    if (coreConfusions > 0) {
+      html += `<p>💡 Todavía cuesta distinguir una nota larga de una nota + silencio. Vuelve a escuchar los dos primeros ejemplos: la diferencia está siempre en el tiempo 2.</p>`;
+    } else {
+      html += `<p>🎉 ¡Distingues bien cuándo el sonido sigue y cuándo hay silencio! Esto te ayudará en los dictados.</p>`;
+    }
+    document.getElementById('final-summary').innerHTML = html;
+
+    const sessionJson = {
+      schema: "andre-music-log/v1",
+      tool: TOOL_NAME,
+      category: "audicion",
+      scoring: "auto",
+      session: {
+        start: isoLocal(sessionStart), end: isoLocal(sessionEnd),
+        duration_sec: Math.round((sessionEnd - sessionStart) / 1000)
+      },
+      score: { correct: correctCount, total: total, pct: pct },
+      blocks: blocks,
+      items: results,
+      mood: moodValue
+    };
+
+    const human =
+      `¿Sigue sonando o hay silencio? · ${fmt(sessionEnd)}\n` +
+      `Resultado: ${correctCount} de ${total} (${pct}%)\n` +
+      `Bloques: ${blocks.map(b => b.label + " " + b.correct + "/" + b.total).join(' · ')}\n` +
+      `---JSON---\n` + JSON.stringify(sessionJson, null, 0);
+    document.getElementById('final-textarea').value = human;
+
+    try {
+      const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      hist.push(sessionJson);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionJson));
+    } catch (e) { document.getElementById('storage-warning').style.display = 'block'; }
+    if (!markCompleted(sessionJson)) document.getElementById('storage-warning').style.display = 'block';
+  }
+  function fmt(d) { const p = n => String(n).padStart(2, '0'); return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+
+  showOnly('explain');
+})();
+</script>
+</body>
+</html>

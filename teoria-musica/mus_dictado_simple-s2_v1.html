@@ -81,6 +81,16 @@
   .resumen-btns{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
   #avisoCopia{font-size:.85rem; color:var(--ok); margin-left:4px; align-self:center;}
   .btn-reset{font-family:inherit; font-size:.85rem; background:none; border:1px solid var(--linea); color:var(--gris); border-radius:18px; padding:6px 14px; cursor:pointer;}
+  .navbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px;
+  }
+  .navbar button, .navbar a {
+    font-family: inherit; font-size: 0.9em; padding: 8px 14px;
+    border: 2px solid #666; border-radius: 8px; background: #fff;
+    color: #000; text-decoration: none; cursor: pointer; display: inline-block;
+  }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
 </style>
 </head>
 <body>
@@ -141,6 +151,11 @@
 
   <div style="margin-top:16px"><button class="btn-reset" onclick="resetTodo()">Reiniciar progreso</button></div>
 
+  <div class="navbar">
+    <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+    <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+  </div>
+
 </div>
 
 <script>
@@ -156,6 +171,11 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+document.getElementById('btn-reset').addEventListener('click', function () {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_mus_dictado_simple-s2_v1'); } catch (e) { /* sin persistencia */ }
+  location.reload();
+});
 function isoLocal(d) {
   const pad = n => String(n).padStart(2, '0');
   const off = -d.getTimezoneOffset();
@@ -386,7 +406,7 @@ function buildSessionData(moodVal){
   });
   var pct=total>0?Math.round(correct/total*1000)/10:0;
   return {
-    schema:"andre-music-log/v1", tool:"mus_dictado_simple-s2_v1", category:"dictado",
+    schema:"andre-music-log/v1", tool:"mus_dictado_simple-s2_v1", category:"dictado", scoring:"self",
     session:{start:isoLocal(startDate), end:isoLocal(now), duration_sec:durationSec},
     score:{correct:correct, total:total, pct:pct}, blocks:blocks, items:items, mood:moodVal
   };

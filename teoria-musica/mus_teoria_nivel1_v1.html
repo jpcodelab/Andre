@@ -108,6 +108,16 @@
   .nota-pie{color:var(--suave);font-size:14px;margin-top:30px;border-top:1px solid var(--linea);padding-top:12px;}
   .oculto{display:none;}
   @media print{button{display:none;}}
+  .navbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px;
+  }
+  .navbar button, .navbar a {
+    font-family: inherit; font-size: 0.9em; padding: 8px 14px;
+    border: 2px solid #666; border-radius: 8px; background: #fff;
+    color: #000; text-decoration: none; cursor: pointer; display: inline-block;
+  }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
 </style>
 </head>
 <body>
@@ -210,6 +220,11 @@
     <p class="nota-pie">Hecho para André. Contenido basado en su libro de lenguaje musical (Unidades 10 a 16 y repaso de las Unidades 1 a 5).</p>
   </section>
 
+  <div class="navbar">
+    <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+    <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+  </div>
+
 </div>
 
 <script>
@@ -225,6 +240,11 @@
     } catch (e) { /* quota o privado: no crítico */ }
   }
 })();
+document.getElementById('btn-reset').addEventListener('click', function () {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_mus_teoria_nivel1_v1'); } catch (e) { /* sin persistencia */ }
+  location.reload();
+});
 function isoLocal(d) {
   const pad = n => String(n).padStart(2, '0');
   const off = -d.getTimezoneOffset();
@@ -696,7 +716,7 @@ function buildSessionData(moodVal){
     };
   });
   return {
-    schema: 'andre-music-log/v1', tool: 'mus_teoria_nivel1_v1', category: 'teoria',
+    schema: 'andre-music-log/v1', tool: 'mus_teoria_nivel1_v1', category: 'teoria', scoring: 'auto',
     session: {start: isoLocal(startDate), end: isoLocal(now), duration_sec: durationSec},
     score: {correct: correct, total: total, pct: pct},
     blocks: [], items: sessionItems, mood: moodVal

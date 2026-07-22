@@ -1,0 +1,38 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_audicion_puente-sincopa_v1",
+  "category": "audicion",
+  "scoring": "auto",
+  "_migration_note": "scoring añadido retroactivamente (MUSIC_GUIDE v1.3) — este registro se generó antes de que el campo existiera.",
+  "session": {
+    "start": "2026-07-21T09:53:41+01:00",
+    "end": "2026-07-21T09:59:36+01:00",
+    "duration_sec": 355
+  },
+  "score": { "correct": 11, "total": 18, "pct": 61.1 },
+  "blocks": [
+    { "id": "fase_1", "label": "Fase 1: Normal vs Contratiempo", "correct": 6, "total": 8 },
+    { "id": "fase_2", "label": "Fase 2: Normal vs Contratiempo vs Síncopa", "correct": 5, "total": 10 }
+  ],
+  "items": [
+    { "n": 1, "block": "fase_1", "topic": "contratiempo", "expected": "contratiempo", "answered": "contratiempo", "correct": true, "attempts": 1, "time_sec": 11 },
+    { "n": 2, "block": "fase_1", "topic": "ritmo_normal", "expected": "normal", "answered": "normal", "correct": true, "attempts": 1, "time_sec": 9 },
+    { "n": 3, "block": "fase_1", "topic": "ritmo_normal", "expected": "normal", "answered": "normal", "correct": true, "attempts": 1, "time_sec": 7 },
+    { "n": 4, "block": "fase_1", "topic": "contratiempo", "expected": "contratiempo", "answered": "contratiempo", "correct": true, "attempts": 1, "time_sec": 26 },
+    { "n": 5, "block": "fase_1", "topic": "ritmo_normal", "expected": "normal", "answered": "contratiempo", "correct": false, "attempts": 1, "time_sec": 18 },
+    { "n": 6, "block": "fase_1", "topic": "contratiempo", "expected": "contratiempo", "answered": "normal", "correct": false, "attempts": 1, "time_sec": 15 },
+    { "n": 7, "block": "fase_1", "topic": "contratiempo", "expected": "contratiempo", "answered": "contratiempo", "correct": true, "attempts": 1, "time_sec": 7 },
+    { "n": 8, "block": "fase_1", "topic": "ritmo_normal", "expected": "normal", "answered": "normal", "correct": true, "attempts": 1, "time_sec": 10 },
+    { "n": 9, "block": "fase_2", "topic": "sincopa", "expected": "sincopa", "answered": "contratiempo", "correct": false, "attempts": 1, "time_sec": 14 },
+    { "n": 10, "block": "fase_2", "topic": "sincopa", "expected": "sincopa", "answered": "sincopa", "correct": true, "attempts": 1, "time_sec": 14 },
+    { "n": 11, "block": "fase_2", "topic": "sincopa", "expected": "sincopa", "answered": "normal", "correct": false, "attempts": 1, "time_sec": 13 },
+    { "n": 12, "block": "fase_2", "topic": "contratiempo", "expected": "contratiempo", "answered": "contratiempo", "correct": true, "attempts": 1, "time_sec": 6 },
+    { "n": 13, "block": "fase_2", "topic": "ritmo_normal", "expected": "normal", "answered": "sincopa", "correct": false, "attempts": 1, "time_sec": 4 },
+    { "n": 14, "block": "fase_2", "topic": "contratiempo", "expected": "contratiempo", "answered": "contratiempo", "correct": true, "attempts": 1, "time_sec": 9 },
+    { "n": 15, "block": "fase_2", "topic": "ritmo_normal", "expected": "normal", "answered": "sincopa", "correct": false, "attempts": 1, "time_sec": 9 },
+    { "n": 16, "block": "fase_2", "topic": "ritmo_normal", "expected": "normal", "answered": "normal", "correct": true, "attempts": 1, "time_sec": 6 },
+    { "n": 17, "block": "fase_2", "topic": "contratiempo", "expected": "contratiempo", "answered": "normal", "correct": false, "attempts": 1, "time_sec": 22 },
+    { "n": 18, "block": "fase_2", "topic": "sincopa", "expected": "sincopa", "answered": "sincopa", "correct": true, "attempts": 1, "time_sec": 8 }
+  ],
+  "mood": 2
+}

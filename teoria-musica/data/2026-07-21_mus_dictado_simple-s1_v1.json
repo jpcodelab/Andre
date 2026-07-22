@@ -1,0 +1,29 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_dictado_simple-s1_v1",
+  "category": "dictado",
+  "scoring": "self",
+  "_migration_note": "scoring añadido retroactivamente (MUSIC_GUIDE v1.3) — en esta sesión (21/07) la herramienta aún no tenía el bloqueo de suma de tiempos (self_guarded); era autoevaluación pura.",
+  "session": {
+    "start": "2026-07-21T10:01:01+01:00",
+    "end": "2026-07-21T10:10:15+01:00",
+    "duration_sec": 554
+  },
+  "score": { "correct": 7, "total": 9, "pct": 77.8 },
+  "blocks": [
+    { "id": "bloque_1", "label": "Bloque 1 (4/4)", "correct": 4, "total": 5 },
+    { "id": "bloque_2", "label": "Bloque 2 (3/4)", "correct": 3, "total": 4 }
+  ],
+  "items": [
+    { "n": 1, "block": "bloque_1", "topic": "compas_4", "expected": "negra negra negra negra", "answered": "negra negra negra", "correct": true, "attempts": 1, "time_sec": 66 },
+    { "n": 2, "block": "bloque_1", "topic": "compas_4", "expected": "corcheas negra negra negra", "answered": "corcheas negra negra negra", "correct": true, "attempts": 1, "time_sec": 40 },
+    { "n": 3, "block": "bloque_1", "topic": "compas_4", "expected": "negra silencio negra negra", "answered": "blanca negra negra", "correct": true, "attempts": 1, "time_sec": 55 },
+    { "n": 4, "block": "bloque_1", "topic": "compas_4", "expected": "corcheas corcheas negra negra", "answered": "corcheas corcheas negra negra", "correct": true, "attempts": 1, "time_sec": 27 },
+    { "n": 5, "block": "bloque_1", "topic": "compas_4", "expected": "negra corcheas silencio negra", "answered": "negra corcheas blanca", "correct": false, "attempts": 1, "time_sec": 101 },
+    { "n": 6, "block": "bloque_2", "topic": "compas_3", "expected": "negra negra negra", "answered": "negra negra negra", "correct": true, "attempts": 1, "time_sec": 45 },
+    { "n": 7, "block": "bloque_2", "topic": "compas_3", "expected": "corcheas negra negra", "answered": "corcheas negra negra", "correct": true, "attempts": 1, "time_sec": 23 },
+    { "n": 8, "block": "bloque_2", "topic": "compas_3", "expected": "negra blanca", "answered": "negra silencio negra", "correct": false, "attempts": 1, "time_sec": 76 },
+    { "n": 9, "block": "bloque_2", "topic": "compas_3", "expected": "negra corcheas negra", "answered": "negra corcheas negra", "correct": true, "attempts": 1, "time_sec": 71 }
+  ],
+  "mood": 3
+}

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dictado rítmico en 3/8 · André</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --line:#111; --soft:#666; --box:#e8e8e8; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background:#fff; color:#000;
+    margin:0; padding:1.2rem;
+    line-height:1.55;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-size:1.5rem; margin:0 0 .2rem; }
+  h2 { font-size:1.15rem; margin:1.4rem 0 .5rem; }
+  .sub { color:var(--soft); font-size:.92rem; margin:0 0 1.2rem; }
+  .card { border:2px solid var(--line); padding:1rem 1.1rem; margin:1rem 0; }
+  .warn { border:2px dashed var(--line); padding:.7rem .9rem; font-size:.92rem; margin:1rem 0; }
+  button {
+    font-family:inherit; font-size:1rem;
+    background:#fff; color:#000;
+    border:2px solid var(--line); padding:.55rem 1rem;
+    cursor:pointer; margin:.25rem .3rem .25rem 0;
+  }
+  button:hover:not(:disabled) { background:var(--box); }
+  button:disabled { opacity:.35; cursor:not-allowed; }
+  button.primary { font-weight:700; }
+  .glyph { font-size:1.9rem; letter-spacing:.35rem; line-height:1.2; }
+  .opt { display:block; width:100%; text-align:left; }
+  .opt .glyph { font-size:1.7rem; }
+  .palette button { font-size:1.7rem; min-width:3.4rem; padding:.35rem .6rem; }
+  .slot {
+    border:2px solid var(--line); min-height:3.6rem;
+    padding:.4rem .6rem; margin:.4rem 0;
+    display:flex; align-items:center; flex-wrap:wrap; gap:.5rem;
+  }
+  .slot .tok { font-size:1.7rem; cursor:pointer; border-bottom:2px solid transparent; }
+  .slot .tok:hover { border-bottom-color:var(--line); }
+  .count { font-size:.88rem; color:var(--soft); }
+  .fb { border-left:5px solid var(--line); padding:.5rem .8rem; margin:.8rem 0; }
+  .prog { font-size:.85rem; color:var(--soft); margin-bottom:.4rem; }
+  textarea { width:100%; height:16rem; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.78rem; padding:.6rem; border:2px solid var(--line); }
+  ul { margin:.4rem 0 .4rem 1.1rem; padding:0; }
+  li { margin:.2rem 0; }
+  .hide { display:none; }
+  table { border-collapse:collapse; width:100%; font-size:.92rem; margin:.5rem 0; }
+  td, th { border:1px solid var(--line); padding:.35rem .5rem; text-align:left; }
+  .navbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid #ccc; margin-top: 24px; padding-top: 12px;
+  }
+  .navbar button, .navbar a {
+    font-family: inherit; font-size: 0.9em; padding: 8px 14px;
+    border: 2px solid #666; border-radius: 8px; background: #fff;
+    color: #000; text-decoration: none; cursor: pointer; display: inline-block;
+  }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="scr-intro">
+  <h1>Dictado rítmico en 3/8</h1>
+  <p class="sub">Compases con unidad de tiempo <strong>corchea</strong> · Paso 2</p>
+
+  <div class="warn">
+    <strong>Necesitas sonido.</strong> Sube el volumen o ponte los auriculares.
+    Usa Chrome o Edge. Esta herramienta no funciona sin conexión.
+  </div>
+
+  <div class="card">
+    <h2>¿Qué es el compás de 3/8?</h2>
+    <p>El número de abajo (el <strong>8</strong>) te dice qué figura vale un tiempo:
+    la <strong>corchea</strong> (♪). El de arriba (el <strong>3</strong>) te dice
+    cuántas caben: <strong>tres corcheas</strong> en cada compás.</p>
+    <p>3/8 es un compás <strong>simple</strong>, igual que 3/4. Lo único que cambia
+    es la figura que hace de tiempo: en 3/4 es la negra, en 3/8 es la corchea.</p>
+    <table>
+      <tr><th>Figura</th><th>Se escribe</th><th>Vale</th></tr>
+      <tr><td>Corchea</td><td class="glyph">♪</td><td>1 tiempo</td></tr>
+      <tr><td>Silencio de corchea</td><td class="glyph">𝄾</td><td>1 tiempo (callado)</td></tr>
+      <tr><td>Negra</td><td class="glyph">♩</td><td>2 tiempos</td></tr>
+      <tr><td>Negra con puntillo</td><td class="glyph">♩.</td><td>3 tiempos = el compás entero</td></tr>
+    </table>
+    <p>La <strong>negra con puntillo</strong> es la <em>unidad de compás</em> de 3/8:
+    una sola figura que ocupa el compás completo.</p>
+  </div>
+
+  <div class="card">
+    <h2>Cómo se trabaja esto</h2>
+    <p>No vale con mirarlo. El orden es siempre:</p>
+    <ul>
+      <li><strong>Escuchar</strong> — sin tocar nada.</li>
+      <li><strong>Interiorizar</strong> — marca el pulso con la mano: 1-2-3.</li>
+      <li><strong>Cantar</strong> — di el ritmo en voz alta antes de responder.</li>
+    </ul>
+    <p class="count">Duración estimada: 12-15 minutos.</p>
+  </div>
+
+  <button class="primary" id="btn-start">Empezar</button>
+</div>
+
+<div id="scr-q" class="hide">
+  <div class="prog" id="prog"></div>
+  <h2 id="q-title"></h2>
+  <p id="q-text" class="sub"></p>
+
+  <div class="card">
+    <button id="btn-play">▶ Escuchar</button>
+    <span class="count" id="listen-info"></span>
+  </div>
+
+  <div id="area"></div>
+
+  <div id="fb-box"></div>
+
+  <div>
+    <button class="primary" id="btn-check" disabled>Comprobar</button>
+    <button class="primary hide" id="btn-next">Siguiente</button>
+  </div>
+</div>
+
+<div id="scr-mood" class="hide">
+  <h2>¿Cómo te has sentido?</h2>
+  <p class="sub">Responde con sinceridad. Sirve para preparar la sesión siguiente.</p>
+  <button data-mood="1">😖 Difícil</button>
+  <button data-mood="2">😐 Normal</button>
+  <button data-mood="3">😄 Fácil y divertido</button>
+  <div><button id="btn-skip-mood">Prefiero no responder</button></div>
+</div>
+
+<div id="scr-end" class="hide">
+  <h1>Sesión terminada</h1>
+  <div id="summary"></div>
+  <h2>Registro para papá</h2>
+  <p class="sub">Copia todo este bloque y pégaselo tal cual.</p>
+  <textarea id="log" readonly></textarea>
+  <button class="primary" id="btn-copy">Copiar registro</button>
+  <span class="count" id="copy-info"></span>
+</div>
+
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</div>
+
+</div>
+
+<script>
+/* ============================================================
+   mus_dictado_3-8_v1
+   Dictado rítmico en 3/8 (compás simple, unidad de tiempo corchea)
+   Conforme a MUSIC_GUIDE.md v1.2
+   localStorage: andre_mus_dictado_3-8_v1 · andre_music_history
+   ============================================================ */
+
+/* ---------- Helper de timestamp con zona horaria (MUSIC_GUIDE §3.4) ---------- */
+function isoLocal(d) {
+  const pad = n => String(n).padStart(2, '0');
+  const off = -d.getTimezoneOffset();
+  const sign = off >= 0 ? '+' : '-';
+  const abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+
+/* ---------- Vocabulario de figuras ---------- */
+/* Valores en corcheas. El compás de 3/8 suma exactamente 3. */
+var VALUES = { 'N.': 3, 'N': 2, 'C': 1, 's': 1 };
+var GLYPH  = { 'N.': '\u2669.', 'N': '\u2669', 'C': '\u266A', 's': '\uD834\uDD3E' };
+
+function tokens(pattern) { return pattern.split('-'); }
+function sumPattern(pattern) {
+  return tokens(pattern).reduce(function (a, t) { return a + VALUES[t]; }, 0);
+}
+function render(pattern) {
+  return tokens(pattern).map(function (t) { return GLYPH[t]; }).join(' ');
+}
+function renderMulti(pattern) {
+  return pattern.split('|').map(render).join('   |   ');
+}
+
+/* ---------- Audio ---------- */
+var EIGHTH_BPM = 100;            // corchea = 100 BPM
+var EIGHTH_SEC = 60 / EIGHTH_BPM; // 0.6 s por corchea; compás = 1.8 s
+var ctx = null;
+
+function audio() {
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state === 'suspended') ctx.resume();
+  return ctx;
+}
+
+function tone(at, dur, freq, gain) {
+  var a = audio();
+  var osc = a.createOscillator();
+  var g = a.createGain();
+  osc.type = 'triangle';
+  osc.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, at);
+  g.gain.exponentialRampToValueAtTime(gain, at + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  osc.connect(g); g.connect(a.destination);
+  osc.start(at); osc.stop(at + dur + 0.05);
+}
+
+/* Reproduce claqueta + patrón. Devuelve Promise con la duración total en ms. */
+function play(pattern, opts) {
+  opts = opts || {};
+  var a = audio();
+  var t = a.currentTime + 0.25;
+  var start = t;
+
+  // Claqueta: 3 corcheas, la primera con timbre distinto
+  for (var i = 0; i < 3; i++) {
+    tone(t + i * EIGHTH_SEC, 0.07, i === 0 ? 1320 : 880, 0.20);
+  }
+  t += 3 * EIGHTH_SEC + EIGHTH_SEC * 0.0;
+
+  var compases = pattern.split('|');
+  for (var c = 0; c < compases.length; c++) {
+    var pos = 0;
+    var toks = tokens(compases[c]);
+    for (var j = 0; j < toks.length; j++) {
+      var tk = toks[j];
+      var val = VALUES[tk];
+      if (tk !== 's') {
+        var isDownbeat = (pos === 0);
+        var useAccent = isDownbeat && opts.accent !== false;
+        tone(
+          t + pos * EIGHTH_SEC,
+          val * EIGHTH_SEC * 0.85,
+          useAccent ? 660 : 440,
+          useAccent ? 0.30 : 0.22
+        );
+      }
+      pos += val;
+    }
+    t += 3 * EIGHTH_SEC;
+  }
+
+  var totalMs = (t - start) * 1000 + 120;
+  return new Promise(function (res) { setTimeout(function () { res(totalMs); }, totalMs); });
+}
+
+/* ---------- Banco de ítems ---------- */
+/* Todos los patrones verificados: cada compás suma exactamente 3 corcheas.
+   Verificación adicional en teoria-musica/tests/test_dictado_3-8.js */
+
+var ITEMS = [
+  /* --- Bloque 0: calibración (no puntuado) --- */
+  { block:'calibracion', topic:'dictado_3-8_calibracion', pattern:'N.',
+    kind:'warmup', accent:true,
+    title:'Calentamiento 1 de 2',
+    text:'Escucha. Marca el pulso con la mano: 1 - 2 - 3. Este compás es UNA sola figura larga que dura los tres tiempos. Dila en voz alta: "taaaa". Cuando lo hayas hecho, pulsa el botón.' },
+
+  { block:'calibracion', topic:'dictado_3-8_calibracion', pattern:'C-C-C',
+    kind:'warmup', accent:true,
+    title:'Calentamiento 2 de 2',
+    text:'Escucha. Marca el pulso: 1 - 2 - 3. Ahora hay una nota en cada tiempo. Dilo en voz alta: "ta - ta - ta". Cuando lo hayas hecho, pulsa el botón.' },
+
+  /* --- Bloque 1: identificar (4 ítems) --- */
+  { block:'identificar', topic:'dictado_3-8_unidad-compas', pattern:'N.',
+    kind:'choice', accent:true, options:['N.', 'C-C-C', 'N-C'],
+    title:'Identificar 1 de 4',
+    text:'Suena el compás dos veces. ¿Cuál de los tres es?' },
+
+  { block:'identificar', topic:'dictado_3-8_tres-corcheas', pattern:'C-C-C',
+    kind:'choice', accent:true, options:['N-C', 'C-C-C', 'N.'],
+    title:'Identificar 2 de 4',
+    text:'Cuenta cuántos golpes oyes dentro del compás.' },
+
+  { block:'identificar', topic:'dictado_3-8_negra-corchea', pattern:'N-C',
+    kind:'choice', accent:true, options:['C-C-C', 'N-C', 'N.'],
+    title:'Identificar 3 de 4',
+    text:'¿La primera nota dura uno o dos tiempos?' },
+
+  { block:'identificar', topic:'dictado_3-8_negra-corchea', pattern:'N-C',
+    kind:'choice', accent:true, options:['N-C', 'C-N', 'C-C-C'],
+    title:'Identificar 4 de 4',
+    text:'Cuidado: las dos primeras opciones tienen las mismas figuras, pero en distinto orden. ¿Cuál va primero, la larga o la corta?' },
+
+  /* --- Bloque 2: construir (4 ítems) --- */
+  { block:'construir', topic:'dictado_3-8_corchea-negra', pattern:'C-N',
+    kind:'build', accent:true, slots:1,
+    title:'Construir 1 de 4',
+    text:'Escucha y monta el compás con las figuras. Tiene que sumar 3 tiempos.' },
+
+  { block:'construir', topic:'dictado_3-8_silencio', pattern:'C-s-C',
+    kind:'build', accent:true, slots:1,
+    title:'Construir 2 de 4',
+    text:'Ojo: aquí hay un hueco. Un tiempo en el que no suena nada. ¿En qué tiempo está?' },
+
+  { block:'construir', topic:'dictado_3-8_silencio', pattern:'s-C-C',
+    kind:'build', accent:true, slots:1,
+    title:'Construir 3 de 4',
+    text:'Este empieza callado. La primera nota NO cae en el tiempo 1.' },
+
+  { block:'construir', topic:'dictado_3-8_negra-corchea', pattern:'N-C',
+    kind:'build', accent:true, slots:1,
+    title:'Construir 4 de 4',
+    text:'Ahora móntalo tú, sin opciones donde elegir.' },
+
+  /* --- Bloque 3: dictado de 2 compases, SIN acento (2 ítems) --- */
+  { block:'dictado2', topic:'dictado_3-8_dos-compases', pattern:'C-C-C|N.',
+    kind:'build', accent:false, slots:2,
+    title:'Dictado largo 1 de 2',
+    text:'Dos compases seguidos. A partir de aquí el tiempo 1 ya NO suena más fuerte: tienes que contarlo tú.' },
+
+  { block:'dictado2', topic:'dictado_3-8_dos-compases', pattern:'N-C|C-N',
+    kind:'build', accent:false, slots:2,
+    title:'Dictado largo 2 de 2',
+    text:'Los dos compases llevan las mismas figuras, pero en distinto orden. Escucha dónde cae la nota larga.' }
+];
+
+var MAX_LISTENS = { calibracion: Infinity, identificar: Infinity, construir: 3, dictado2: 2 };
+
+var BLOCK_LABELS = {
+  calibracion: 'Calentamiento',
+  identificar: 'Identificar',
+  construir: 'Construir',
+  dictado2: 'Dictado de 2 compases'
+};
+
+/* ---------- Estado ---------- */
+var idx = 0;
+var results = [];
+var sessionStart = new Date();
+var mood = null;
+
+var cur = null; // estado del ítem en curso
+
+var $ = function (id) { return document.getElementById(id); };
+function show(id) {
+  ['scr-intro','scr-q','scr-mood','scr-end'].forEach(function (s) {
+    $(s).classList.toggle('hide', s !== id);
+  });
+}
+
+/* ---------- Ciclo de pregunta ---------- */
+function startItem() {
+  if (idx >= ITEMS.length) { show('scr-mood'); return; }
+  var it = ITEMS[idx];
+
+  cur = {
+    item: it,
+    listens: 0,
+    listenMs: 0,
+    extraListenMs: 0,   // escuchas posteriores a la habilitación de la respuesta
+    t0: null,           // se fija cuando la interfaz de respuesta queda habilitada
+    answered: null,
+    attempts: 0,
+    playing: false
+  };
+
+  $('prog').textContent = 'Bloque: ' + BLOCK_LABELS[it.block] +
+    '  ·  Pregunta ' + (idx + 1) + ' de ' + ITEMS.length;
+  $('q-title').textContent = it.title;
+  $('q-text').textContent = it.text;
+  $('fb-box').innerHTML = '';
+  $('btn-next').classList.add('hide');
+  $('btn-check').classList.remove('hide');
+  $('btn-check').disabled = true;
+  $('btn-play').disabled = false;
+  updateListenInfo();
+  buildArea(it);
+  show('scr-q');
+}
+
+function updateListenInfo() {
+  var max = MAX_LISTENS[cur.item.block];
+  $('listen-info').textContent = (max === Infinity)
+    ? 'Escuchas: ' + cur.listens + ' (sin límite)'
+    : 'Escuchas: ' + cur.listens + ' de ' + max;
+}
+
+$('btn-play').addEventListener('click', function () {
+  if (cur.playing) return;
+  var max = MAX_LISTENS[cur.item.block];
+  if (cur.listens >= max) return;
+  cur.playing = true;
+  $('btn-play').disabled = true;
+  var wasEnabled = cur.t0 !== null;
+  var pStart = Date.now();
+
+  play(cur.item.pattern, { accent: cur.item.accent }).then(function () {
+    var dur = Date.now() - pStart;
+    cur.listens += 1;
+    cur.listenMs += dur;
+    if (wasEnabled) cur.extraListenMs += dur;
+    cur.playing = false;
+    updateListenInfo();
+    if (cur.listens < MAX_LISTENS[cur.item.block]) $('btn-play').disabled = false;
+
+    // t0 = instante en que la interfaz de respuesta queda habilitada
+    if (cur.t0 === null) {
+      cur.t0 = Date.now();
+      enableAnswer();
+    }
+  });
+});
+
+function enableAnswer() {
+  var it = cur.item;
+  if (it.kind === 'warmup') {
+    $('btn-check').disabled = false;
+    $('btn-check').textContent = 'Ya lo he hecho';
+  } else if (it.kind === 'choice') {
+    Array.prototype.forEach.call(document.querySelectorAll('#area button'), function (b) {
+      b.disabled = false;
+    });
+  } else {
+    Array.prototype.forEach.call(document.querySelectorAll('#area button'), function (b) {
+      b.disabled = false;
+    });
+    refreshBuild();
+  }
+}
+
+/* ---------- Construcción del área de respuesta ---------- */
+var buildState = [];
+
+function buildArea(it) {
+  var area = $('area');
+  area.innerHTML = '';
+  $('btn-check').textContent = 'Comprobar';
+
+  if (it.kind === 'warmup') {
+    var p = document.createElement('p');
+    p.className = 'count';
+    p.textContent = 'Escucha primero, luego marca el pulso y dilo en voz alta.';
+    area.appendChild(p);
+    return;
+  }
+
+  if (it.kind === 'choice') {
+    var opts = shuffle(it.options.slice());
+    var card = document.createElement('div');
+    card.className = 'card';
+    opts.forEach(function (o) {
+      var b = document.createElement('button');
+      b.className = 'opt';
+      b.disabled = true;
+      b.innerHTML = '<span class="glyph">' + render(o) + '</span>';
+      b.addEventListener('click', function () {
+        cur.answered = o;
+        Array.prototype.forEach.call(card.querySelectorAll('button'), function (x) {
+          x.style.background = '#fff';
+        });
+        b.style.background = '#e8e8e8';
+        $('btn-check').disabled = false;
+      });
+      card.appendChild(b);
+    });
+    area.appendChild(card);
+    return;
+  }
+
+  // build
+  buildState = [];
+  for (var s = 0; s < it.slots; s++) buildState.push([]);
+
+  var pal = document.createElement('div');
+  pal.className = 'card palette';
+  var lbl = document.createElement('div');
+  lbl.className = 'count';
+  lbl.textContent = 'Pulsa una figura para añadirla. Pulsa una figura ya puesta para quitarla.';
+  pal.appendChild(lbl);
+
+  ['N.', 'N', 'C', 's'].forEach(function (tk) {
+    var b = document.createElement('button');
+    b.disabled = true;
+    b.textContent = GLYPH[tk];
+    b.title = { 'N.': 'negra con puntillo (3)', 'N': 'negra (2)', 'C': 'corchea (1)', 's': 'silencio de corchea (1)' }[tk];
+    b.addEventListener('click', function () { addToken(tk); });
+    pal.appendChild(b);
+  });
+  area.appendChild(pal);
+
+  for (var k = 0; k < it.slots; k++) {
+    var h = document.createElement('div');
+    h.className = 'count';
+    h.textContent = it.slots > 1 ? ('Compás ' + (k + 1)) : 'Tu compás';
+    area.appendChild(h);
+    var slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.id = 'slot-' + k;
+    area.appendChild(slot);
+    var c = document.createElement('div');
+    c.className = 'count';
+    c.id = 'cnt-' + k;
+    area.appendChild(c);
+  }
+  refreshBuild();
+}
+
+var activeSlot = 0;
+
+function addToken(tk) {
+  var it = cur.item;
+  // añade al primer compás que no esté completo
+  for (var k = 0; k < it.slots; k++) {
+    var sum = buildState[k].reduce(function (a, t) { return a + VALUES[t]; }, 0);
+    if (sum + VALUES[tk] <= 3) { buildState[k].push(tk); refreshBuild(); return; }
+    if (sum < 3) { /* no cabe esta figura aquí, probar siguiente compás no procede */ break; }
+  }
+  refreshBuild();
+}
+
+function refreshBuild() {
+  var it = cur.item;
+  var allFull = true;
+  for (var k = 0; k < it.slots; k++) {
+    var slot = $('slot-' + k);
+    if (!slot) continue;
+    slot.innerHTML = '';
+    buildState[k].forEach(function (tk, i) {
+      var sp = document.createElement('span');
+      sp.className = 'tok';
+      sp.textContent = GLYPH[tk];
+      sp.addEventListener('click', function () {
+        if (cur.t0 === null) return;
+        buildState[k].splice(i, 1);
+        refreshBuild();
+      });
+      slot.appendChild(sp);
+    });
+    var sum = buildState[k].reduce(function (a, t) { return a + VALUES[t]; }, 0);
+    $('cnt-' + k).textContent = sum + ' de 3 tiempos' + (sum === 3 ? ' \u2713' : '');
+    if (sum !== 3) allFull = false;
+  }
+  $('btn-check').disabled = !(allFull && cur.t0 !== null);
+  if (allFull) {
+    cur.answered = buildState.map(function (arr) { return arr.join('-'); }).join('|');
+  } else {
+    cur.answered = null;
+  }
+}
+
+function shuffle(a) {
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* ---------- Comprobación ---------- */
+$('btn-check').addEventListener('click', function () {
+  var it = cur.item;
+  var t1 = Date.now();
+  var rawMs = t1 - (cur.t0 === null ? t1 : cur.t0) - cur.extraListenMs;
+  var timeSec = Math.max(0, Math.round(rawMs / 1000));
+  cur.attempts += 1;
+
+  var isWarmup = (it.kind === 'warmup');
+  var answered = isWarmup ? 'realizado' : cur.answered;
+  var correct = isWarmup ? null : (answered === it.pattern);
+
+  results.push({
+    n: results.length + 1,
+    block: it.block,
+    topic: it.topic,
+    expected: isWarmup ? null : it.pattern,
+    answered: answered,
+    correct: correct,
+    attempts: cur.attempts,
+    time_sec: timeSec,
+    listens: cur.listens,
+    listen_sec: Math.round(cur.listenMs / 1000)
+  });
+
+  $('btn-check').classList.add('hide');
+  $('btn-next').classList.remove('hide');
+  $('btn-play').disabled = true;
+  Array.prototype.forEach.call(document.querySelectorAll('#area button'), function (b) { b.disabled = true; });
+
+  $('fb-box').innerHTML = feedback(it, answered, correct);
+});
+
+function feedback(it, answered, correct) {
+  if (correct === null) {
+    return '<div class="fb">Bien. Ese pulso de tres es la base de todo lo que viene ahora.</div>';
+  }
+  var head = correct
+    ? '<strong>Correcto.</strong>'
+    : '<strong>No era esa.</strong> Tú pusiste: <span class="glyph">' + renderMulti(answered) +
+      '</span><br>Era: <span class="glyph">' + renderMulti(it.pattern) + '</span>';
+  return '<div class="fb">' + head + '<br>' + why(it, answered, correct) + '</div>';
+}
+
+function why(it, answered, correct) {
+  var exp = it.pattern;
+  if (correct) {
+    if (exp === 'N.') return 'La negra con puntillo ocupa el compás entero: un solo golpe y los tres tiempos consumidos.';
+    if (exp === 'C-C-C') return 'Tres corcheas = un golpe en cada tiempo. Es el pulso desnudo del 3/8.';
+    if (exp === 'N-C') return 'La negra vale 2 tiempos: empieza en el 1 y llega hasta el 2. La corchea cae en el 3.';
+    if (exp === 'C-N') return 'La corchea cae en el 1, y la negra empieza en el tiempo 2 y dura hasta el 3.';
+    if (exp === 'C-s-C') return 'El hueco está en el tiempo 2. El silencio también ocupa tiempo: hay que contarlo.';
+    if (exp === 's-C-C') return 'El compás empieza callado. La primera nota que oyes es el tiempo 2, no el 1.';
+    return 'Los dos compases suman 3 tiempos cada uno. Bien contado.';
+  }
+  // Diagnóstico del error
+  var a = String(answered);
+  if (a.replace(/-/g, '') === exp.replace(/-/g, '') && a !== exp) {
+    return 'Las figuras eran las correctas, pero en otro orden. Vuelve a escuchar preguntándote solo esto: ¿la nota larga estaba al principio o al final?';
+  }
+  if (exp.indexOf('s') >= 0 && a.indexOf('s') < 0) {
+    return 'Se te ha escapado el silencio. Un tiempo sin sonido sigue siendo un tiempo: hay que contarlo con la mano aunque no oigas nada.';
+  }
+  if (exp === 'N.' && a === 'C-C-C') {
+    return 'Has contado tres tiempos, y eso está bien. Pero eran tres tiempos de UNA nota sostenida, no tres golpes. Escucha cuántas veces empieza el sonido.';
+  }
+  if (exp === 'C-C-C' && a === 'N.') {
+    return 'Al revés: aquí sí hay tres golpes distintos, uno por tiempo.';
+  }
+  return 'Escucha otra vez marcando 1-2-3 con la mano y fíjate en qué tiempos empieza cada nota.';
+}
+
+$('btn-next').addEventListener('click', function () { idx += 1; startItem(); });
+$('btn-start').addEventListener('click', function () { audio(); startItem(); });
+
+/* ---------- Mood y cierre ---------- */
+Array.prototype.forEach.call(document.querySelectorAll('#scr-mood button[data-mood]'), function (b) {
+  b.addEventListener('click', function () { mood = parseInt(b.dataset.mood, 10); finish(); });
+});
+$('btn-skip-mood').addEventListener('click', function () { mood = null; finish(); });
+
+function finish() {
+  var end = new Date();
+  var scored = results.filter(function (r) { return typeof r.correct === 'boolean'; });
+  var correct = scored.filter(function (r) { return r.correct; }).length;
+  var total = scored.length;
+  var pct = total ? Math.round((correct / total) * 1000) / 10 : 0;
+
+  var blocks = ['calibracion', 'identificar', 'construir', 'dictado2'].map(function (id) {
+    var rs = results.filter(function (r) { return r.block === id; });
+    var sc = rs.filter(function (r) { return typeof r.correct === 'boolean'; });
+    return {
+      id: id,
+      label: BLOCK_LABELS[id],
+      correct: sc.filter(function (r) { return r.correct; }).length,
+      total: sc.length
+    };
+  }).filter(function (b) { return b.total > 0; });
+
+  var session = {
+    schema: 'andre-music-log/v1',
+    tool: 'mus_dictado_3-8_v1',
+    category: 'dictado',
+    scoring: 'auto',
+    session: {
+      start: isoLocal(sessionStart),
+      end: isoLocal(end),
+      duration_sec: Math.round((end - sessionStart) / 1000)
+    },
+    score: { correct: correct, total: total, pct: pct },
+    blocks: blocks,
+    items: results,
+    mood: mood
+  };
+
+  // Resumen humano
+  var html = '<div class="card"><p><strong>Resultado: ' + correct + ' de ' + total +
+    ' (' + pct + '%)</strong></p><ul>';
+  blocks.forEach(function (b) {
+    html += '<li>' + b.label + ': ' + b.correct + ' de ' + b.total + '</li>';
+  });
+  html += '</ul>';
+  var slow = results.filter(function (r) { return r.listens >= 3; }).length;
+  if (slow > 0) html += '<p class="count">Preguntas en las que necesitaste 3 escuchas o más: ' + slow + '</p>';
+  html += '</div>';
+  $('summary').innerHTML = html;
+
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var stamp = pad(end.getDate()) + '/' + pad(end.getMonth() + 1) + '/' + end.getFullYear() +
+    ' ' + pad(end.getHours()) + ':' + pad(end.getMinutes());
+
+  var text =
+    'Dictado rítmico en 3/8 · ' + stamp + '\n' +
+    'Resultado: ' + correct + ' de ' + total + ' (' + pct + '%)\n' +
+    'Bloques: ' + blocks.map(function (b) { return b.label + ' ' + b.correct + '/' + b.total; }).join(' · ') + '\n' +
+    '---JSON---\n' +
+    JSON.stringify(session, null, 2);
+
+  $('log').value = text;
+
+  // Histórico
+  try {
+    var hist = JSON.parse(localStorage.getItem('andre_music_history') || '[]');
+    hist.push(session);
+    localStorage.setItem('andre_music_history', JSON.stringify(hist));
+    localStorage.setItem('andre_mus_dictado_3-8_v1', JSON.stringify({ last: session.session.end, pct: pct }));
+  } catch (e) { /* el registro sigue siendo copiable a mano */ }
+
+  show('scr-end');
+}
+
+$('btn-copy').addEventListener('click', function () {
+  var ta = $('log');
+  ta.select();
+  try {
+    document.execCommand('copy');
+    $('copy-info').textContent = 'Copiado.';
+  } catch (e) {
+    $('copy-info').textContent = 'Selecciona el texto y cópialo a mano.';
+  }
+});
+
+document.getElementById('btn-reset').addEventListener('click', function () {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_mus_dictado_3-8_v1'); } catch (e) { /* sin persistencia */ }
+  location.reload();
+});
+</script>
+</body>
+</html>

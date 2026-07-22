@@ -4,11 +4,14 @@
   "_valid_groups": [
     "compas_pulso", "ritmo", "tonalidad_grados", "expresion", "intervalos_alturas",
     "anacrusa", "repeticion", "alteraciones", "enarmonia", "lectura_notas",
-    "unidad_tiempo", "compas_9-8", "compas_12-8", "grados"
+    "unidad_tiempo", "compas_9-8", "compas_12-8", "compas_6-8", "grados"
   ],
   "_dynamic_topics": [
     "compas_2",
-    "ritmo_normal"
+    "ritmo_normal",
+    "dur_larga",
+    "dur_corta_silencio",
+    "dur_silencio_corta"
   ],
 
   "agogica":              "expresion",
@@ -17,6 +20,7 @@
   "alteraciones":         "alteraciones",
   "alteraciones_dir":     "alteraciones",
   "anacrusa":             "anacrusa",
+  "armadura_conteo":      "tonalidad_grados",
   "arm_mayor":            "tonalidad_grados",
   "arm_mayor_dir":        "tonalidad_grados",
   "arm_menor":            "tonalidad_grados",
@@ -43,7 +47,17 @@
   "contratiempo":         "ritmo",
   "cuarta":               "intervalos_alturas",
   "dc_segno":             "repeticion",
+  "dictado_3-8_calibracion":   "compas_pulso",
+  "dictado_3-8_corchea-negra": "ritmo",
+  "dictado_3-8_dos-compases":  "compas_pulso",
+  "dictado_3-8_negra-corchea": "ritmo",
+  "dictado_3-8_silencio":      "ritmo",
+  "dictado_3-8_tres-corcheas": "compas_pulso",
+  "dictado_3-8_unidad-compas": "unidad_tiempo",
   "dos_relativas":        "tonalidad_grados",
+  "dur_corta_silencio":   "ritmo",
+  "dur_larga":            "ritmo",
+  "dur_silencio_corta":   "ritmo",
   "enarmonia":            "enarmonia",
   "especie_4":            "intervalos_alturas",
   "especie_5":            "intervalos_alturas",
