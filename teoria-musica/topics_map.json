@@ -8,7 +8,10 @@
   ],
   "_dynamic_topics": [
     "compas_2",
-    "ritmo_normal"
+    "ritmo_normal",
+    "dur_larga",
+    "dur_corta_silencio",
+    "dur_silencio_corta"
   ],
 
   "agogica":              "expresion",
@@ -52,6 +55,9 @@
   "dictado_3-8_tres-corcheas": "compas_pulso",
   "dictado_3-8_unidad-compas": "unidad_tiempo",
   "dos_relativas":        "tonalidad_grados",
+  "dur_corta_silencio":   "ritmo",
+  "dur_larga":            "ritmo",
+  "dur_silencio_corta":   "ritmo",
   "enarmonia":            "enarmonia",
   "especie_4":            "intervalos_alturas",
   "especie_5":            "intervalos_alturas",
