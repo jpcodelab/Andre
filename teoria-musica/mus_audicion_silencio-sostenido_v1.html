@@ -131,6 +131,7 @@
   <div id="final-summary"></div>
   <p style="margin-top:16px; font-weight:600;">Para papá — copia esto y pégalo en el chat:</p>
   <textarea id="final-textarea" readonly></textarea>
+  <button id="btn-copy-final" onclick="var t=document.getElementById('final-textarea');t.focus();t.select();t.setSelectionRange(0,99999);var ok=false;try{ok=document.execCommand('copy');}catch(e){}if(!ok&&navigator.clipboard){navigator.clipboard.writeText(t.value).catch(function(){});}this.textContent='¡Copiado! ✅';" style="margin-top:10px;padding:10px 22px;border-radius:8px;border:1px solid #000;background:#f5f5f5;cursor:pointer;font-family:inherit;font-size:1em;">📋 Copiar registro</button>
   <p class="warning-box" id="storage-warning" style="display:none;">
     ⚠️ No se pudo guardar el histórico en este ordenador. Copia igualmente el texto de arriba.
   </p>
@@ -324,7 +325,7 @@
   const BLOCK_LABELS = { bloque_1: "Bloque 1: ¿Larga o cortada?", bloque_2: "Bloque 2: ¿Dónde está el sonido?" };
   const block1Count = block1.length;
 
-  let qi = 0, itemStartTime = 0, replayCount = 0;
+  let qi = 0, itemStartTime = 0, replayCount = 0, reviewMode = false;
   const MAX_REPLAYS = 3;
   const results = [];
   const sessionStart = new Date();
@@ -335,6 +336,7 @@
     const item = QUEUE[qi];
     itemStartTime = Date.now();
     replayCount = 0;
+    reviewMode = false;
     const idxInBlock = (item.block === "bloque_1" ? qi + 1 : qi - block1Count + 1);
     const totalInBlock = (item.block === "bloque_1" ? block1.length : block2.length);
     document.getElementById('progress').textContent = `${BLOCK_LABELS[item.block]} · Pregunta ${idxInBlock} de ${totalInBlock}`;
@@ -356,14 +358,22 @@
     updateReplayLabel();
   }
   function updateReplayLabel() {
+    // El límite solo aplica ANTES de responder; tras la corrección se puede
+    // re-escuchar sin restricción para repasar el error (MUSIC_GUIDE §3.2 / repaso).
+    if (reviewMode) {
+      document.getElementById('replay-count').textContent = '(puedes escucharlo las veces que quieras)';
+      document.getElementById('btn-replay').disabled = false;
+      return;
+    }
     const remaining = MAX_REPLAYS - replayCount;
     document.getElementById('replay-count').textContent = remaining > 0 ? `(te quedan ${remaining} repetición(es))` : '(sin más repeticiones)';
     document.getElementById('btn-replay').disabled = remaining <= 0;
   }
   document.getElementById('btn-replay').addEventListener('click', () => {
-    if (replayCount >= MAX_REPLAYS) return;
+    if (!reviewMode && replayCount >= MAX_REPLAYS) return;
     playPattern(QUEUE[qi].type, {});
-    replayCount++; updateReplayLabel();
+    if (!reviewMode) replayCount++;
+    updateReplayLabel();
   });
 
   function handleAnswer(chosenType, item, btnEl) {
@@ -384,6 +394,9 @@
       correct: isCorrect, attempts: 1, time_sec: timeSec
     });
     document.getElementById('btn-next').classList.remove('hidden');
+    // Tras la corrección, libera la re-escucha para poder repasar el error.
+    reviewMode = true;
+    updateReplayLabel();
   }
   function explain(type) {
     if (type === "larga") return "El sonido seguía sonando en el tiempo 2, sin golpe nuevo: una blanca.";

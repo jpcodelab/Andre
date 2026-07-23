@@ -32,7 +32,6 @@ const STRONG = new Set([0, 2, 4, 6]);  // strong beat positions
 const VALID_TYPES = new Set(['normal', 'contratiempo', 'sincopa']);
 
 const AUDICION_FILES = [
-  'mus_audicion_puente-sincopa_v1.html',
   'mus_audicion_sincopa-contratiempo_v1.html',
 ];
 

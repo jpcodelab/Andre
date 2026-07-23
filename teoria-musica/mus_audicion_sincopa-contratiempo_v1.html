@@ -468,6 +468,18 @@ function finalizarConMood(moodVal) {
     hist.push(sessionData);
     localStorage.setItem('andre_music_history', JSON.stringify(hist));
   } catch(e) {}
+  try {
+    var reg = JSON.parse(localStorage.getItem('andre_music_completed') || '{}');
+    reg[sessionData.tool] = {
+      title: 'Síncopa vs Contratiempo',
+      date: sessionData.session.end,
+      correct: sessionData.score.correct,
+      total: sessionData.score.total,
+      pct: sessionData.score.pct,
+      times: (reg[sessionData.tool] && reg[sessionData.tool].times ? reg[sessionData.tool].times : 0) + 1
+    };
+    localStorage.setItem('andre_music_completed', JSON.stringify(reg));
+  } catch(e) {}
 }
 
 function copiarRegistro() {

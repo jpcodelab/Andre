@@ -1,6 +1,8 @@
 /**
- * Phase C structural validation — checks that all 12 evaluative files
- * have the required feedback infrastructure (§3 MUSIC_GUIDE).
+ * Phase C structural validation — checks that the legacy-architecture
+ * evaluative files have the required feedback infrastructure (§3 MUSIC_GUIDE).
+ * (Los ficheros de arquitectura nueva — showFinal/final-textarea — se validan
+ *  con sus scripts dedicados, no aquí.)
  *
  * Run: node teoria-musica/tests/check_phase_c.js
  */
@@ -14,7 +16,6 @@ const EVALUATIVE_FILES = [
   'mus_dictado_simple-s1_v1.html',
   'mus_dictado_simple-s2_v1.html',
   'mus_audicion_fuerte-debil_v1.html',
-  'mus_audicion_puente-sincopa_v1.html',
   'mus_audicion_sincopa-contratiempo_v1.html',
   'mus_teoria_nivel1_v1.html',
   'mus_teoria_nivel2_v1.html',

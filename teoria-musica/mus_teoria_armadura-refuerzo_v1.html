@@ -126,6 +126,7 @@
   <div id="final-summary"></div>
   <p style="margin-top:16px; font-weight:600;">Para papá — copia esto y pégalo en el chat:</p>
   <textarea id="final-textarea" readonly></textarea>
+  <button id="btn-copy-final" onclick="var t=document.getElementById('final-textarea');t.focus();t.select();t.setSelectionRange(0,99999);var ok=false;try{ok=document.execCommand('copy');}catch(e){}if(!ok&&navigator.clipboard){navigator.clipboard.writeText(t.value).catch(function(){});}this.textContent='¡Copiado! ✅';" style="margin-top:10px;padding:10px 22px;border-radius:8px;border:1px solid #000;background:#f5f5f5;cursor:pointer;font-family:inherit;font-size:1em;">📋 Copiar registro</button>
   <p class="warning" id="storage-warning" style="display:none;">
     ⚠️ No se pudo guardar el histórico en este ordenador. Copia igualmente el texto de arriba.
   </p>

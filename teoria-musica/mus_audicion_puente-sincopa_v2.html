@@ -186,6 +186,7 @@
   <div id="final-summary"></div>
   <p style="margin-top:16px; font-weight:600;">Para papá — copia esto y pégalo en el chat:</p>
   <textarea id="final-textarea" readonly></textarea>
+  <button id="btn-copy-final" onclick="var t=document.getElementById('final-textarea');t.focus();t.select();t.setSelectionRange(0,99999);var ok=false;try{ok=document.execCommand('copy');}catch(e){}if(!ok&&navigator.clipboard){navigator.clipboard.writeText(t.value).catch(function(){});}this.textContent='¡Copiado! ✅';" style="margin-top:10px;padding:10px 22px;border-radius:8px;border:1px solid #000;background:#f5f5f5;cursor:pointer;font-family:inherit;font-size:1em;">📋 Copiar registro</button>
   <p class="warning-box" id="storage-warning" style="display:none;">
     ⚠️ No se pudo guardar el histórico en este ordenador. Copia igualmente el texto de arriba.
   </p>
@@ -469,6 +470,7 @@
   let qi = 0;
   let itemStartTime = 0;
   let replayCount = 0;
+  let reviewMode = false;
   const MAX_REPLAYS = 3;
   const results = [];
   const sessionStart = new Date();
@@ -477,6 +479,7 @@
     const item = QUEUE[qi];
     itemStartTime = Date.now();
     replayCount = 0;
+    reviewMode = false;
 
     document.getElementById('progress').textContent =
       `${BLOCK_LABELS[item.block]} · Pregunta ${(qi < fase1Types.length ? qi + 1 : qi - fase1Types.length + 1)} de ${(item.block === 'fase_1' ? fase1Types.length : fase2Types.length)}`;
@@ -502,6 +505,13 @@
   }
 
   function updateReplayLabel() {
+    // El límite solo aplica ANTES de responder; tras la corrección se puede
+    // re-escuchar sin restricción para repasar el error (MUSIC_GUIDE §3.2 / repaso).
+    if (reviewMode) {
+      document.getElementById('replay-count').textContent = '(puedes escucharlo las veces que quieras)';
+      document.getElementById('btn-replay').disabled = false;
+      return;
+    }
     const remaining = MAX_REPLAYS - replayCount;
     document.getElementById('replay-count').textContent =
       remaining > 0 ? `(te quedan ${remaining} repeticion(es))` : '(sin más repeticiones)';
@@ -509,9 +519,9 @@
   }
 
   document.getElementById('btn-replay').addEventListener('click', () => {
-    if (replayCount >= MAX_REPLAYS) return;
+    if (!reviewMode && replayCount >= MAX_REPLAYS) return;
     playPattern(QUEUE[qi].type, {});
-    replayCount++;
+    if (!reviewMode) replayCount++;
     updateReplayLabel();
   });
 
@@ -542,6 +552,9 @@
     });
 
     document.getElementById('btn-next').classList.remove('hidden');
+    // Tras la corrección, libera la re-escucha para poder repasar el error.
+    reviewMode = true;
+    updateReplayLabel();
   }
 
   function explanationFor(type) {

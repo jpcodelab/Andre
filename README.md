@@ -54,7 +54,7 @@ Secuencia progresiva. Cada herramienta necesita sonido activo y Chrome o Edge. N
 | Archivo | Paso | Descripción |
 |---------|------|-------------|
 | `teoria-musica/mus_audicion_fuerte-debil_v1.html` | 1 — Prerrequisito | Tiempos fuertes/débiles: escucha guiada, tap en tiempo real, rejilla, clasificación de compases 2/3/4 |
-| `teoria-musica/mus_audicion_puente-sincopa_v1.html` | 2 — Puente | ¿Con el fuerte o en el hueco? Ritmo normal vs contratiempo (Fase 1) y síncopa como tercera opción (Fase 2) |
+| `teoria-musica/mus_audicion_puente-sincopa_v2.html` | 2 — Puente | ¿Con el fuerte o en el hueco? (Refuerzo) Ritmo normal vs contratiempo (Fase 1) y síncopa reforzada como tercera opción (Fase 2) |
 | `teoria-musica/mus_audicion_sincopa-contratiempo_v1.html` | 3 — Consolidación | Síncopa vs Contratiempo: 12 preguntas con metrónomo + nota, tres opciones, rejilla explicativa |
 
 ---

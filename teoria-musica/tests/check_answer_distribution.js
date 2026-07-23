@@ -4,6 +4,8 @@
  * ficheros HTML de teoría musical no supere el 40% en ninguna posición.
  *
  * Uso: node teoria-musica/tests/check_answer_distribution.js
+ *      (o desde cualquier directorio — las rutas se resuelven contra la
+ *       ubicación del propio script, no contra process.cwd())
  */
 
 'use strict';
@@ -11,15 +13,17 @@
 const fs = require('fs');
 const path = require('path');
 
-// Rutas relativas a la raíz del proyecto (donde se ejecuta node)
+// Directorio de las herramientas: el padre de tests/ (independiente del cwd).
+const TOOLS_DIR = path.resolve(__dirname, '..');
+
 const FILES = [
-  'teoria-musica/mus_teoria_nivel1_v1.html',
-  'teoria-musica/mus_teoria_nivel2_v1.html',
-  'teoria-musica/mus_teoria_nivel3_v1.html',
-  'teoria-musica/mus_teoria_repaso-final_v1.html',
-  'teoria-musica/mus_teoria_compas_v1.html',
-  'teoria-musica/mus_teoria_gran-repaso1_v1.html',
-  'teoria-musica/mus_teoria_gran-repaso2_v1.html',
+  'mus_teoria_nivel1_v1.html',
+  'mus_teoria_nivel2_v1.html',
+  'mus_teoria_nivel3_v1.html',
+  'mus_teoria_repaso-final_v1.html',
+  'mus_teoria_compas_v1.html',
+  'mus_teoria_gran-repaso1_v1.html',
+  'mus_teoria_gran-repaso2_v1.html',
 ];
 
 const MAX_PCT = 40; // umbral máximo permitido por posición
@@ -51,12 +55,14 @@ function extractCValues(html) {
 
 let anyFailed = false;
 
-for (const relPath of FILES) {
-  const absPath = path.resolve(process.cwd(), relPath);
-  const fileName = path.basename(relPath);
+for (const fileName of FILES) {
+  const absPath = path.join(TOOLS_DIR, fileName);
 
   if (!fs.existsSync(absPath)) {
-    console.log(`\n[SKIP] ${fileName} — fichero no encontrado en ${absPath}`);
+    // Un fichero ausente es un FALLO, no un skip: así un problema de ruta
+    // nunca se disfraza de PASA (falso verde).
+    console.log(`\n[FALLA] ${fileName} — fichero no encontrado en ${absPath}`);
+    anyFailed = true;
     continue;
   }
 

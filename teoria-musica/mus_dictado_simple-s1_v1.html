@@ -689,7 +689,7 @@ function buildDualText(sessionData) {
     'mus_dictado_simple-s1_v1': 'Dictado Rítmico · Sesión 1',
     'mus_dictado_simple-s2_v1': 'Dictado Rítmico · Sesión 2',
     'mus_audicion_fuerte-debil_v1': 'Tiempos Fuertes y Débiles',
-    'mus_audicion_puente-sincopa_v1': '¿Con el fuerte o en el hueco?',
+    'mus_audicion_puente-sincopa_v2': '¿Con el fuerte o en el hueco?',
     'mus_audicion_sincopa-contratiempo_v1': 'Síncopa vs Contratiempo'
   };
   var nombre = toolNames[sessionData.tool] || sessionData.tool;
@@ -727,6 +727,18 @@ function finalizarConMood(moodVal) {
     var hist = JSON.parse(localStorage.getItem('andre_music_history') || '[]');
     hist.push(sessionData);
     localStorage.setItem('andre_music_history', JSON.stringify(hist));
+  } catch(e) {}
+  try {
+    var reg = JSON.parse(localStorage.getItem('andre_music_completed') || '{}');
+    reg[sessionData.tool] = {
+      title: 'Dictado Rítmico · Sesión 1',
+      date: sessionData.session.end,
+      correct: sessionData.score.correct,
+      total: sessionData.score.total,
+      pct: sessionData.score.pct,
+      times: (reg[sessionData.tool] && reg[sessionData.tool].times ? reg[sessionData.tool].times : 0) + 1
+    };
+    localStorage.setItem('andre_music_completed', JSON.stringify(reg));
   } catch(e) {}
 }
 

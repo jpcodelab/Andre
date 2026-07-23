@@ -356,7 +356,8 @@ function startItem() {
     t0: null,           // se fija cuando la interfaz de respuesta queda habilitada
     answered: null,
     attempts: 0,
-    playing: false
+    playing: false,
+    reviewing: false   // tras comprobar pasa a true: re-escucha sin límite para repasar
   };
 
   $('prog').textContent = 'Bloque: ' + BLOCK_LABELS[it.block] +
@@ -374,6 +375,10 @@ function startItem() {
 }
 
 function updateListenInfo() {
+  if (cur.reviewing) {
+    $('listen-info').textContent = 'Escuchas: ' + cur.listens + ' · repaso libre';
+    return;
+  }
   var max = MAX_LISTENS[cur.item.block];
   $('listen-info').textContent = (max === Infinity)
     ? 'Escuchas: ' + cur.listens + ' (sin límite)'
@@ -383,7 +388,7 @@ function updateListenInfo() {
 $('btn-play').addEventListener('click', function () {
   if (cur.playing) return;
   var max = MAX_LISTENS[cur.item.block];
-  if (cur.listens >= max) return;
+  if (!cur.reviewing && cur.listens >= max) return;
   cur.playing = true;
   $('btn-play').disabled = true;
   var wasEnabled = cur.t0 !== null;
@@ -396,7 +401,7 @@ $('btn-play').addEventListener('click', function () {
     if (wasEnabled) cur.extraListenMs += dur;
     cur.playing = false;
     updateListenInfo();
-    if (cur.listens < MAX_LISTENS[cur.item.block]) $('btn-play').disabled = false;
+    if (cur.reviewing || cur.listens < MAX_LISTENS[cur.item.block]) $('btn-play').disabled = false;
 
     // t0 = instante en que la interfaz de respuesta queda habilitada
     if (cur.t0 === null) {
@@ -578,7 +583,9 @@ $('btn-check').addEventListener('click', function () {
 
   $('btn-check').classList.add('hide');
   $('btn-next').classList.remove('hide');
-  $('btn-play').disabled = true;
+  cur.reviewing = true;              // tras corregir, re-escucha libre para repasar el error
+  $('btn-play').disabled = false;
+  updateListenInfo();
   Array.prototype.forEach.call(document.querySelectorAll('#area button'), function (b) { b.disabled = true; });
 
   $('fb-box').innerHTML = feedback(it, answered, correct);
@@ -698,6 +705,20 @@ function finish() {
     localStorage.setItem('andre_music_history', JSON.stringify(hist));
     localStorage.setItem('andre_mus_dictado_3-8_v1', JSON.stringify({ last: session.session.end, pct: pct }));
   } catch (e) { /* el registro sigue siendo copiable a mano */ }
+
+  // Registro de completado (leído por index.html) — MUSIC_GUIDE §3.5
+  try {
+    var reg = JSON.parse(localStorage.getItem('andre_music_completed') || '{}');
+    reg[session.tool] = {
+      title: 'Dictado rítmico en 3/8',
+      date: session.session.end,
+      correct: session.score.correct,
+      total: session.score.total,
+      pct: session.score.pct,
+      times: (reg[session.tool] && reg[session.tool].times ? reg[session.tool].times : 0) + 1
+    };
+    localStorage.setItem('andre_music_completed', JSON.stringify(reg));
+  } catch (e) { /* no impide copiar a mano */ }
 
   show('scr-end');
 }

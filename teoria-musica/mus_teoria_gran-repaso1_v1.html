@@ -552,6 +552,7 @@ function finalizarConMood(moodVal){
   var regEl=document.getElementById('registro-final');
   regEl.innerHTML='<h2 style="font-size:19px;margin:16px 0 8px;">📋 Registro de sesión</h2><textarea id="registroTexto" readonly style="width:100%;height:240px;font-family:monospace;font-size:13px;padding:10px;border:1px solid #000;border-radius:6px;">'+dualText.replace(/</g,'&lt;')+'</textarea><br><button class="secundaria" onclick="copiarRegistro()" style="margin-top:8px;">Copiar registro</button>';
   try{var hist=JSON.parse(localStorage.getItem('andre_music_history')||'[]');hist.push(sessionData);localStorage.setItem('andre_music_history',JSON.stringify(hist));}catch(e){}
+  try{var reg=JSON.parse(localStorage.getItem('andre_music_completed')||'{}');reg[sessionData.tool]={title:'Gran Repaso 1',date:sessionData.session.end,correct:sessionData.score.correct,total:sessionData.score.total,pct:sessionData.score.pct,times:(reg[sessionData.tool]&&reg[sessionData.tool].times?reg[sessionData.tool].times:0)+1};localStorage.setItem('andre_music_completed',JSON.stringify(reg));}catch(e){}
 }
 function copiarRegistro(){var ta=document.getElementById('registroTexto');ta.select();document.execCommand('copy');}
 </script>
