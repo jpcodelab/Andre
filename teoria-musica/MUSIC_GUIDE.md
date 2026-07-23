@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.5 · Julio 2026
+> Referenciado desde CLAUDE.md. Versión: 1.6 · 23 de julio de 2026
 
 ---
 
@@ -149,6 +149,12 @@ Reglas:
   la herramienta (mismo formato que `expected`), nunca un genérico del tipo
   `"bien"` / `"mal"` / `"ok"`. En preguntas de opción múltiple se registra el
   contenido de la opción elegida, no su índice ni su posición.
+- **Caja del vocabulario**: los valores de `expected` y `answered` usan la
+  misma convención que los ids de topic: **minúsculas, sin tildes, guion bajo
+  como separador** (`sincopa`, no `"Síncopa"`). Las etiquetas de interfaz que
+  ve André son independientes y sí llevan tildes y mayúsculas. Motivo: dos
+  herramientas emitiendo `"Síncopa"` y `"sincopa"` para el mismo concepto
+  rompen la agregación entre sesiones (detectado el 23/07/2026).
 - `correct` puede ser `null` en ítems de bloques de calentamiento o
   calibración (no evaluados). El `score` agrega **únicamente** los ítems con
   `correct` booleano; `blocks` con `total: 0` se omiten del array. El ítem se
@@ -412,7 +418,20 @@ Gran Repaso 1 → Gran Repaso 2.
 
 **Ritmo (rama auditiva):**
 Dictado S1 → Dictado S2 →
-Fuerte/Débil (paso 1) → Puente síncopa (paso 2) → Síncopa vs Contratiempo (paso 3).
+Fuerte/Débil (paso 1) → Ataque y duración (paso 1.5) →
+Puente síncopa (paso 2) → Síncopa vs Contratiempo (paso 3).
+
+Paso 1.5 (`mus_audicion_ataque-duracion_v1`) se añadió el 23/07/2026 como
+prerrequisito perceptivo: distinguir un sonido sostenido de un ataque corto +
+silencio, antes de pedir la distinción más fina entre síncopa y contratiempo.
+
+Limitación conocida del paso 1.5: trabaja síncopa y contratiempo solo a nivel
+de subdivisión (corchea). La síncopa a nivel de pulso (negra–blanca–negra)
+queda fuera a propósito — empieza *en* un pulso y rompería la regla de
+decisión que la herramienta enseña (bloque 4: "¿el golpe cae justo en el
+pulso?" → normal; si no y hay silencio → contratiempo; si no y el sonido
+sigue → síncopa). Pendiente de diseñar un paso posterior que cubra la síncopa
+a nivel de pulso.
 
 **Melódica (rama de oído):**
 Dictado melódico S1 (reconocer notas, Do Mayor) → siguiente material a definir
@@ -421,6 +440,15 @@ según diagnóstico del padre tras la primera sesión.
 Regla general: no avanzar de paso sin registro de sesión revisado por el padre.
 El ciclo es: André completa → padre pega registro → se diagnostica → siguiente
 material a medida.
+
+**Máximo 2 sesiones evaluativas por día.** Un registro con `mood: 1` cierra la
+jornada: no se lanza otra herramienta ese día.
+
+Justificación: el 23/07/2026 se encadenaron 4 sesiones en 40 minutos. La
+cuarta dio 33,3% con 3 opciones —exactamente el azar—, con tiempos crecientes
+y `mood: 1`. El dato no mide capacidad, mide agotamiento, y contamina el
+histórico. Un registro producido en esas condiciones no debe usarse para
+decidir si André avanza de paso.
 
 ---
 
