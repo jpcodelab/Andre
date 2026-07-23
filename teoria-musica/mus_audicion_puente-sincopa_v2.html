@@ -198,6 +198,18 @@
 </div>
 
 <script>
+/* ── Corrección de conformidad MUSIC_GUIDE.md v1.5, 23/07/2026 ──
+   4.1 listens/listen_sec ausentes → instrumentados (ver listens/listenSec/
+       listenAfterEnable/enabledAt más abajo).
+   4.2 time_sec medido como reloj desde que se pinta la pregunta → corregido:
+       las opciones quedan deshabilitadas hasta que termina la primera
+       reproducción completa (enabledAt); time_sec = tiempo desde ahí hasta
+       responder, descontando reproducciones posteriores (listenAfterEnable).
+   4.4 vocabulario de expected/answered → canónico (minúsculas, sin tildes,
+       guion_bajo), igual que sincopa-contratiempo_v1 e igual que los ids de
+       topic. Las etiquetas visibles ("Normal"/"Contratiempo"/"Síncopa") no
+       cambian; solo el valor grabado en el JSON de sesión.
+   ──────────────────────────────────────────────────────────────── */
 (function () {
   "use strict";
 
@@ -445,6 +457,14 @@
   const OPTS_2 = ["Normal", "Contratiempo"];
   const OPTS_3 = ["Normal", "Contratiempo", "Síncopa"];
   function typeLabel(t) { return t === "normal" ? "Normal" : t === "contratiempo" ? "Contratiempo" : "Síncopa"; }
+  // §3.2/§4.4: vocabulario canónico para expected/answered — minúsculas, sin
+  // tildes, guion_bajo (mismo criterio que los ids de topic). Las etiquetas
+  // de interfaz (typeLabel) no cambian.
+  function canonOf(label) {
+    if (label === "Normal") return "normal";
+    if (label === "Contratiempo") return "contratiempo";
+    return "sincopa";
+  }
 
   // Fase 1: 8 items, 4 normal / 4 contratiempo (maintenance)
   const fase1Types = shuffle([
@@ -468,18 +488,41 @@
   };
 
   let qi = 0;
-  let itemStartTime = 0;
   let replayCount = 0;
   let reviewMode = false;
   const MAX_REPLAYS = 3;
   const results = [];
   const sessionStart = new Date();
 
+  /* §3.2 instrumentación de listens/listen_sec/time_sec (§4.2). Se resetea
+     por pregunta. enabledAt se fija cuando termina la primera reproducción
+     completa; hasta entonces las opciones están deshabilitadas. */
+  let listens = 0;
+  let listenSec = 0;
+  let listenAfterEnable = 0;
+  let enabledAt = null;
+
+  function countedPlay(type) {
+    const durMs = playPattern(type, {});
+    const wasEnabled = enabledAt !== null;
+    if (!reviewMode) {
+      listens += 1;
+      listenSec += durMs / 1000;
+      if (wasEnabled) listenAfterEnable += durMs / 1000;
+    }
+    if (!wasEnabled) {
+      setTimeout(() => {
+        enabledAt = Date.now();
+        document.querySelectorAll('#quiz-options .option-btn').forEach(b => { b.disabled = false; });
+      }, durMs);
+    }
+  }
+
   function renderQuestion() {
     const item = QUEUE[qi];
-    itemStartTime = Date.now();
     replayCount = 0;
     reviewMode = false;
+    listens = 0; listenSec = 0; listenAfterEnable = 0; enabledAt = null;
 
     document.getElementById('progress').textContent =
       `${BLOCK_LABELS[item.block]} · Pregunta ${(qi < fase1Types.length ? qi + 1 : qi - fase1Types.length + 1)} de ${(item.block === 'fase_1' ? fase1Types.length : fase2Types.length)}`;
@@ -494,12 +537,13 @@
       const b = document.createElement('button');
       b.className = 'option-btn';
       b.textContent = optText;
+      b.disabled = true; // se habilita al terminar la primera reproducción (§4.2)
       b.addEventListener('click', () => handleAnswer(optText, item, b));
       optsWrap.appendChild(b);
     });
 
     // Reproducción automática de la primera escucha
-    playPattern(item.type, {});
+    countedPlay(item.type);
     replayCount = 1;
     updateReplayLabel();
   }
@@ -520,14 +564,15 @@
 
   document.getElementById('btn-replay').addEventListener('click', () => {
     if (!reviewMode && replayCount >= MAX_REPLAYS) return;
-    playPattern(QUEUE[qi].type, {});
+    countedPlay(QUEUE[qi].type);
     if (!reviewMode) replayCount++;
     updateReplayLabel();
   });
 
   function handleAnswer(chosen, item, btnEl) {
     const isCorrect = chosen === typeLabel(item.type);
-    const timeSec = Math.round((Date.now() - itemStartTime) / 1000);
+    const raw = (Date.now() - enabledAt) / 1000 - listenAfterEnable;
+    const timeSec = Math.max(0, Math.round(raw));
     const allButtons = document.querySelectorAll('#quiz-options .option-btn');
     allButtons.forEach(b => b.disabled = true);
 
@@ -544,11 +589,13 @@
       n: results.length + 1,
       block: item.block,
       topic: item.type === "normal" ? "ritmo_normal" : item.type,
-      expected: typeLabel(item.type),
-      answered: chosen,
+      expected: item.type,
+      answered: canonOf(chosen),
       correct: isCorrect,
       attempts: 1,
-      time_sec: timeSec
+      time_sec: timeSec,
+      listens: listens,
+      listen_sec: Math.round(listenSec)
     });
 
     document.getElementById('btn-next').classList.remove('hidden');
@@ -602,8 +649,8 @@
     const fase2Items = results.filter(r => r.block === "fase_2");
     const normalSincopaConfusions = fase2Items.filter(r =>
       !r.correct && (
-        (r.expected === "Normal" && r.answered === "Síncopa") ||
-        (r.expected === "Síncopa" && r.answered === "Normal")
+        (r.expected === "normal" && r.answered === "sincopa") ||
+        (r.expected === "sincopa" && r.answered === "normal")
       )
     ).length;
 

@@ -177,9 +177,9 @@
   <button onclick="playClassifyItem()">🔊 Escuchar</button>
   <button onclick="playClassifyItem()">🔁 Repetir</button>
   <div style="margin-top:12px;">
-    <button onclick="answerClassify(2)">2 tiempos</button>
-    <button onclick="answerClassify(3)">3 tiempos</button>
-    <button onclick="answerClassify(4)">4 tiempos</button>
+    <button class="classify-btn" onclick="answerClassify(2)" disabled>2 tiempos</button>
+    <button class="classify-btn" onclick="answerClassify(3)" disabled>3 tiempos</button>
+    <button class="classify-btn" onclick="answerClassify(4)" disabled>4 tiempos</button>
   </div>
   <div id="feedback3"></div>
   <button id="next3" class="hidden" onclick="nextClassifyItem()">Siguiente →</button>
@@ -209,6 +209,24 @@
 </div>
 
 <script>
+/* ── Corrección de conformidad MUSIC_GUIDE.md v1.5, 23/07/2026 ──
+   4.1 listens/listen_sec ausentes en los 3 bloques → instrumentados.
+   4.2 time_sec medido como reloj desde que se pinta la pregunta → corregido
+       a "segundos de razonamiento" desde que la interfaz de respuesta se
+       habilita (tras la primera reproducción completa), descontando
+       re-escuchas posteriores. En el bloque "tap" (tiempo real, sin gesto de
+       escuchar/responder separado) se adapta: la primera medida del bucle es
+       de escucha obligatoria (ningún tap cuenta ahí, ver strongTimesMs) y
+       hace de "reproducción completa" — listens=1, listen_sec=esa medida,
+       time_sec arranca cuando empieza la medida 1 (inicio real de la
+       puntuación). No hay re-escucha discreta en ese bloque (bucle continuo
+       mientras se responde), así que listenAfterEnable siempre es 0 ahí.
+   4.3 answered con texto humano ("Aciertos: X, fallos: Y") en el bloque tap →
+       ahora vocabulario ("tiempo_1" / "no_atrapado"); el detalle de
+       aciertos/fallos pasa a tap_hits/tap_misses. Tolerancia de fallos
+       tolerados extraída a TAP_MAX_MISSES_FOR_CREDIT (mismo valor, ahora
+       documentado).
+   ──────────────────────────────────────────────────────────────── */
 /* ── Migración de clave localStorage (legacy → §2 MUSIC_GUIDE) ──
    Clave antigua: andre_fuerte-debil_v1
    ──────────────────────────────────────────────────────────────── */
@@ -237,7 +255,13 @@ function isoLocal(d) {
 }
 
 let sessionStart = null;
-let itemStartTime = 0;
+
+/* §3.2 instrumentación de listens/listen_sec/time_sec, compartida por los
+   3 bloques evaluativos. Se resetea al cargar cada ítem/ronda. */
+let listens = 0;
+let listenSec = 0;
+let listenAfterEnable = 0;
+let enabledAt = null;
 
 // ================= AUDIO =================
 let audioCtx = null;
@@ -344,6 +368,16 @@ let tapActive = false;
 // golpes de tiempos adyacentes.
 const TAP_TOLERANCE_MS = 220;
 
+// TAP_MAX_MISSES_FOR_CREDIT: nº de fallos tolerados dentro de una ronda para
+// seguir contando esa ronda como "correcta" en el score (§5: toda tolerancia
+// documentada junto a su constante). Justificación: exigir 0 fallos
+// penalizaría el ruido normal de reacción motora (un tap tardío aislado no
+// significa que André no haya identificado el tiempo fuerte); más de 2
+// fallos sí sugiere que está adivinando en vez de escuchar. Valor sin
+// cambios respecto al comportamiento anterior (2); antes vivía suelto como
+// literal en tres puntos del código.
+const TAP_MAX_MISSES_FOR_CREDIT = 2;
+
 function initTapBlock() {
   tapRound = 0;
   updateTapProgress();
@@ -374,7 +408,6 @@ function startTapRound() {
   tapMisses = 0;
   strongTimesMs = [];
   tapActive = true;
-  itemStartTime = Date.now();
   document.getElementById('startRound2').classList.add('hidden');
   document.getElementById('tapBtn').classList.remove('hidden');
   document.getElementById('feedback2').style.display = 'none';
@@ -395,6 +428,19 @@ function startTapRound() {
       }
     }
   }
+
+  // §3.2/§4.2: la medida 0 es de escucha obligatoria (ningún tap puntúa ahí,
+  // strongTimesMs sigue vacío) — hace de "primera reproducción completa".
+  // listens=1, listen_sec=esa medida; enabledAt marca el arranque real de la
+  // puntuación (medida 1).
+  listens = 1;
+  listenSec = beats * BEAT_SEC;
+  listenAfterEnable = 0;
+  enabledAt = null;
+  const measure0Ms = beats * BEAT_SEC * 1000;
+  const enableId = setTimeout(() => { if (tapActive) enabledAt = Date.now(); }, measure0Ms);
+  tapLoopIds.push(enableId);
+
   // auto end round if time runs out
   const endId = setTimeout(() => { if (tapActive) finishTapRound(false); },
     measures * beats * BEAT_SEC * 1000 + 400);
@@ -423,20 +469,29 @@ function registerTap() {
 function finishTapRound(success) {
   stopTapLoop();
   scores.tap.total++;
-  if (success && tapMisses <= 2) scores.tap.ok++;
+  const credited = success && tapMisses <= TAP_MAX_MISSES_FOR_CREDIT;
+  if (credited) scores.tap.ok++;
   const beats = TAP_ROUNDS[tapRound].beats;
+
+  const raw = enabledAt !== null ? (Date.now() - enabledAt) / 1000 - listenAfterEnable : 0;
+  const timeSec = Math.max(0, Math.round(raw));
+
   log.push({
     block: 'tap',
     item: 'Ronda ' + (tapRound + 1) + ' · compás de ' + beats,
     topic: 'tiempo_fuerte',
     expected: 'tiempo_1',
-    chosen: 'Aciertos: ' + tapHits + ', fallos: ' + tapMisses,
-    correct: success && tapMisses <= 2,
-    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
+    chosen: credited ? 'tiempo_1' : 'no_atrapado',
+    hits: tapHits,
+    misses: tapMisses,
+    correct: credited,
+    time_sec: timeSec,
+    listens: listens,
+    listen_sec: Math.round(listenSec)
   });
 
   const fb = document.getElementById('feedback2');
-  if (success && tapMisses <= 2) {
+  if (credited) {
     fb.className = 'ok';
     fb.textContent = '✅ ¡Muy bien! Has atrapado el tiempo fuerte del compás de ' + beats + ' tiempos.';
   } else if (success) {
@@ -480,7 +535,7 @@ function initPointBlock() {
 
 function loadPointItem() {
   pointAnswered = false;
-  itemStartTime = Date.now();
+  listens = 0; listenSec = 0; listenAfterEnable = 0; enabledAt = null;
   const item = POINT_ITEMS[pointIndex];
   document.getElementById('progress2b').textContent =
     'Pregunta ' + (pointIndex + 1) + ' de ' + POINT_ITEMS.length;
@@ -493,11 +548,19 @@ function loadPointItem() {
   row.innerHTML = '';
   for (let i = 0; i < item.beats; i++) {
     const d = document.createElement('div');
-    d.className = 'beat clickable';
+    d.className = 'beat'; // se hace clicable tras la primera reproducción completa (§3.2/§4.2)
     d.textContent = i + 1;
-    d.onclick = () => pointAnswer(i);
     d.id = 'row2b_b' + i;
     row.appendChild(d);
+  }
+}
+
+function enablePointGrid(item) {
+  for (let i = 0; i < item.beats; i++) {
+    const el = document.getElementById('row2b_b' + i);
+    if (!el) continue;
+    el.classList.add('clickable');
+    el.onclick = () => pointAnswer(i);
   }
 }
 
@@ -511,6 +574,16 @@ function playPointItem() {
       playBeat(t, b === item.strong);
     }
   }
+  const durMs = 2 * item.beats * BEAT_SEC * 1000;
+  const wasEnabled = enabledAt !== null;
+  if (!pointAnswered) {
+    listens += 1;
+    listenSec += durMs / 1000;
+    if (wasEnabled) listenAfterEnable += durMs / 1000;
+  }
+  if (!wasEnabled) {
+    setTimeout(() => { enabledAt = Date.now(); enablePointGrid(item); }, durMs);
+  }
 }
 
 function pointAnswer(chosen) {
@@ -521,6 +594,9 @@ function pointAnswer(chosen) {
   scores.point.total++;
   if (correct) scores.point.ok++;
 
+  const raw = (Date.now() - enabledAt) / 1000 - listenAfterEnable;
+  const timeSec = Math.max(0, Math.round(raw));
+
   log.push({
     block: 'point',
     item: 'Pregunta ' + (pointIndex + 1) + ' · compás de ' + item.beats,
@@ -528,7 +604,9 @@ function pointAnswer(chosen) {
     expected: 'posicion_' + (item.strong + 1),
     chosen: 'posicion_' + (chosen + 1),
     correct: correct,
-    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
+    time_sec: timeSec,
+    listens: listens,
+    listen_sec: Math.round(listenSec)
   });
 
   for (let i = 0; i < item.beats; i++) {
@@ -569,13 +647,14 @@ function initClassifyBlock() {
 
 function loadClassifyItem() {
   classifyAnswered = false;
-  itemStartTime = Date.now();
+  listens = 0; listenSec = 0; listenAfterEnable = 0; enabledAt = null;
   document.getElementById('progress3').textContent =
     'Pregunta ' + (classifyIndex + 1) + ' de ' + CLASSIFY_ITEMS.length +
     '  ·  Aciertos: ' + scores.classify.ok;
   document.getElementById('feedback3').style.display = 'none';
   document.getElementById('feedback3').className = '';
   document.getElementById('next3').classList.add('hidden');
+  document.querySelectorAll('.classify-btn').forEach(b => { b.disabled = true; });
 }
 
 function playClassifyItem() {
@@ -588,6 +667,19 @@ function playClassifyItem() {
       playBeat(start + (m * beats + b) * BEAT_SEC, b === 0);
     }
   }
+  const durMs = measures * beats * BEAT_SEC * 1000;
+  const wasEnabled = enabledAt !== null;
+  if (!classifyAnswered) {
+    listens += 1;
+    listenSec += durMs / 1000;
+    if (wasEnabled) listenAfterEnable += durMs / 1000;
+  }
+  if (!wasEnabled) {
+    setTimeout(() => {
+      enabledAt = Date.now();
+      document.querySelectorAll('.classify-btn').forEach(b => { b.disabled = false; });
+    }, durMs);
+  }
 }
 
 function answerClassify(choice) {
@@ -598,6 +690,9 @@ function answerClassify(choice) {
   scores.classify.total++;
   if (correct) scores.classify.ok++;
 
+  const raw = enabledAt !== null ? (Date.now() - enabledAt) / 1000 - listenAfterEnable : 0;
+  const timeSec = Math.max(0, Math.round(raw));
+
   log.push({
     block: 'classify',
     item: 'Pregunta ' + (classifyIndex + 1),
@@ -605,7 +700,9 @@ function answerClassify(choice) {
     expected: String(beats),
     chosen: String(choice),
     correct: correct,
-    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
+    time_sec: timeSec,
+    listens: listens,
+    listen_sec: Math.round(listenSec)
   });
 
   const fb = document.getElementById('feedback3');
@@ -668,7 +765,7 @@ function buildSessionData(moodVal) {
   ];
 
   var items = log.map(function(e, i) {
-    return {
+    var item = {
       n: i + 1,
       block: e.block,
       topic: e.topic,
@@ -676,8 +773,12 @@ function buildSessionData(moodVal) {
       answered: e.chosen,
       correct: e.correct,
       attempts: 1,
-      time_sec: e.time_sec || 0
+      time_sec: e.time_sec || 0,
+      listens: e.listens,
+      listen_sec: e.listen_sec
     };
+    if (e.block === 'tap') { item.tap_hits = e.hits; item.tap_misses = e.misses; }
+    return item;
   });
 
   return {
