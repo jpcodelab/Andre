@@ -143,6 +143,13 @@
 </div>
 
 <script>
+/* ── Corrección de conformidad MUSIC_GUIDE.md v1.5, 23/07/2026 ──
+   4.1 listens/listen_sec ausentes → instrumentados.
+   4.2 time_sec medido como reloj desde que se pinta la pregunta → corregido:
+       las opciones quedan deshabilitadas hasta que termina la primera
+       reproducción completa (enabledAt); time_sec descuenta reproducciones
+       posteriores (listenAfterEnable).
+   ──────────────────────────────────────────────────────────────── */
 (function () {
   "use strict";
 
@@ -325,18 +332,37 @@
   const BLOCK_LABELS = { bloque_1: "Bloque 1: ¿Larga o cortada?", bloque_2: "Bloque 2: ¿Dónde está el sonido?" };
   const block1Count = block1.length;
 
-  let qi = 0, itemStartTime = 0, replayCount = 0, reviewMode = false;
+  let qi = 0, replayCount = 0, reviewMode = false;
   const MAX_REPLAYS = 3;
   const results = [];
   const sessionStart = new Date();
+
+  /* §3.2 instrumentación de listens/listen_sec/time_sec (§4.2). */
+  let listens = 0, listenSec = 0, listenAfterEnable = 0, enabledAt = null;
+
+  function countedPlay(type) {
+    const durMs = playPattern(type, {});
+    const wasEnabled = enabledAt !== null;
+    if (!reviewMode) {
+      listens += 1;
+      listenSec += durMs / 1000;
+      if (wasEnabled) listenAfterEnable += durMs / 1000;
+    }
+    if (!wasEnabled) {
+      setTimeout(() => {
+        enabledAt = Date.now();
+        document.querySelectorAll('#quiz-options .option-btn').forEach(b => { b.disabled = false; });
+      }, durMs);
+    }
+  }
 
   document.getElementById('btn-start').addEventListener('click', () => { showOnly('quiz'); renderQuestion(); });
 
   function renderQuestion() {
     const item = QUEUE[qi];
-    itemStartTime = Date.now();
     replayCount = 0;
     reviewMode = false;
+    listens = 0; listenSec = 0; listenAfterEnable = 0; enabledAt = null;
     const idxInBlock = (item.block === "bloque_1" ? qi + 1 : qi - block1Count + 1);
     const totalInBlock = (item.block === "bloque_1" ? block1.length : block2.length);
     document.getElementById('progress').textContent = `${BLOCK_LABELS[item.block]} · Pregunta ${idxInBlock} de ${totalInBlock}`;
@@ -350,10 +376,11 @@
       const b = document.createElement('button');
       b.className = 'option-btn';
       b.textContent = labelOf(optType);
+      b.disabled = true; // se habilita al terminar la primera reproducción (§4.2)
       b.addEventListener('click', () => handleAnswer(optType, item, b));
       optsWrap.appendChild(b);
     });
-    playPattern(item.type, {});
+    countedPlay(item.type);
     replayCount = 1;
     updateReplayLabel();
   }
@@ -371,14 +398,15 @@
   }
   document.getElementById('btn-replay').addEventListener('click', () => {
     if (!reviewMode && replayCount >= MAX_REPLAYS) return;
-    playPattern(QUEUE[qi].type, {});
+    countedPlay(QUEUE[qi].type);
     if (!reviewMode) replayCount++;
     updateReplayLabel();
   });
 
   function handleAnswer(chosenType, item, btnEl) {
     const isCorrect = chosenType === item.type;
-    const timeSec = Math.round((Date.now() - itemStartTime) / 1000);
+    const raw = (Date.now() - enabledAt) / 1000 - listenAfterEnable;
+    const timeSec = Math.max(0, Math.round(raw));
     document.querySelectorAll('#quiz-options .option-btn').forEach(b => b.disabled = true);
     const fb = document.getElementById('quiz-feedback');
     if (isCorrect) {
@@ -391,7 +419,8 @@
     results.push({
       n: results.length + 1, block: item.block, topic: TOPIC[item.type],
       expected: labelOf(item.type), answered: labelOf(chosenType),
-      correct: isCorrect, attempts: 1, time_sec: timeSec
+      correct: isCorrect, attempts: 1, time_sec: timeSec,
+      listens: listens, listen_sec: Math.round(listenSec)
     });
     document.getElementById('btn-next').classList.remove('hidden');
     // Tras la corrección, libera la re-escucha para poder repasar el error.

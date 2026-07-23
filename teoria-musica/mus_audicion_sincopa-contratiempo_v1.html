@@ -179,6 +179,15 @@
 </div>
 
 <script>
+/* ── Corrección de conformidad MUSIC_GUIDE.md v1.5, 23/07/2026 ──
+   4.1 listens/listen_sec ausentes → instrumentados.
+   4.2 time_sec medido como reloj desde que se pinta la pregunta → corregido:
+       los botones de respuesta quedan deshabilitados hasta que termina la
+       primera reproducción completa (enabledAt); time_sec descuenta
+       reproducciones posteriores (listenAfterEnable). Nota: expected/answered
+       ya usaban vocabulario canónico ('normal'/'contratiempo'/'sincopa'), no
+       hizo falta tocarlos (§4.4 solo afectaba a puente-sincopa_v2).
+   ──────────────────────────────────────────────────────────────── */
 /* ── Migración de clave localStorage (legacy → §2 MUSIC_GUIDE) ──
    Clave antigua: andre_sincopa_contratiempo_v1
    ──────────────────────────────────────────────────────────────── */
@@ -207,7 +216,6 @@ function isoLocal(d) {
 }
 
 let sessionStart = null;
-let itemStartTime = 0;
 
 // ---------- Pattern definitions ----------
 // Grid: 8 eighth-note slots per measure. Strong beats at index 0,2,4,6.
@@ -256,6 +264,13 @@ let log = [];
 let answered = false;
 let audioCtx = null;
 
+/* §3.2 instrumentación de listens/listen_sec/time_sec (§4.2). Se resetea
+   por ítem en loadItem(). */
+let listens = 0;
+let listenSec = 0;
+let listenAfterEnable = 0;
+let enabledAt = null;
+
 function startSession() {
   sessionStart = new Date();
   items = shuffle(ITEM_POOL);
@@ -278,12 +293,12 @@ function ensureAudio() {
 
 function loadItem() {
   answered = false;
-  itemStartTime = Date.now();
+  listens = 0; listenSec = 0; listenAfterEnable = 0; enabledAt = null;
   document.getElementById('feedback').style.display = 'none';
   document.getElementById('feedback').className = '';
   document.getElementById('nextBtn').classList.add('hidden');
   const buttons = document.querySelectorAll('#choices button');
-  buttons.forEach(b => { b.disabled = false; b.classList.remove('correct'); });
+  buttons.forEach(b => { b.disabled = true; b.classList.remove('correct'); }); // se habilitan tras la 1ª reproducción (§4.2)
   document.getElementById('progressLine').textContent =
     'Pregunta ' + (currentIndex + 1) + ' de ' + items.length + '  ·  Aciertos: ' + score;
   document.getElementById('questionGrid').innerHTML = '';
@@ -307,6 +322,7 @@ function playPattern(notes, bpm) {
       playNote(base + n.start * eighth, n.dur * eighth);
     });
   }
+  return repeats * totalEighths * eighth * 1000; // duración total en ms (§4.2)
 }
 
 function playClick(t) {
@@ -341,7 +357,19 @@ function playNote(t, dur) {
 
 function playCurrent() {
   const item = items[currentIndex];
-  playPattern(item.notes, 96);
+  const durMs = playPattern(item.notes, 96);
+  const wasEnabled = enabledAt !== null;
+  if (!answered) {
+    listens += 1;
+    listenSec += durMs / 1000;
+    if (wasEnabled) listenAfterEnable += durMs / 1000;
+  }
+  if (!wasEnabled) {
+    setTimeout(() => {
+      enabledAt = Date.now();
+      document.querySelectorAll('#choices button').forEach(b => { b.disabled = false; });
+    }, durMs);
+  }
 }
 
 function renderGrid(item) {
@@ -376,13 +404,18 @@ function answer(choice) {
   const correct = (choice === item.type);
   if (correct) score++;
 
+  const raw = enabledAt !== null ? (Date.now() - enabledAt) / 1000 - listenAfterEnable : 0;
+  const timeSec = Math.max(0, Math.round(raw));
+
   log.push({
     n: currentIndex + 1,
     topic: item.type === 'normal' ? 'ritmo_normal' : item.type,
     expected: item.type,
     chosen: choice,
     correct: correct,
-    time_sec: Math.round((Date.now() - itemStartTime) / 1000)
+    time_sec: timeSec,
+    listens: listens,
+    listen_sec: Math.round(listenSec)
   });
 
   const buttons = document.querySelectorAll('#choices button');
@@ -433,7 +466,8 @@ function buildSessionData(moodVal) {
     return {
       n: i + 1, block: '', topic: e.topic,
       expected: e.expected, answered: e.chosen,
-      correct: e.correct, attempts: 1, time_sec: e.time_sec || 0
+      correct: e.correct, attempts: 1, time_sec: e.time_sec || 0,
+      listens: e.listens, listen_sec: e.listen_sec
     };
   });
   return {
