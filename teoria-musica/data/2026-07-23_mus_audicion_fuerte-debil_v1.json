@@ -1,0 +1,229 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_audicion_fuerte-debil_v1",
+  "category": "audicion",
+  "scoring": "auto",
+  "session": {
+    "start": "2026-07-23T08:31:48+01:00",
+    "end": "2026-07-23T08:35:58+01:00",
+    "duration_sec": 250
+  },
+  "score": {
+    "correct": 19,
+    "total": 19,
+    "pct": 100
+  },
+  "blocks": [
+    {
+      "id": "tap",
+      "label": "Atrapar el fuerte",
+      "correct": 5,
+      "total": 5
+    },
+    {
+      "id": "point",
+      "label": "Señalar el fuerte",
+      "correct": 6,
+      "total": 6
+    },
+    {
+      "id": "classify",
+      "label": "Clasificar compases",
+      "correct": 8,
+      "total": 8
+    }
+  ],
+  "items": [
+    {
+      "n": 1,
+      "block": "tap",
+      "topic": "tiempo_fuerte",
+      "expected": "tiempo_1",
+      "answered": "Aciertos: 4, fallos: 0",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 9
+    },
+    {
+      "n": 2,
+      "block": "tap",
+      "topic": "tiempo_fuerte",
+      "expected": "tiempo_1",
+      "answered": "Aciertos: 4, fallos: 0",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 14
+    },
+    {
+      "n": 3,
+      "block": "tap",
+      "topic": "tiempo_fuerte",
+      "expected": "tiempo_1",
+      "answered": "Aciertos: 4, fallos: 1",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 14
+    },
+    {
+      "n": 4,
+      "block": "tap",
+      "topic": "tiempo_fuerte",
+      "expected": "tiempo_1",
+      "answered": "Aciertos: 4, fallos: 0",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 14
+    },
+    {
+      "n": 5,
+      "block": "tap",
+      "topic": "tiempo_fuerte",
+      "expected": "tiempo_1",
+      "answered": "Aciertos: 4, fallos: 0",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 12
+    },
+    {
+      "n": 6,
+      "block": "point",
+      "topic": "tiempo_fuerte",
+      "expected": "posicion_1",
+      "answered": "posicion_1",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 10
+    },
+    {
+      "n": 7,
+      "block": "point",
+      "topic": "tiempo_fuerte",
+      "expected": "posicion_2",
+      "answered": "posicion_2",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 3
+    },
+    {
+      "n": 8,
+      "block": "point",
+      "topic": "tiempo_fuerte",
+      "expected": "posicion_3",
+      "answered": "posicion_3",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 3
+    },
+    {
+      "n": 9,
+      "block": "point",
+      "topic": "tiempo_fuerte",
+      "expected": "posicion_2",
+      "answered": "posicion_2",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 5
+    },
+    {
+      "n": 10,
+      "block": "point",
+      "topic": "tiempo_fuerte",
+      "expected": "posicion_1",
+      "answered": "posicion_1",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 6
+    },
+    {
+      "n": 11,
+      "block": "point",
+      "topic": "tiempo_fuerte",
+      "expected": "posicion_4",
+      "answered": "posicion_4",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 5
+    },
+    {
+      "n": 12,
+      "block": "classify",
+      "topic": "compas_4",
+      "expected": "4",
+      "answered": "4",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 18
+    },
+    {
+      "n": 13,
+      "block": "classify",
+      "topic": "compas_2",
+      "expected": "2",
+      "answered": "2",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 11
+    },
+    {
+      "n": 14,
+      "block": "classify",
+      "topic": "compas_3",
+      "expected": "3",
+      "answered": "3",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 5
+    },
+    {
+      "n": 15,
+      "block": "classify",
+      "topic": "compas_4",
+      "expected": "4",
+      "answered": "4",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 4
+    },
+    {
+      "n": 16,
+      "block": "classify",
+      "topic": "compas_3",
+      "expected": "3",
+      "answered": "3",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 10
+    },
+    {
+      "n": 17,
+      "block": "classify",
+      "topic": "compas_2",
+      "expected": "2",
+      "answered": "2",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 5
+    },
+    {
+      "n": 18,
+      "block": "classify",
+      "topic": "compas_4",
+      "expected": "4",
+      "answered": "4",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 8
+    },
+    {
+      "n": 19,
+      "block": "classify",
+      "topic": "compas_3",
+      "expected": "3",
+      "answered": "3",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 8
+    }
+  ],
+  "mood": 3
+}

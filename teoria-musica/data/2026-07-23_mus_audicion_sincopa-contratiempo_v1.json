@@ -1,0 +1,140 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_audicion_sincopa-contratiempo_v1",
+  "category": "audicion",
+  "scoring": "auto",
+  "session": {
+    "start": "2026-07-23T09:00:27+01:00",
+    "end": "2026-07-23T09:11:23+01:00",
+    "duration_sec": 656
+  },
+  "score": {
+    "correct": 4,
+    "total": 12,
+    "pct": 33.3
+  },
+  "blocks": [],
+  "items": [
+    {
+      "n": 1,
+      "block": "",
+      "topic": "sincopa",
+      "expected": "sincopa",
+      "answered": "sincopa",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 50
+    },
+    {
+      "n": 2,
+      "block": "",
+      "topic": "ritmo_normal",
+      "expected": "normal",
+      "answered": "normal",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 13
+    },
+    {
+      "n": 3,
+      "block": "",
+      "topic": "ritmo_normal",
+      "expected": "normal",
+      "answered": "contratiempo",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 19
+    },
+    {
+      "n": 4,
+      "block": "",
+      "topic": "ritmo_normal",
+      "expected": "normal",
+      "answered": "normal",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 14
+    },
+    {
+      "n": 5,
+      "block": "",
+      "topic": "sincopa",
+      "expected": "sincopa",
+      "answered": "contratiempo",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 15
+    },
+    {
+      "n": 6,
+      "block": "",
+      "topic": "contratiempo",
+      "expected": "contratiempo",
+      "answered": "contratiempo",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 24
+    },
+    {
+      "n": 7,
+      "block": "",
+      "topic": "contratiempo",
+      "expected": "contratiempo",
+      "answered": "sincopa",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 13
+    },
+    {
+      "n": 8,
+      "block": "",
+      "topic": "sincopa",
+      "expected": "sincopa",
+      "answered": "normal",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 23
+    },
+    {
+      "n": 9,
+      "block": "",
+      "topic": "sincopa",
+      "expected": "sincopa",
+      "answered": "contratiempo",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 68
+    },
+    {
+      "n": 10,
+      "block": "",
+      "topic": "contratiempo",
+      "expected": "contratiempo",
+      "answered": "normal",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 42
+    },
+    {
+      "n": 11,
+      "block": "",
+      "topic": "contratiempo",
+      "expected": "contratiempo",
+      "answered": "normal",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 30
+    },
+    {
+      "n": 12,
+      "block": "",
+      "topic": "ritmo_normal",
+      "expected": "normal",
+      "answered": "contratiempo",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 32
+    }
+  ],
+  "mood": 1
+}

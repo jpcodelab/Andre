@@ -1,0 +1,133 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_audicion_silencio-sostenido_v1",
+  "category": "audicion",
+  "scoring": "auto",
+  "session": {
+    "start": "2026-07-23T08:52:03+01:00",
+    "end": "2026-07-23T08:57:54+01:00",
+    "duration_sec": 350
+  },
+  "score": {
+    "correct": 8,
+    "total": 10,
+    "pct": 80
+  },
+  "blocks": [
+    {
+      "id": "bloque_1",
+      "label": "Bloque 1: ¿Larga o cortada?",
+      "correct": 4,
+      "total": 5
+    },
+    {
+      "id": "bloque_2",
+      "label": "Bloque 2: ¿Dónde está el sonido?",
+      "correct": 4,
+      "total": 5
+    }
+  ],
+  "items": [
+    {
+      "n": 1,
+      "block": "bloque_1",
+      "topic": "dur_corta_silencio",
+      "expected": "Nota (1 tiempo) + silencio",
+      "answered": "Nota (1 tiempo) + silencio",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 14
+    },
+    {
+      "n": 2,
+      "block": "bloque_1",
+      "topic": "dur_larga",
+      "expected": "Nota larga (blanca, 2 tiempos)",
+      "answered": "Nota (1 tiempo) + silencio",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 9
+    },
+    {
+      "n": 3,
+      "block": "bloque_1",
+      "topic": "dur_larga",
+      "expected": "Nota larga (blanca, 2 tiempos)",
+      "answered": "Nota larga (blanca, 2 tiempos)",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 10
+    },
+    {
+      "n": 4,
+      "block": "bloque_1",
+      "topic": "dur_corta_silencio",
+      "expected": "Nota (1 tiempo) + silencio",
+      "answered": "Nota (1 tiempo) + silencio",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 9
+    },
+    {
+      "n": 5,
+      "block": "bloque_1",
+      "topic": "dur_larga",
+      "expected": "Nota larga (blanca, 2 tiempos)",
+      "answered": "Nota larga (blanca, 2 tiempos)",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 6
+    },
+    {
+      "n": 6,
+      "block": "bloque_2",
+      "topic": "dur_corta_silencio",
+      "expected": "Nota (1 tiempo) + silencio",
+      "answered": "Nota (1 tiempo) + silencio",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 15
+    },
+    {
+      "n": 7,
+      "block": "bloque_2",
+      "topic": "dur_larga",
+      "expected": "Nota larga (blanca, 2 tiempos)",
+      "answered": "Silencio + nota (1 tiempo)",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 9
+    },
+    {
+      "n": 8,
+      "block": "bloque_2",
+      "topic": "dur_corta_silencio",
+      "expected": "Nota (1 tiempo) + silencio",
+      "answered": "Nota (1 tiempo) + silencio",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 29
+    },
+    {
+      "n": 9,
+      "block": "bloque_2",
+      "topic": "dur_silencio_corta",
+      "expected": "Silencio + nota (1 tiempo)",
+      "answered": "Silencio + nota (1 tiempo)",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 49
+    },
+    {
+      "n": 10,
+      "block": "bloque_2",
+      "topic": "dur_larga",
+      "expected": "Nota larga (blanca, 2 tiempos)",
+      "answered": "Nota larga (blanca, 2 tiempos)",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 8
+    }
+  ],
+  "mood": 3
+}
