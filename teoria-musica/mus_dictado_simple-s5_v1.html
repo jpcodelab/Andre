@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dictado rítmico · Compases simples S5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family:'Lora',Georgia,serif; color:#000; background:#fff; margin:0; padding:20px; line-height:1.55; }
+  .wrap { max-width: 640px; margin:0 auto; }
+  h1 { font-size:1.5rem; margin:0 0 4px; }
+  .sub { color:#333; font-size:.95rem; margin-bottom:16px; }
+  .card { border:2px solid #000; border-radius:10px; padding:18px; margin-bottom:16px; }
+  .warn { border:1px solid #a12; background:#fbe6e6; border-radius:8px; padding:10px 12px; font-size:.9rem; margin-bottom:14px; }
+  .prog { font-size:.85rem; color:#444; margin-bottom:8px; }
+  .blocklbl { font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:.8rem; }
+  .compas { font-size:1.05rem; font-weight:700; margin:8px 0; }
+  .prompt { font-size:1.08rem; font-weight:600; margin:8px 0 12px; }
+  button { font-family:'Lora',serif; font-size:1rem; width:100%; text-align:center;
+    padding:12px 14px; margin:7px 0; border:2px solid #000; border-radius:8px; background:#fff; cursor:pointer; }
+  button:hover:not(:disabled){ background:#f2f2f2; }
+  button:disabled{ cursor:default; }
+  .primary{ font-weight:700; background:#111; color:#fff; }
+  .primary:hover:not(:disabled){ background:#333; }
+  .listen{ background:#eef4fb; border-color:#245; font-weight:700; }
+  .opt{ padding:8px; }
+  .opt svg{ display:block; margin:0 auto; }
+  .opt.correct{ background:#e5f6e5; border-color:#1a7a1a; }
+  .opt.wrong{ background:#fbe6e6; border-color:#a12; }
+  .fb{ margin-top:12px; padding:12px; border-radius:8px; border:1px dashed #555; font-size:.98rem; }
+  .fb.ok{ border-color:#1a7a1a; } .fb.no{ border-color:#a12; }
+  .demo-box{ background:#faf7ef; border:1px solid #ccc; border-radius:8px; padding:12px 14px; margin:10px 0; }
+  ul{ margin:6px 0 6px 18px; } li{ margin:4px 0; }
+  textarea{ width:100%; height:150px; font-family:monospace; font-size:.8rem; margin-top:8px; }
+  .mood button{ width:31%; display:inline-block; }
+  .mrow{ display:flex; gap:6px; }
+  .tiny{ font-size:.82rem; color:#555; } .center{ text-align:center; }
+  .legend svg{ display:inline-block; vertical-align:middle; }
+  .navbar { display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid #ccc; margin: 24px auto 0; padding-top: 12px; max-width: 640px; }
+  .navbar button, .navbar a { font-family: 'Lora', serif; font-size: .9em; padding: 8px 14px; border: 2px solid #666; border-radius: 8px; background: #fff; color: #000; text-decoration: none; cursor: pointer; display: inline-block; }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
+  .hidden { display: none; }
+  .done-banner { background: #eaf7ea; border: 2px solid #2a7a2a; border-radius: 8px; padding: 10px 14px; font-size: .9rem; margin: 12px auto; max-width: 640px; }
+</style>
+</head>
+<body>
+<div id="done-banner" class="done-banner hidden"></div>
+<div class="wrap" id="app"></div>
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</div>
+<script>
+"use strict";
+
+/* ================= Renderizador de figuras rítmicas ================= */
+const DUR={ n:1, cc:1, ssss:1, c_ss:1, ss_c:1, np_c:2, b:2, sr:1 };
+const LINE_Y=46, STEM_TOP=22, BEAT_W=30;
+function head(x,open){const f=open?'white':'#000';return `<ellipse cx="${x}" cy="${LINE_Y}" rx="4.2" ry="3" fill="${f}" stroke="#000" stroke-width="1" transform="rotate(-20 ${x} ${LINE_Y})"/>`;}
+function stem(x){return `<line x1="${x+3.6}" y1="${LINE_Y-1}" x2="${x+3.6}" y2="${STEM_TOP}" stroke="#000" stroke-width="1.2"/>`;}
+function dotG(x){return `<circle cx="${x+9}" cy="${LINE_Y-2}" r="1.4" fill="#000"/>`;}
+function flagG(x){return `<path d="M ${x+3.6} ${STEM_TOP} C ${x+11} ${STEM_TOP+3}, ${x+11} ${STEM_TOP+9}, ${x+6} ${STEM_TOP+12}" fill="none" stroke="#000" stroke-width="1.2"/>`;}
+function beamG(x1,x2,y){return `<rect x="${x1+3}" y="${y}" width="${x2-x1+1.2}" height="2.6" fill="#000"/>`;}
+function qRest(x){return `<path d="M ${x+1} ${LINE_Y-9} q 5 4 1 8 q -4 3 2 7 q -6 -2 -2 -7 q 4 -3 -2 -8 z" fill="#000"/>`;}
+function tok(t,x){let s='';
+  if(t==='n'){s+=head(x,0)+stem(x);}
+  else if(t==='b'){s+=head(x,1)+stem(x);}
+  else if(t==='sr'){s+=qRest(x);}
+  else if(t==='cc'){const x2=x+BEAT_W*0.5;s+=head(x,0)+stem(x)+head(x2,0)+stem(x2)+beamG(x,x2,STEM_TOP);}
+  else if(t==='ssss'){const xs=[x,x+BEAT_W*0.25,x+BEAT_W*0.5,x+BEAT_W*0.75];xs.forEach(q=>s+=head(q,0)+stem(q));s+=beamG(xs[0],xs[3],STEM_TOP)+beamG(xs[0],xs[3],STEM_TOP+4);}
+  else if(t==='c_ss'){const xs=[x,x+BEAT_W*0.5,x+BEAT_W*0.75];xs.forEach(q=>s+=head(q,0)+stem(q));s+=beamG(xs[0],xs[2],STEM_TOP)+beamG(xs[1],xs[2],STEM_TOP+4);}
+  else if(t==='ss_c'){const xs=[x,x+BEAT_W*0.25,x+BEAT_W*0.5];xs.forEach(q=>s+=head(q,0)+stem(q));s+=beamG(xs[0],xs[2],STEM_TOP)+beamG(xs[0],xs[1],STEM_TOP+4);}
+  else if(t==='np_c'){const x2=x+BEAT_W*1.5;s+=head(x,0)+stem(x)+dotG(x)+head(x2,0)+stem(x2)+flagG(x2);}
+  return s;}
+function measureSVG(tokens,scale){
+  scale=scale||1.6;
+  const total=tokens.reduce((a,t)=>a+DUR[t],0);
+  const W=24+total*BEAT_W+16;
+  let x=20,body='';for(const t of tokens){body+=tok(t,x);x+=DUR[t]*BEAT_W;}
+  const line=`<line x1="10" y1="${LINE_Y}" x2="${W-8}" y2="${LINE_Y}" stroke="#000" stroke-width="1"/>`;
+  const bar=`<line x1="${W-8}" y1="${LINE_Y-16}" x2="${W-8}" y2="${LINE_Y+6}" stroke="#000" stroke-width="1.2"/>`;
+  return `<svg viewBox="0 0 ${W} 62" width="${Math.round(W*scale)}" height="${Math.round(62*scale)}" xmlns="http://www.w3.org/2000/svg"><rect width="${W}" height="62" fill="#fff"/>${line}${body}${bar}</svg>`;
+}
+
+/* ================= Audio (Web Audio API) ================= */
+const BPM=80, SPB=60/BPM;   // segundos por pulso de negra
+let AC=null;
+function ac(){ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)(); return AC; }
+function click(when,freq,gain){
+  const c=ac();
+  const o=c.createOscillator(), g=c.createGain();
+  o.type='triangle'; o.frequency.value=freq;
+  g.gain.setValueAtTime(0,when);
+  g.gain.linearRampToValueAtTime(gain,when+0.005);
+  g.gain.exponentialRampToValueAtTime(0.0001,when+0.12);
+  o.connect(g).connect(c.destination); o.start(when); o.stop(when+0.14);
+}
+function onsets(tokens){ // devuelve tiempos de ataque (en pulsos) de cada nota
+  let t=0; const out=[];
+  for(const tk of tokens){
+    if(tk==='n'||tk==='b'){ out.push(t); }
+    else if(tk==='sr'){ /* silencio */ }
+    else if(tk==='cc'){ out.push(t,t+0.5); }
+    else if(tk==='ssss'){ out.push(t,t+0.25,t+0.5,t+0.75); }
+    else if(tk==='c_ss'){ out.push(t,t+0.5,t+0.75); }
+    else if(tk==='ss_c'){ out.push(t,t+0.25,t+0.5); }
+    else if(tk==='np_c'){ out.push(t,t+1.5); }
+    t+=DUR[tk];
+  }
+  return out;
+}
+function play(tokens,beats){
+  const c=ac(); if(c.state==='suspended') c.resume();
+  const t0=c.currentTime+0.15;
+  // cuenta previa: un compás de pulsos (clic agudo, acento en el 1)
+  for(let b=0;b<beats;b++) click(t0+b*SPB, b===0?1200:900, b===0?0.5:0.32);
+  // ritmo (clic grave woodblock)
+  const start=t0+beats*SPB+SPB*0.5;
+  onsets(tokens).forEach(o=>click(start+o*SPB, 520, 0.6));
+}
+
+/* ================= Helpers ================= */
+function isoLocal(d){const p=n=>String(n).padStart(2,'0');const o=-d.getTimezoneOffset(),s=o>=0?'+':'-',a=Math.abs(o);
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+s+p(Math.floor(a/60))+':'+p(a%60);}
+function fmtHuman(d){const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes());}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function key(tokens){return tokens.join('|');}
+
+/* ================= Banco de preguntas =================
+   beats = numerador (pulsos de negra por compás). correct = tokens.
+   distractores: misma duración total, distinta distribución. */
+const BLOCKS={ A:'Compás de 2/4', B:'Compás de 3/4', C:'Compás de 4/4' };
+const Q=[
+  { block:'A', beats:2, meter:'2/4', topic:'puntillo_negra',
+    correct:['np_c'], opts:[['np_c'],['n','cc'],['cc','n']],
+    hint:'La primera figura dura pulso y medio (negra con puntillo) y termina con una corchea.' },
+  { block:'A', beats:2, meter:'2/4', topic:'corcheas',
+    correct:['cc','n'], opts:[['cc','n'],['n','cc'],['ssss','n']],
+    hint:'Empieza con dos notas rápidas (corcheas) y acaba en una negra.' },
+
+  { block:'B', beats:3, meter:'3/4', topic:'puntillo_negra',
+    correct:['n','np_c'], opts:[['n','np_c'],['np_c','n'],['n','n','n']],
+    hint:'La figura con puntillo está al FINAL del compás.' },
+  { block:'B', beats:3, meter:'3/4', topic:'corcheas',
+    correct:['cc','n','cc'], opts:[['cc','n','cc'],['n','cc','n'],['cc','cc','n']],
+    hint:'Corcheas en el pulso 1 y en el pulso 3; negra en medio.' },
+  { block:'B', beats:3, meter:'3/4', topic:'blanca',
+    correct:['b','n'], opts:[['b','n'],['n','b'],['n','n','n']],
+    hint:'Empieza con una nota larga (blanca = 2 pulsos) y acaba en negra.' },
+
+  { block:'C', beats:4, meter:'4/4', topic:'puntillo_negra',
+    correct:['np_c','cc','n'], opts:[['np_c','cc','n'],['b','cc','n'],['n','cc','cc','n']],
+    hint:'Empieza con negra con puntillo + corchea (pulso y medio + medio).' },
+  { block:'C', beats:4, meter:'4/4', topic:'semicorcheas',
+    correct:['cc','ssss','n','sr'], opts:[['cc','ssss','n','sr'],['ssss','cc','n','sr'],['cc','cc','n','sr']],
+    hint:'El grupo de cuatro notas muy rápidas (semicorcheas) va en el pulso 2.' },
+  { block:'C', beats:4, meter:'4/4', topic:'silencios',
+    correct:['n','sr','cc','n'], opts:[['n','sr','cc','n'],['sr','n','cc','n'],['n','n','cc','sr']],
+    hint:'Hay un silencio de negra en el pulso 2 (no suena nada ahí).' }
+];
+
+/* ================= Estado ================= */
+const TOOL='mus_dictado_simple-s5_v1', CAT='dictado';
+const COMPLETED_KEY='andre_music_completed', TOOL_TITLE='Dictado rítmico · compases simples S5';
+const state={ i:0, correct:0, items:[], start:new Date(), qStart:0, mood:null, replays:0 };
+const app=document.getElementById('app');
+function render(h){ app.innerHTML=h; window.scrollTo(0,0); }
+
+/* ---------- Registro de completado (leído por index.html) ---------- */
+function readCompleted(){
+  try{ return JSON.parse(localStorage.getItem(COMPLETED_KEY)||'{}'); }catch(e){ return {}; }
+}
+function markCompleted(sessionJson){
+  try{
+    const reg=readCompleted();
+    reg[TOOL]={ title:TOOL_TITLE, date:sessionJson.session.end,
+      correct:sessionJson.score.correct, total:sessionJson.score.total, pct:sessionJson.score.pct,
+      times:(reg[TOOL]&&reg[TOOL].times?reg[TOOL].times:0)+1 };
+    localStorage.setItem(COMPLETED_KEY,JSON.stringify(reg));
+    return true;
+  }catch(e){ return false; }
+}
+(function showPreviousBanner(){
+  const prev=readCompleted()[TOOL];
+  if(!prev) return;
+  const el=document.getElementById('done-banner');
+  const d=new Date(prev.date);
+  const pad=n=>String(n).padStart(2,'0');
+  const human=isNaN(d)?prev.date:`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  el.innerHTML=`✅ Ya completaste este ejercicio el <strong>${human}</strong> (${prev.correct}/${prev.total}). Puedes repetirlo cuando quieras.`;
+  el.classList.remove('hidden');
+})();
+
+function screenStart(){
+  render(`
+  <h1>Dictado rítmico · compases simples</h1>
+  <div class="sub">Lenguaje Musical · Sesión 5 · foco en figuras con <b>puntillo</b></div>
+  <div class="warn">🔊 Esta actividad necesita <b>sonido</b>. Usa Chrome o Edge con el volumen encendido (no funciona sin conexión).</div>
+  <div class="card">
+    <p>Vas a <b>escuchar</b> un compás y elegir cuál de las opciones escritas es la que ha sonado. Antes del ritmo oirás una <b>cuenta previa</b> para sentir el pulso.</p>
+    <p class="tiny">8 preguntas · 3 bloques (2/4, 3/4, 4/4) · con un ejemplo antes de empezar.</p>
+    <button class="primary" onclick="screenDemo()">Ver el ejemplo →</button>
+  </div>`);
+}
+
+function screenDemo(){
+  render(`
+  <div class="prog">Ejemplo</div>
+  <div class="card">
+    <div class="compas">Así se lee una negra con puntillo + corchea (2/4):</div>
+    <div class="center">${measureSVG(['np_c'])}</div>
+    <div class="demo-box">
+      <b>Cómo suena:</b> la primera nota es <b>larga</b> (dura pulso y medio) y la segunda es
+      <b>corta</b> y rápida (media parte), justo antes del pulso 2. Es el ritmo de "TAA–ta".
+      <br><button class="listen" onclick="play(['np_c'],2)">▶ Escuchar el ejemplo</button>
+    </div>
+    <div class="tiny">Consejo: primero escucha y siente el pulso con la cuenta previa; luego fíjate en qué notas caen fuera del pulso.</div>
+    <button class="primary" onclick="startQuiz()">¡Empezar! →</button>
+  </div>`);
+}
+
+function startQuiz(){ state.i=0;state.correct=0;state.items=[];state.start=new Date();nextQ(); }
+
+function nextQ(){
+  if(state.i>=Q.length) return screenMood();
+  const q=Q[state.i]; state.qStart=Date.now(); state.replays=0;
+  const shuffled=shuffle(q.opts); q._shuffled=shuffled;
+  render(`
+    <div class="prog">Pregunta ${state.i+1} de ${Q.length}</div>
+    <div class="card">
+      <div class="blocklbl">Bloque: ${BLOCKS[q.block]}</div>
+      <div class="compas">Compás de ${q.meter}</div>
+      <div class="prompt">Escucha y elige el ritmo que ha sonado:</div>
+      <button class="listen" onclick="replay()">🔊 Escuchar</button>
+      <div id="opts">
+        ${shuffled.map((o,k)=>`<button class="opt" onclick="answer(${k})">${measureSVG(o)}</button>`).join('')}
+      </div>
+      <div id="fb"></div>
+    </div>`);
+  setTimeout(()=>play(q.correct,q.beats),350);
+}
+function replay(){ const q=Q[state.i]; state.replays++; play(q.correct,q.beats); }
+
+function answer(k){
+  const q=Q[state.i], chosen=q._shuffled[k];
+  const ok=key(chosen)===key(q.correct);
+  const t=Math.round((Date.now()-state.qStart)/1000);
+  if(ok) state.correct++;
+  state.items.push({ n:state.i+1, block:q.block, topic:q.topic,
+    expected:key(q.correct), answered:key(chosen), correct:ok, attempts:1, time_sec:t, replays:state.replays });
+  document.querySelectorAll('#opts button').forEach((b,idx)=>{
+    b.disabled=true;
+    if(key(q._shuffled[idx])===key(q.correct)) b.classList.add('correct');
+    else if(idx===k) b.classList.add('wrong');
+  });
+  document.getElementById('fb').innerHTML=`
+    <div class="fb ${ok?'ok':'no'}"><b>${ok?'¡Correcto! ✅':'No era ese ❌'}</b><br>${q.hint}</div>
+    <button class="listen" onclick="play(Q[state.i].correct,Q[state.i].beats)">🔊 Volver a escuchar el correcto</button>
+    <button class="primary" onclick="state.i++;nextQ()">${state.i+1>=Q.length?'Ver resultado →':'Siguiente →'}</button>`;
+}
+
+function screenMood(){
+  render(`
+  <div class="card center">
+    <div class="prompt">¿Cómo te has sentido con este dictado?</div>
+    <div class="mrow mood">
+      <button onclick="setMood(1)">😖<br>Difícil</button>
+      <button onclick="setMood(2)">🙂<br>Normal</button>
+      <button onclick="setMood(3)">😄<br>Fácil</button>
+    </div>
+    <button class="opt" onclick="setMood(null)">Prefiero no responder</button>
+  </div>`);
+}
+function setMood(m){ state.mood=m; screenFinal(); }
+
+function buildJSON(){
+  const end=new Date(), total=Q.length, pct=Math.round(state.correct/total*1000)/10;
+  const ids=['A','B','C'];
+  const blocks=ids.map(id=>{const its=state.items.filter(x=>x.block===id);
+    return {id,label:BLOCKS[id],correct:its.filter(x=>x.correct).length,total:its.length};});
+  return { schema:'andre-music-log/v1', tool:TOOL, category:CAT, scoring:'auto',
+    session:{start:isoLocal(state.start),end:isoLocal(end),duration_sec:Math.round((end-state.start)/1000)},
+    score:{correct:state.correct,total,pct}, blocks, items:state.items, mood:state.mood };
+}
+
+function screenFinal(){
+  const json=buildJSON();
+  try{ const h=JSON.parse(localStorage.getItem('andre_music_history')||'[]');
+    h.push(json); localStorage.setItem('andre_music_history',JSON.stringify(h));
+    localStorage.setItem('andre_'+TOOL,JSON.stringify({lastScore:json.score,at:json.session.end})); }catch(e){}
+  markCompleted(json);
+  const bl=json.blocks.map(b=>`${b.label}: ${b.correct}/${b.total}`);
+  const blLine=json.blocks.map(b=>`${b.id} ${b.correct}/${b.total}`).join(' · ');
+  const copy=`Dictado ritmico compases simples S5 · ${fmtHuman(new Date())}
+Resultado: ${json.score.correct} de ${json.score.total} (${json.score.pct}%)
+Bloques: [${blLine}]
+---JSON---
+${JSON.stringify(json,null,2)}`;
+  render(`
+  <h1>¡Terminado! 🥁</h1>
+  <div class="card">
+    <div class="prompt">Resultado: ${json.score.correct} de ${json.score.total} (${json.score.pct}%)</div>
+    <ul>${bl.map(x=>`<li>${x}</li>`).join('')}</ul>
+    ${json.score.pct>=80?'<p>¡Genial! Distingues muy bien las figuras, incluido el puntillo.</p>':
+      '<p>Buen trabajo. Vuelve a escuchar los ritmos con puntillo: la primera nota es larga y la segunda, corta.</p>'}
+  </div>
+  <div class="card">
+    <p class="tiny"><b>Para papá:</b> copia este cuadro y pégalo en el chat para diseñar la siguiente sesión.</p>
+    <textarea readonly onclick="this.select()">${copy.replace(/</g,'&lt;')}</textarea>
+    <button class="primary" onclick="copyLog(this)">Copiar registro</button>
+    <button class="opt" onclick="screenStart()">Volver a empezar</button>
+  </div>`);
+  window._copy=copy;
+}
+function copyLog(btn){ navigator.clipboard.writeText(window._copy).then(()=>btn.textContent='¡Copiado! ✅')
+  .catch(()=>btn.textContent='Selecciona el texto y copia manualmente'); }
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_'+TOOL); } catch (e) {}
+  location.reload();
+});
+
+screenStart();
+</script>
+</body>
+</html>

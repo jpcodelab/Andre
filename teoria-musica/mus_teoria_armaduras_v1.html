@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armaduras y tonalidad · NIVEL 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Lora', Georgia, serif; color: #000; background: #fff;
+    margin: 0; padding: 20px; line-height: 1.55;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .sub { color: #333; font-size: 0.95rem; margin-bottom: 18px; }
+  .card { border: 2px solid #000; border-radius: 10px; padding: 18px; margin-bottom: 16px; }
+  .prog { font-size: 0.85rem; color: #444; margin-bottom: 8px; }
+  .blocklbl { font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: .8rem; }
+  .prompt { font-size: 1.12rem; font-weight: 600; margin: 10px 0 14px; }
+  svg { display: block; margin: 6px auto 14px; }
+  button {
+    font-family: 'Lora', serif; font-size: 1rem; width: 100%;
+    text-align: left; padding: 12px 14px; margin: 7px 0;
+    border: 2px solid #000; border-radius: 8px; background: #fff; cursor: pointer;
+  }
+  button:hover:not(:disabled) { background: #f2f2f2; }
+  button:disabled { cursor: default; }
+  .opt.correct { background: #e5f6e5; border-color: #1a7a1a; font-weight: 600; }
+  .opt.wrong { background: #fbe6e6; border-color: #a12; }
+  .primary { text-align: center; font-weight: 700; background: #111; color: #fff; }
+  .primary:hover:not(:disabled) { background: #333; }
+  .fb { margin-top: 12px; padding: 12px; border-radius: 8px; border: 1px dashed #555; font-size: .98rem; }
+  .fb.ok { border-color: #1a7a1a; }
+  .fb.no { border-color: #a12; }
+  .demo-box { background: #faf7ef; border: 1px solid #ccc; border-radius: 8px; padding: 12px 14px; margin: 10px 0; }
+  ul { margin: 6px 0 6px 18px; padding: 0; }
+  li { margin: 4px 0; }
+  textarea { width: 100%; height: 150px; font-family: monospace; font-size: .8rem; margin-top: 8px; }
+  .mood button { width: 31%; display: inline-block; text-align: center; }
+  .mrow { display: flex; gap: 6px; }
+  .tiny { font-size: .82rem; color: #555; }
+  .center { text-align: center; }
+  .navbar { display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid #ccc; margin: 24px auto 0; padding-top: 12px; max-width: 640px; }
+  .navbar button, .navbar a { font-family: 'Lora', serif; font-size: .9em; padding: 8px 14px; border: 2px solid #666; border-radius: 8px; background: #fff; color: #000; text-decoration: none; cursor: pointer; display: inline-block; }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
+  .hidden { display: none; }
+  .done-banner { background: #eaf7ea; border: 2px solid #2a7a2a; border-radius: 8px; padding: 10px 14px; font-size: .9rem; margin: 12px auto; max-width: 640px; }
+</style>
+</head>
+<body>
+<div id="done-banner" class="done-banner hidden"></div>
+<div class="wrap" id="app"></div>
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</div>
+
+<script>
+"use strict";
+
+/* ---------- Renderizador de armadura (clave de Sol + alteraciones) ---------- */
+const Y = { G5:20,F5:25,E5:30,D5:35,C5:40,B4:45,A4:50,G4:55,F4:60,E4:65,D4:70 };
+const SHARP_POS = [Y.F5,Y.C5,Y.G5,Y.D5,Y.A4];
+const FLAT_POS  = [Y.B4,Y.E5,Y.A4,Y.D5,Y.G4];
+function drawSharp(cx,cy){const s='stroke="#000" stroke-linecap="round"';return `
+ <line x1="${cx-2.2}" y1="${cy-8}" x2="${cx-2.2}" y2="${cy+6}" stroke-width="1.1" ${s}/>
+ <line x1="${cx+2.2}" y1="${cy-6}" x2="${cx+2.2}" y2="${cy+8}" stroke-width="1.1" ${s}/>
+ <line x1="${cx-4.2}" y1="${cy-2}" x2="${cx+4.2}" y2="${cy-3.4}" stroke-width="1.8" ${s}/>
+ <line x1="${cx-4.2}" y1="${cy+3.4}" x2="${cx+4.2}" y2="${cy+2}" stroke-width="1.8" ${s}/>`;}
+function drawFlat(cx,cy){return `
+ <line x1="${cx-2}" y1="${cy-11}" x2="${cx-2}" y2="${cy+4}" stroke="#000" stroke-width="1.1" stroke-linecap="round"/>
+ <path d="M ${cx-2} ${cy-3} Q ${cx+6} ${cy-2}, ${cx+2.5} ${cy+2.2} Q ${cx+0.5} ${cy+4.5}, ${cx-2} ${cy+3.5}" fill="none" stroke="#000" stroke-width="1.1"/>`;}
+function trebleClef(){return `
+ <g transform="translate(13,0)">
+  <path d="M 10,74 C 3,72 1,64 6,60 C 11,56 18,58 18,50 C 18,44 12,40 8,45 C 5,49 8,55 13,54 C 20,52 22,42 18,34 C 15,28 9,24 9,17 C 9,11 14,9 16,14 C 18,18 16,24 12,29 C 7,35 8,60 11,66"
+    fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="9.5" cy="70.5" r="2.2" fill="#000"/></g>`;}
+function armaduraSVG(type,count){
+  const W = 40 + Math.max(count,1)*13 + 20;
+  const lines=[25,35,45,55,65].map(y=>`<line x1="8" y1="${y}" x2="${W-6}" y2="${y}" stroke="#000" stroke-width="0.8"/>`).join('');
+  let acc='',x0=46;
+  if(type==='sharp'){for(let i=0;i<count;i++)acc+=drawSharp(x0+i*12,SHARP_POS[i]);}
+  else if(type==='flat'){for(let i=0;i<count;i++)acc+=drawFlat(x0+i*12,FLAT_POS[i]);}
+  return `<svg viewBox="0 0 ${W} 90" width="${Math.round(W*1.7)}" height="${Math.round(90*1.7)}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="${W}" height="90" fill="#fff"/>${lines}${trebleClef()}${acc}</svg>`;
+}
+
+/* ---------- Helper timestamp con zona horaria (MUSIC_GUIDE §3.4) ---------- */
+function isoLocal(d){
+  const pad=n=>String(n).padStart(2,'0');
+  const off=-d.getTimezoneOffset(), sign=off>=0?'+':'-', abs=Math.abs(off);
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+
+    pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+
+    sign+pad(Math.floor(abs/60))+':'+pad(abs%60);
+}
+function fmtHuman(d){const pad=n=>String(n).padStart(2,'0');
+  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ---------- Banco de preguntas ---------- */
+const BLOCKS = {
+  A: 'Orden de las alteraciones',
+  B: 'Tonalidad Mayor desde la armadura',
+  C: 'Relativo menor'
+};
+const Q = [
+  { block:'A', topic:'orden_sostenidos',
+    prompt:'¿Cuál es el orden de los SOSTENIDOS (♯)?',
+    options:[['Fa Do Sol Re La Mi Si',true],['Si Mi La Re Sol Do Fa',false],
+             ['Do Re Mi Fa Sol La Si',false],['Fa Mi Re Do Si La Sol',false]],
+    explain:'El orden de los sostenidos es Fa–Do–Sol–Re–La–Mi–Si. Cada nuevo sostenido está una 5ª por encima del anterior.' },
+
+  { block:'A', topic:'orden_bemoles',
+    prompt:'¿Cuál es el orden de los BEMOLES (♭)?',
+    options:[['Si Mi La Re Sol Do Fa',true],['Fa Do Sol Re La Mi Si',false],
+             ['La Sol Fa Mi Re Do Si',false],['Do Sol Re La Mi Si Fa',false]],
+    explain:'El orden de los bemoles es Si–Mi–La–Re–Sol–Do–Fa: exactamente el orden de los sostenidos al revés.' },
+
+  { block:'A', topic:'orden_sostenidos',
+    svg:['sharp',3],
+    prompt:'En esta armadura de 3 sostenidos, ¿cuál es el TERCER sostenido?',
+    options:[['Sol',true],['Re',false],['La',false],['Do',false]],
+    explain:'Siguiendo Fa–Do–Sol, el tercero es Sol♯.' },
+
+  { block:'B', topic:'armadura_mayor',
+    svg:['sharp',1],
+    prompt:'¿Qué tonalidad Mayor tiene esta armadura (1 sostenido)?',
+    options:[['Sol Mayor',true],['Re Mayor',false],['Do Mayor',false],['Fa Mayor',false]],
+    explain:'Truco de los sostenidos: el ÚLTIMO sostenido (aquí Fa♯) subido medio tono da la tónica → Fa♯ + ½ = Sol. Sol Mayor.' },
+
+  { block:'B', topic:'armadura_mayor',
+    svg:['sharp',2],
+    prompt:'¿Qué tonalidad Mayor tiene esta armadura (2 sostenidos)?',
+    options:[['Re Mayor',true],['Sol Mayor',false],['La Mayor',false],['Si Mayor',false]],
+    explain:'El último sostenido es Do♯. Do♯ + medio tono = Re. Re Mayor.' },
+
+  { block:'B', topic:'armadura_mayor',
+    svg:['flat',2],
+    prompt:'¿Qué tonalidad Mayor tiene esta armadura (2 bemoles)? — la de tu partitura de "Hey Jude".',
+    options:[['Si♭ Mayor',true],['Mi♭ Mayor',false],['Fa Mayor',false],['Sol Mayor',false]],
+    explain:'Truco de los bemoles: la tónica es el PENÚLTIMO bemol. Con Si♭ y Mi♭, el penúltimo es Si♭ → Si♭ Mayor.' },
+
+  { block:'B', topic:'armadura_mayor',
+    svg:['flat',1],
+    prompt:'¿Qué tonalidad Mayor tiene esta armadura (1 bemol)?',
+    options:[['Fa Mayor',true],['Si♭ Mayor',false],['Do Mayor',false],['Re Mayor',false]],
+    explain:'Con un solo bemol no hay "penúltimo", así que este caso se memoriza: 1 bemol (Si♭) = Fa Mayor.' },
+
+  { block:'B', topic:'armadura_mayor',
+    svg:['flat',3],
+    prompt:'¿Qué tonalidad Mayor tiene esta armadura (3 bemoles)?',
+    options:[['Mi♭ Mayor',true],['Si♭ Mayor',false],['La♭ Mayor',false],['Fa Mayor',false]],
+    explain:'Bemoles: Si♭–Mi♭–La♭. El penúltimo es Mi♭ → Mi♭ Mayor.' },
+
+  { block:'C', topic:'relativo_menor',
+    prompt:'El relativo menor de Do Mayor (sin alteraciones) es…',
+    options:[['La menor',true],['Mi menor',false],['Re menor',false],['Sol menor',false]],
+    explain:'El relativo menor está una 3ª menor por debajo (1 tono y medio). Do → La. La menor comparte armadura con Do Mayor.' },
+
+  { block:'C', topic:'relativo_menor',
+    svg:['flat',2],
+    prompt:'¿Qué tonalidad MENOR comparte esta armadura con Si♭ Mayor?',
+    options:[['Sol menor',true],['Re menor',false],['Do menor',false],['Fa menor',false]],
+    explain:'Baja una 3ª menor desde la Mayor: Si♭ → Sol. Sol menor es el relativo menor de Si♭ Mayor (misma armadura).' },
+
+  { block:'C', topic:'relativo_menor',
+    svg:['sharp',1],
+    prompt:'El relativo menor de Sol Mayor (1 sostenido) es…',
+    options:[['Mi menor',true],['La menor',false],['Si menor',false],['Re menor',false]],
+    explain:'Sol bajando una 3ª menor = Mi. Mi menor comparte la armadura de 1 sostenido con Sol Mayor.' },
+
+  { block:'C', topic:'relativo_menor',
+    prompt:'Verdadero o falso: una tonalidad Mayor y su relativo menor tienen la MISMA armadura.',
+    options:[['Verdadero',true],['Falso',false]],
+    explain:'Verdadero. Comparten exactamente las mismas alteraciones; lo que cambia es la nota tónica y, con ella, el modo.' }
+];
+
+/* ---------- Estado ---------- */
+const TOOL='mus_teoria_armaduras_v1', CAT='teoria';
+const COMPLETED_KEY='andre_music_completed', TOOL_TITLE='Armaduras y tonalidad (Nivel 3)';
+const state={ i:0, correct:0, items:[], start:new Date(), qStart:0, mood:null };
+const app=document.getElementById('app');
+
+function render(html){ app.innerHTML=html; window.scrollTo(0,0); }
+
+/* ---------- Registro de completado (leído por index.html) ---------- */
+function readCompleted(){
+  try{ return JSON.parse(localStorage.getItem(COMPLETED_KEY)||'{}'); }catch(e){ return {}; }
+}
+function markCompleted(sessionJson){
+  try{
+    const reg=readCompleted();
+    reg[TOOL]={ title:TOOL_TITLE, date:sessionJson.session.end,
+      correct:sessionJson.score.correct, total:sessionJson.score.total, pct:sessionJson.score.pct,
+      times:(reg[TOOL]&&reg[TOOL].times?reg[TOOL].times:0)+1 };
+    localStorage.setItem(COMPLETED_KEY,JSON.stringify(reg));
+    return true;
+  }catch(e){ return false; }
+}
+(function showPreviousBanner(){
+  const prev=readCompleted()[TOOL];
+  if(!prev) return;
+  const el=document.getElementById('done-banner');
+  const d=new Date(prev.date);
+  const pad=n=>String(n).padStart(2,'0');
+  const human=isNaN(d)?prev.date:`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  el.innerHTML=`✅ Ya completaste este ejercicio el <strong>${human}</strong> (${prev.correct}/${prev.total}). Puedes repetirlo cuando quieras.`;
+  el.classList.remove('hidden');
+})();
+
+function screenStart(){
+  render(`
+  <h1>Armaduras y tonalidad</h1>
+  <div class="sub">Lenguaje Musical · NIVEL 3 · identificar la tonalidad a partir de la armadura</div>
+  <div class="card">
+    <p>En esta actividad vas a aprender a decir <b>qué tonalidad</b> tiene una pieza mirando solo su <b>armadura</b> (los sostenidos o bemoles al principio del pentagrama), sin necesidad de tocarla.</p>
+    <p class="tiny">12 preguntas · 3 bloques · con un ejemplo resuelto antes de empezar.</p>
+    <button class="primary" onclick="screenDemo()">Ver el ejemplo →</button>
+  </div>`);
+}
+
+function screenDemo(){
+  render(`
+  <div class="prog">Ejemplo resuelto</div>
+  <div class="card">
+    <div class="prompt">Los dos trucos que vas a usar</div>
+    ${armaduraSVG('flat',2)}
+    <div class="demo-box">
+      <b>1) Truco de los BEMOLES (♭):</b>
+      <ul>
+        <li>La tónica Mayor es el <b>penúltimo bemol</b>.</li>
+        <li>Aquí hay 2 bemoles: Si♭ y Mi♭ → el penúltimo es <b>Si♭</b> → <b>Si♭ Mayor</b>.</li>
+        <li>Caso especial: 1 bemol = <b>Fa Mayor</b> (se memoriza).</li>
+      </ul>
+    </div>
+    <div class="demo-box">
+      <b>2) Truco de los SOSTENIDOS (♯):</b>
+      <ul>
+        <li>Coge el <b>último sostenido</b> y súbelo <b>medio tono</b>: esa es la tónica.</li>
+        <li>Ejemplo: último = Fa♯ → Fa♯ + ½ tono = <b>Sol Mayor</b>.</li>
+      </ul>
+    </div>
+    <div class="demo-box">
+      <b>3) Relativo menor:</b> baja una 3ª menor (1 tono y medio) desde la Mayor.
+      Comparte la <b>misma armadura</b>. Ej.: Si♭ Mayor → <b>Sol menor</b>.
+    </div>
+    <button class="primary" onclick="startQuiz()">¡Empezar! →</button>
+  </div>`);
+}
+
+function startQuiz(){ state.i=0; state.correct=0; state.items=[]; state.start=new Date(); nextQ(); }
+
+function nextQ(){
+  if(state.i>=Q.length){ return screenMood(); }
+  const q=Q[state.i];
+  state.qStart=Date.now();
+  const opts=shuffle(q.options.map((o,idx)=>({text:o[0],correct:o[1],idx})));
+  q._shuffled=opts;
+  render(`
+    <div class="prog">Pregunta ${state.i+1} de ${Q.length}</div>
+    <div class="card">
+      <div class="blocklbl">Bloque: ${BLOCKS[q.block]}</div>
+      <div class="prompt">${q.prompt}</div>
+      ${q.svg?armaduraSVG(q.svg[0],q.svg[1]):''}
+      <div id="opts">
+        ${opts.map((o,k)=>`<button class="opt" onclick="answer(${k})">${o.text}</button>`).join('')}
+      </div>
+      <div id="fb"></div>
+    </div>`);
+}
+
+function answer(k){
+  const q=Q[state.i], opts=q._shuffled, chosen=opts[k];
+  const ok=chosen.correct;
+  const t=Math.round((Date.now()-state.qStart)/1000);
+  if(ok) state.correct++;
+  state.items.push({
+    n:state.i+1, block:q.block, topic:q.topic,
+    expected:q.options.find(o=>o[1])[0], answered:chosen.text,
+    correct:ok, attempts:1, time_sec:t
+  });
+  document.querySelectorAll('#opts button').forEach((b,idx)=>{
+    b.disabled=true;
+    if(opts[idx].correct) b.classList.add('correct');
+    else if(idx===k) b.classList.add('wrong');
+  });
+  document.getElementById('fb').innerHTML=`
+    <div class="fb ${ok?'ok':'no'}">
+      <b>${ok?'¡Correcto! ✅':'No es esa ❌'}</b><br>${q.explain}
+    </div>
+    <button class="primary" onclick="state.i++;nextQ()">
+      ${state.i+1>=Q.length?'Ver resultado →':'Siguiente →'}</button>`;
+}
+
+function screenMood(){
+  render(`
+  <div class="card center">
+    <div class="prompt">¿Cómo te has sentido con esta actividad?</div>
+    <div class="mrow mood">
+      <button onclick="setMood(1)">😖<br>Difícil</button>
+      <button onclick="setMood(2)">🙂<br>Normal</button>
+      <button onclick="setMood(3)">😄<br>Fácil</button>
+    </div>
+    <button class="opt" style="text-align:center" onclick="setMood(null)">Prefiero no responder</button>
+  </div>`);
+}
+function setMood(m){ state.mood=m; screenFinal(); }
+
+function buildJSON(){
+  const end=new Date();
+  const total=Q.length, pct=Math.round(state.correct/total*1000)/10;
+  const blockIds=['A','B','C'];
+  const blocks=blockIds.map(id=>{
+    const its=state.items.filter(x=>x.block===id);
+    return { id, label:BLOCKS[id], correct:its.filter(x=>x.correct).length, total:its.length };
+  });
+  return {
+    schema:'andre-music-log/v1', tool:TOOL, category:CAT, scoring:'auto',
+    session:{ start:isoLocal(state.start), end:isoLocal(end),
+      duration_sec:Math.round((end-state.start)/1000) },
+    score:{ correct:state.correct, total, pct },
+    blocks, items:state.items, mood:state.mood
+  };
+}
+
+function screenFinal(){
+  const json=buildJSON();
+  // persistencia
+  try{
+    const h=JSON.parse(localStorage.getItem('andre_music_history')||'[]');
+    h.push(json); localStorage.setItem('andre_music_history',JSON.stringify(h));
+    localStorage.setItem('andre_'+TOOL,JSON.stringify({lastScore:json.score,at:json.session.end}));
+  }catch(e){}
+  markCompleted(json);
+  const bl=json.blocks.map(b=>`${b.label}: ${b.correct}/${b.total}`);
+  const blLine=json.blocks.map(b=>`${b.id} ${b.correct}/${b.total}`).join(' · ');
+  const copy=`Armaduras y tonalidad (NIVEL 3) · ${fmtHuman(new Date())}
+Resultado: ${json.score.correct} de ${json.score.total} (${json.score.pct}%)
+Bloques: [${blLine}]
+---JSON---
+${JSON.stringify(json,null,2)}`;
+  render(`
+  <h1>¡Terminado! 🎉</h1>
+  <div class="card">
+    <div class="prompt">Resultado: ${json.score.correct} de ${json.score.total} (${json.score.pct}%)</div>
+    <ul>${bl.map(x=>`<li>${x}</li>`).join('')}</ul>
+    ${json.score.pct>=80?'<p>¡Muy bien! Ya sabes leer la tonalidad desde la armadura.</p>':
+      '<p>Buen intento. Repasa los dos trucos (penúltimo bemol / último sostenido + ½ tono) y vuelve a probar.</p>'}
+  </div>
+  <div class="card">
+    <p class="tiny"><b>Para papá:</b> copia todo este cuadro y pégalo en el chat para diseñar la siguiente sesión.</p>
+    <textarea readonly onclick="this.select()">${copy.replace(/</g,'&lt;')}</textarea>
+    <button class="primary" onclick="copyLog(this)">Copiar registro</button>
+    <button class="opt" style="text-align:center" onclick="screenStart()">Volver a empezar</button>
+  </div>`);
+  window._copy=copy;
+}
+function copyLog(btn){
+  navigator.clipboard.writeText(window._copy).then(()=>{btn.textContent='¡Copiado! ✅';})
+    .catch(()=>{btn.textContent='Selecciona el texto y copia manualmente';});
+}
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_'+TOOL); } catch (e) {}
+  location.reload();
+});
+
+screenStart();
+</script>
+</body>
+</html>

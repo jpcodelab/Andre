@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.3 · Julio 2026
+> Referenciado desde CLAUDE.md. Versión: 1.4 · Julio 2026
 
 ---
 
@@ -13,13 +13,14 @@ Toda herramienta de música pertenece a exactamente una categoría:
 |---|---|---|---|---|
 | `teoria` | Repasos teóricos | Test adaptativo de preguntas de teoría | No | Sí |
 | `mapa` | Mapas imprimibles | Ficha estática de repaso (1-2 páginas A4) | No | No |
-| `dictado` | Dictados rítmicos | Escuchar y transcribir/identificar figuras rítmicas | Sí | Sí |
+| `dictado` | Dictados (rítmicos y melódicos) | Escuchar y transcribir/identificar figuras rítmicas, o reconocer notas y fragmentos melódicos de oído | Sí | Sí |
 | `audicion` | Discriminación auditiva | Escuchar y clasificar fenómenos musicales | Sí | Sí |
 | `util` | Utilidades | Herramientas de apoyo (metrónomos, afinadores…) | Sí | No |
 
 Distinción clave `dictado` vs `audicion`: el dictado exige reconstruir el ritmo
-(qué figuras suenan); la audición exige clasificar (qué fenómeno es). Son
-destrezas distintas y su feedback se diagnostica por separado.
+o identificar la nota/melodía (qué suena y en qué orden); la audición exige
+clasificar (qué fenómeno es). Son destrezas distintas y su feedback se
+diagnostica por separado.
 
 En `index.html`, cada categoría es un `.subgroup-hdr` dentro de la sección
 Lenguaje Musical, en este orden: Mapas · Repasos teóricos · Dictados ·
@@ -299,6 +300,7 @@ const group = map[item.topic]; // undefined si el topic no está en el mapa
 | `compas_9-8` | Compás de 9/8 |
 | `compas_12-8` | Compás de 12/8 |
 | `compas_6-8` | Compás de 6/8 |
+| `melodia_oido` | Reconocimiento de notas y fragmentos melódicos de oído (dictado melódico) |
 
 Antes de usar un topic granular nuevo en un fichero evaluativo:
 1. Decidir a qué grupo pertenece.
@@ -377,6 +379,10 @@ Gran Repaso 1 → Gran Repaso 2.
 **Ritmo (rama auditiva):**
 Dictado S1 → Dictado S2 →
 Fuerte/Débil (paso 1) → Puente síncopa (paso 2) → Síncopa vs Contratiempo (paso 3).
+
+**Melódica (rama de oído):**
+Dictado melódico S1 (reconocer notas, Do Mayor) → siguiente material a definir
+según diagnóstico del padre tras la primera sesión.
 
 Regla general: no avanzar de paso sin registro de sesión revisado por el padre.
 El ciclo es: André completa → padre pega registro → se diagnostica → siguiente

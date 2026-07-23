@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dictado melódico · Reconocer notas (Do Mayor)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family:'Lora',Georgia,serif; color:#000; background:#fff; margin:0; padding:20px; line-height:1.55; }
+  .wrap { max-width:640px; margin:0 auto; }
+  h1 { font-size:1.5rem; margin:0 0 4px; }
+  .sub { color:#333; font-size:.95rem; margin-bottom:16px; }
+  .card { border:2px solid #000; border-radius:10px; padding:18px; margin-bottom:16px; }
+  .warn { border:1px solid #a12; background:#fbe6e6; border-radius:8px; padding:10px 12px; font-size:.9rem; margin-bottom:14px; }
+  .prog { font-size:.85rem; color:#444; margin-bottom:8px; }
+  .blocklbl { font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:.8rem; }
+  .prompt { font-size:1.08rem; font-weight:600; margin:8px 0 12px; }
+  svg { display:block; margin:6px auto 12px; }
+  button { font-family:'Lora',serif; font-size:1rem; width:100%; text-align:center;
+    padding:12px 14px; margin:7px 0; border:2px solid #000; border-radius:8px; background:#fff; cursor:pointer; }
+  button:hover:not(:disabled){ background:#f2f2f2; }
+  button:disabled{ cursor:default; }
+  .primary{ font-weight:700; background:#111; color:#fff; }
+  .primary:hover:not(:disabled){ background:#333; }
+  .listen{ background:#eef4fb; border-color:#245; font-weight:700; }
+  .noteopts{ display:flex; flex-wrap:wrap; gap:8px; }
+  .noteopts button{ flex:1 1 28%; font-size:1.15rem; font-weight:700; }
+  .opt.correct{ background:#e5f6e5; border-color:#1a7a1a; }
+  .opt.wrong{ background:#fbe6e6; border-color:#a12; }
+  .fb{ margin-top:12px; padding:12px; border-radius:8px; border:1px dashed #555; font-size:.98rem; }
+  .fb.ok{ border-color:#1a7a1a; } .fb.no{ border-color:#a12; }
+  .demo-box{ background:#faf7ef; border:1px solid #ccc; border-radius:8px; padding:12px 14px; margin:10px 0; }
+  textarea{ width:100%; height:150px; font-family:monospace; font-size:.8rem; margin-top:8px; }
+  .mood button{ width:31%; display:inline-block; }
+  .mrow{ display:flex; gap:6px; }
+  .tiny{ font-size:.82rem; color:#555; } .center{ text-align:center; }
+  .navbar { display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid #ccc; margin: 24px auto 0; padding-top: 12px; max-width: 640px; }
+  .navbar button, .navbar a { font-family: 'Lora', serif; font-size: .9em; padding: 8px 14px; border: 2px solid #666; border-radius: 8px; background: #fff; color: #000; text-decoration: none; cursor: pointer; display: inline-block; }
+  .navbar button:hover, .navbar a:hover { background: #f0f0f0; }
+  .hidden { display: none; }
+  .done-banner { background: #eaf7ea; border: 2px solid #2a7a2a; border-radius: 8px; padding: 10px 14px; font-size: .9rem; margin: 12px auto; max-width: 640px; }
+</style>
+</head>
+<body>
+<div id="done-banner" class="done-banner hidden"></div>
+<div class="wrap" id="app"></div>
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</div>
+<script>
+"use strict";
+
+/* ================= Notas: altura (y en pentagrama) + frecuencia ================= */
+const NOTES={
+  Do4:{name:'Do',freq:261.63,y:75}, Re4:{name:'Re',freq:293.66,y:70},
+  Mi4:{name:'Mi',freq:329.63,y:65}, Fa4:{name:'Fa',freq:349.23,y:60},
+  Sol4:{name:'Sol',freq:392.00,y:55}, La4:{name:'La',freq:440.00,y:50},
+  Si4:{name:'Si',freq:493.88,y:45}, Do5:{name:'Do',freq:523.25,y:40}
+};
+
+/* ================= Pentagrama + clave de Sol + notas ================= */
+function trebleClef(){return `
+ <g transform="translate(13,0)">
+  <path d="M 10,74 C 3,72 1,64 6,60 C 11,56 18,58 18,50 C 18,44 12,40 8,45 C 5,49 8,55 13,54 C 20,52 22,42 18,34 C 15,28 9,24 9,17 C 9,11 14,9 16,14 C 18,18 16,24 12,29 C 7,35 8,60 11,66"
+    fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="9.5" cy="70.5" r="2.2" fill="#000"/></g>`;}
+function noteHead(x,y){
+  let s=`<ellipse cx="${x}" cy="${y}" rx="4.4" ry="3.1" fill="#000" stroke="#000" transform="rotate(-20 ${x} ${y})"/>`;
+  if(y>=45) s+=`<line x1="${x+3.9}" y1="${y-1}" x2="${x+3.9}" y2="${y-24}" stroke="#000" stroke-width="1.2"/>`;
+  else s+=`<line x1="${x-3.9}" y1="${y+1}" x2="${x-3.9}" y2="${y+24}" stroke="#000" stroke-width="1.2"/>`;
+  if(y===75) s+=`<line x1="${x-8}" y1="75" x2="${x+8}" y2="75" stroke="#000" stroke-width="1"/>`;
+  return s;
+}
+function noteStaffSVG(keys,scale){
+  scale=scale||1.6;
+  const n=keys.length, W=48+n*26+16;
+  const lines=[25,35,45,55,65].map(y=>`<line x1="8" y1="${y}" x2="${W-8}" y2="${y}" stroke="#000" stroke-width="0.8"/>`).join('');
+  let body='',x=52;
+  for(const k of keys){ body+=noteHead(x,NOTES[k].y); x+=26; }
+  return `<svg viewBox="0 0 ${W} 92" width="${Math.round(W*scale)}" height="${Math.round(92*scale)}" xmlns="http://www.w3.org/2000/svg"><rect width="${W}" height="92" fill="#fff"/>${lines}${trebleClef()}${body}</svg>`;
+}
+
+/* ================= Audio (Web Audio API) — tonos afinados ================= */
+let AC=null;
+function ac(){ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)(); return AC; }
+function tone(freq,when,dur){
+  const c=ac(), o=c.createOscillator(), g=c.createGain();
+  o.type='triangle'; o.frequency.value=freq;
+  g.gain.setValueAtTime(0.0001,when);
+  g.gain.exponentialRampToValueAtTime(0.25,when+0.02);
+  g.gain.setValueAtTime(0.25,when+dur*0.6);
+  g.gain.exponentialRampToValueAtTime(0.0001,when+dur);
+  o.connect(g).connect(c.destination); o.start(when); o.stop(when+dur+0.05);
+}
+function playMelody(anchor,target){
+  const c=ac(); if(c.state==='suspended') c.resume();
+  let t=c.currentTime+0.2;
+  anchor.forEach(k=>{ tone(NOTES[k].freq,t,0.5); t+=0.58; });
+  t+=0.45;
+  target.forEach(k=>{ tone(NOTES[k].freq,t,0.62); t+=0.74; });
+}
+function playScale(){
+  const c=ac(); if(c.state==='suspended') c.resume();
+  let t=c.currentTime+0.2;
+  ['Do4','Re4','Mi4','Fa4','Sol4','La4','Si4','Do5'].forEach(k=>{ tone(NOTES[k].freq,t,0.42); t+=0.46; });
+}
+
+/* ================= Helpers ================= */
+function isoLocal(d){const p=n=>String(n).padStart(2,'0');const o=-d.getTimezoneOffset(),s=o>=0?'+':'-',a=Math.abs(o);
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+s+p(Math.floor(a/60))+':'+p(a%60);}
+function fmtHuman(d){const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes());}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function names(keys){return keys.map(k=>NOTES[k].name).join(' → ');}
+
+/* ================= Banco de preguntas ================= */
+const BLOCKS={ A:'Do, Re o Mi', B:'Toda la escala (con anclas Do y Sol)', C:'Mini-dictado de 2 notas' };
+const Q=[
+  // Bloque A — ancla Do
+  { block:'A', topic:'nota_vecina', anchor:['Do4'], target:['Re4'], options:['Do','Re','Mi'],
+    explain:'Re es la 2ª nota: un pasito por encima de Do. Ahora cántala: "Doo… Ree".' },
+  { block:'A', topic:'nota_vecina', anchor:['Do4'], target:['Mi4'], options:['Do','Re','Mi'],
+    explain:'Mi es la 3ª nota: dos pasitos por encima de Do.' },
+  { block:'A', topic:'nota_vecina', anchor:['Do4'], target:['Do4'], options:['Do','Re','Mi'],
+    explain:'¡Era la MISMA nota de referencia! Do.' },
+
+  // Bloque B — anclas Do y Sol
+  { block:'B', topic:'nota_escala', anchor:['Do4','Sol4'], target:['Sol4'], options:['Fa','Sol','La'],
+    explain:'Sol es la 5ª nota, una de las anclas que has oído (la de arriba).' },
+  { block:'B', topic:'nota_escala', anchor:['Do4','Sol4'], target:['Fa4'], options:['Mi','Fa','Sol'],
+    explain:'Fa está justo un pasito por debajo de Sol.' },
+  { block:'B', topic:'nota_escala', anchor:['Do4','Sol4'], target:['La4'], options:['Sol','La','Si'],
+    explain:'La está un pasito por encima de Sol.' },
+  { block:'B', topic:'nota_escala', anchor:['Do4','Sol4'], target:['Si4'], options:['La','Si','Do'],
+    explain:'Si es la 7ª nota, casi llegando al Do agudo.' },
+  { block:'B', topic:'nota_escala', anchor:['Do4','Sol4'], target:['Re4'], options:['Do','Re','Mi'],
+    explain:'Re, un pasito por encima del Do grave.' },
+
+  // Bloque C — mini-dictado de 2 notas, ancla Do
+  { block:'C', topic:'fragmento_2notas', anchor:['Do4'], target:['Mi4','Re4'],
+    options:['Do → Re','Mi → Re','Re → Mi'],
+    explain:'Bajaba: primero Mi y luego Re (un pasito hacia abajo).' },
+  { block:'C', topic:'fragmento_2notas', anchor:['Do4'], target:['Do4','Mi4'],
+    options:['Do → Re','Do → Mi','Mi → Do'],
+    explain:'Subía un salto: de Do a Mi (se salta el Re).' }
+];
+
+/* ================= Estado ================= */
+const TOOL='mus_dictado_melodico-s1_v1', CAT='dictado';
+const COMPLETED_KEY='andre_music_completed', TOOL_TITLE='Dictado melódico · reconocer notas S1';
+const state={ i:0, correct:0, items:[], start:new Date(), qStart:0, mood:null, replays:0 };
+const app=document.getElementById('app');
+function render(h){ app.innerHTML=h; window.scrollTo(0,0); }
+
+/* ---------- Registro de completado (leído por index.html) ---------- */
+function readCompleted(){
+  try{ return JSON.parse(localStorage.getItem(COMPLETED_KEY)||'{}'); }catch(e){ return {}; }
+}
+function markCompleted(sessionJson){
+  try{
+    const reg=readCompleted();
+    reg[TOOL]={ title:TOOL_TITLE, date:sessionJson.session.end,
+      correct:sessionJson.score.correct, total:sessionJson.score.total, pct:sessionJson.score.pct,
+      times:(reg[TOOL]&&reg[TOOL].times?reg[TOOL].times:0)+1 };
+    localStorage.setItem(COMPLETED_KEY,JSON.stringify(reg));
+    return true;
+  }catch(e){ return false; }
+}
+(function showPreviousBanner(){
+  const prev=readCompleted()[TOOL];
+  if(!prev) return;
+  const el=document.getElementById('done-banner');
+  const d=new Date(prev.date);
+  const pad=n=>String(n).padStart(2,'0');
+  const human=isNaN(d)?prev.date:`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  el.innerHTML=`✅ Ya completaste este ejercicio el <strong>${human}</strong> (${prev.correct}/${prev.total}). Puedes repetirlo cuando quieras.`;
+  el.classList.remove('hidden');
+})();
+
+function screenStart(){
+  render(`
+  <h1>Dictado melódico · reconocer notas</h1>
+  <div class="sub">Lenguaje Musical · Sesión 1 · notas de la escala de <b>Do Mayor</b></div>
+  <div class="warn">🔊 Necesita <b>sonido</b>. Usa Chrome o Edge con el volumen encendido (no funciona sin conexión).</div>
+  <div class="card">
+    <p>Aquí no cuentas la duración: tienes que reconocer <b>qué nota suena</b>. Siempre oirás primero una <b>nota de referencia</b> para orientarte.</p>
+    <p class="tiny">10 preguntas · 3 bloques · con la escala y un ejemplo antes de empezar.</p>
+    <button class="primary" onclick="screenDemo()">Escuchar la escala y el ejemplo →</button>
+  </div>`);
+}
+
+function screenDemo(){
+  render(`
+  <div class="prog">Ejemplo</div>
+  <div class="card">
+    <div class="prompt">1) Esta es la escala de Do Mayor</div>
+    ${noteStaffSVG(['Do4','Re4','Mi4','Fa4','Sol4','La4','Si4','Do5'])}
+    <button class="listen" onclick="playScale()">▶ Escuchar la escala (Do Re Mi Fa Sol La Si Do)</button>
+    <div class="demo-box">
+      <div class="prompt" style="margin-top:0">2) Ejemplo resuelto</div>
+      <p>Primero suena la referencia <b>Do</b>, y luego una nota. En este ejemplo la nota es <b>Mi</b>:</p>
+      ${noteStaffSVG(['Mi4'])}
+      <button class="listen" onclick="playMelody(['Do4'],['Mi4'])">▶ Escuchar: Do (referencia) … Mi</button>
+    </div>
+    <div class="tiny">Truco: canta desde el Do de referencia subiendo (Do–Re–Mi…) hasta llegar a la nota. ¡Cantar ayuda a reconocerla!</div>
+    <button class="primary" onclick="startQuiz()">¡Empezar! →</button>
+  </div>`);
+}
+
+function startQuiz(){ state.i=0;state.correct=0;state.items=[];state.start=new Date();nextQ(); }
+
+function nextQ(){
+  if(state.i>=Q.length) return screenMood();
+  const q=Q[state.i]; state.qStart=Date.now(); state.replays=0;
+  q._correct = q.target.length>1 ? names(q.target) : NOTES[q.target[0]].name;
+  q._opts = shuffle(q.options);
+  const anchorTxt = q.anchor.map(k=>NOTES[k].name).join(' y ');
+  render(`
+    <div class="prog">Pregunta ${state.i+1} de ${Q.length}</div>
+    <div class="card">
+      <div class="blocklbl">Bloque: ${BLOCKS[q.block]}</div>
+      <div class="prompt">${q.target.length>1?'¿Qué DOS notas han sonado?':'¿Qué nota ha sonado?'}</div>
+      <button class="listen" onclick="replay()">🔊 Escuchar (referencia ${anchorTxt} … ${q.target.length>1?'2 notas':'nota'})</button>
+      <div class="noteopts" id="opts">
+        ${q._opts.map((o,k)=>`<button class="opt" onclick="answer(${k})">${o}</button>`).join('')}
+      </div>
+      <div id="fb"></div>
+    </div>`);
+  setTimeout(()=>playMelody(q.anchor,q.target),400);
+}
+function replay(){ const q=Q[state.i]; state.replays++; playMelody(q.anchor,q.target); }
+
+function answer(k){
+  const q=Q[state.i], chosen=q._opts[k], ok=(chosen===q._correct);
+  const t=Math.round((Date.now()-state.qStart)/1000);
+  if(ok) state.correct++;
+  state.items.push({ n:state.i+1, block:q.block, topic:q.topic,
+    expected:q._correct, answered:chosen, correct:ok, attempts:1, time_sec:t, replays:state.replays });
+  document.querySelectorAll('#opts button').forEach((b,idx)=>{
+    b.disabled=true;
+    if(q._opts[idx]===q._correct) b.classList.add('correct');
+    else if(idx===k) b.classList.add('wrong');
+  });
+  document.getElementById('fb').innerHTML=`
+    <div class="fb ${ok?'ok':'no'}"><b>${ok?'¡Correcto! ✅':'No era esa ❌'}</b> ${q.target.length>1?'':'Era <b>'+q._correct+'</b>.'}<br>${q.explain}
+      <div class="center">${noteStaffSVG(q.target)}</div></div>
+    <button class="listen" onclick="playMelody(Q[state.i].anchor,Q[state.i].target)">🔊 Volver a escuchar</button>
+    <button class="primary" onclick="state.i++;nextQ()">${state.i+1>=Q.length?'Ver resultado →':'Siguiente →'}</button>`;
+}
+
+function screenMood(){
+  render(`
+  <div class="card center">
+    <div class="prompt">¿Cómo te has sentido reconociendo las notas?</div>
+    <div class="mrow mood">
+      <button onclick="setMood(1)">😖<br>Difícil</button>
+      <button onclick="setMood(2)">🙂<br>Normal</button>
+      <button onclick="setMood(3)">😄<br>Fácil</button>
+    </div>
+    <button class="opt" onclick="setMood(null)">Prefiero no responder</button>
+  </div>`);
+}
+function setMood(m){ state.mood=m; screenFinal(); }
+
+function buildJSON(){
+  const end=new Date(), total=Q.length, pct=Math.round(state.correct/total*1000)/10;
+  const ids=['A','B','C'];
+  const blocks=ids.map(id=>{const its=state.items.filter(x=>x.block===id);
+    return {id,label:BLOCKS[id],correct:its.filter(x=>x.correct).length,total:its.length};});
+  return { schema:'andre-music-log/v1', tool:TOOL, category:CAT, scoring:'auto',
+    session:{start:isoLocal(state.start),end:isoLocal(end),duration_sec:Math.round((end-state.start)/1000)},
+    score:{correct:state.correct,total,pct}, blocks, items:state.items, mood:state.mood };
+}
+function screenFinal(){
+  const json=buildJSON();
+  try{ const h=JSON.parse(localStorage.getItem('andre_music_history')||'[]');
+    h.push(json); localStorage.setItem('andre_music_history',JSON.stringify(h));
+    localStorage.setItem('andre_'+TOOL,JSON.stringify({lastScore:json.score,at:json.session.end})); }catch(e){}
+  markCompleted(json);
+  const bl=json.blocks.map(b=>`${b.label}: ${b.correct}/${b.total}`);
+  const blLine=json.blocks.map(b=>`${b.id} ${b.correct}/${b.total}`).join(' · ');
+  const copy=`Dictado melodico reconocer notas Do Mayor S1 · ${fmtHuman(new Date())}
+Resultado: ${json.score.correct} de ${json.score.total} (${json.score.pct}%)
+Bloques: [${blLine}]
+---JSON---
+${JSON.stringify(json,null,2)}`;
+  render(`
+  <h1>¡Terminado! 🎵</h1>
+  <div class="card">
+    <div class="prompt">Resultado: ${json.score.correct} de ${json.score.total} (${json.score.pct}%)</div>
+    <ul>${bl.map(x=>`<li>${x}</li>`).join('')}</ul>
+    ${json.score.pct>=80?'<p>¡Muy bien! Estás empezando a reconocer las notas de oído.</p>':
+      '<p>Reconocer notas de oído es difícil al principio: lo importante es cantar desde el Do. Poco a poco saldrá.</p>'}
+  </div>
+  <div class="card">
+    <p class="tiny"><b>Para papá:</b> copia este cuadro y pégalo en el chat para diseñar la siguiente sesión.</p>
+    <textarea readonly onclick="this.select()">${copy.replace(/</g,'&lt;')}</textarea>
+    <button class="primary" onclick="copyLog(this)">Copiar registro</button>
+    <button class="opt" onclick="screenStart()">Volver a empezar</button>
+  </div>`);
+  window._copy=copy;
+}
+function copyLog(btn){ navigator.clipboard.writeText(window._copy).then(()=>btn.textContent='¡Copiado! ✅')
+  .catch(()=>btn.textContent='Selecciona el texto y copia manualmente'); }
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
+  try { localStorage.removeItem('andre_'+TOOL); } catch (e) {}
+  location.reload();
+});
+
+screenStart();
+</script>
+</body>
+</html>
