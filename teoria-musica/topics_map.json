@@ -11,7 +11,10 @@
     "ritmo_normal",
     "dur_larga",
     "dur_corta_silencio",
-    "dur_silencio_corta"
+    "dur_silencio_corta",
+    "ataque_cuenta",
+    "ataque_sostiene",
+    "ataque_posicion"
   ],
 
   "agogica":              "expresion",
@@ -32,6 +35,9 @@
   "artic_efecto":         "expresion",
   "artic_id":             "expresion",
   "articulacion":         "expresion",
+  "ataque_cuenta":        "ritmo",
+  "ataque_posicion":      "ritmo",
+  "ataque_sostiene":      "ritmo",
   "blanca":               "ritmo",
   "c_12_8":               "compas_12-8",
   "c_3_8":                "compas_pulso",

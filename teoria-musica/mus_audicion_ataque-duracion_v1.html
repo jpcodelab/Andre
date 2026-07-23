@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¿Cuántos golpes y hasta dónde suena?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#000;
+    --line:#c8c8c8;
+    --soft:#f2f2f2;
+    --ok:#1c6b2e;
+    --no:#a11616;
+    --accent:#0b4f8a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Lora',Georgia,serif;
+    background:#fff; color:var(--ink);
+    margin:0; padding:20px 16px 40px;
+    line-height:1.5; font-size:17px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  h1{font-size:1.55em;margin:0 0 6px;line-height:1.25;}
+  h2{font-size:1.2em;margin:0 0 10px;}
+  .sub{font-style:italic;margin:0 0 22px;}
+  .card{border:2px solid var(--ink);border-radius:10px;padding:18px;margin:18px 0;}
+  .warn{border:2px dashed var(--ink);border-radius:10px;padding:12px 14px;margin:16px 0;background:var(--soft);font-size:0.95em;}
+  button{
+    font-family:'Lora',Georgia,serif;font-size:1em;
+    background:#fff;color:var(--ink);
+    border:2px solid var(--ink);border-radius:8px;
+    padding:11px 16px;margin:6px 6px 6px 0;cursor:pointer;
+  }
+  button:hover:not(:disabled){background:var(--soft);}
+  button:disabled{opacity:.35;cursor:not-allowed;}
+  button.main{background:var(--ink);color:#fff;}
+  button.main:hover:not(:disabled){background:#333;}
+  .opts button{display:block;width:100%;text-align:left;margin:8px 0;}
+  .pulses{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap;}
+  .pulse{
+    width:52px;height:52px;border:2px solid var(--ink);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:1.1em;background:#fff;
+  }
+  .pulse.on{background:var(--ink);color:#fff;}
+  .pulse.target{border-width:4px;border-color:var(--accent);color:var(--accent);}
+  .pulse.target.on{background:var(--accent);color:#fff;}
+  .sound{height:26px;border:1px solid var(--line);border-radius:6px;position:relative;overflow:hidden;margin:6px 0 14px;background:#fff;}
+  .sound .bar{position:absolute;top:0;bottom:0;background:var(--ink);opacity:0;}
+  .sound .bar.lit{opacity:1;}
+  .fb{border-left:5px solid var(--ink);padding:10px 0 10px 14px;margin:16px 0;}
+  .fb.ok{border-color:var(--ok);}
+  .fb.no{border-color:var(--no);}
+  .fb .verdict{font-weight:700;margin:0 0 6px;}
+  .fb.ok .verdict{color:var(--ok);}
+  .fb.no .verdict{color:var(--no);}
+  .prog{font-size:.9em;margin-bottom:10px;color:#444;}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.95em;}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;}
+  th{background:var(--soft);}
+  textarea{
+    width:100%;min-height:230px;font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;border:2px solid var(--ink);border-radius:8px;padding:10px;
+  }
+  ul{margin:8px 0 8px 18px;padding:0;}
+  li{margin:5px 0;}
+  .rule{background:var(--soft);border-radius:8px;padding:12px 14px;margin:14px 0;}
+  .rule p{margin:6px 0;}
+  .hidden{display:none;}
+  .muted{color:#555;font-size:.9em;}
+  .navbar{
+    max-width:720px;margin:36px auto 0;padding-top:16px;
+    border-top:1px solid var(--line);
+    display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  }
+  .navbar a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);
+    border-radius:8px;padding:11px 16px;display:inline-block;}
+  .navbar a:hover{background:var(--soft);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="screen-intro">
+  <h1>¿Cuántos golpes y hasta dónde suena?</h1>
+  <p class="sub">Lenguaje musical · Ataque y duración · Paso previo a síncopa y contratiempo</p>
+
+  <div class="warn">
+    <strong>Necesitas sonido.</strong> Usa Chrome o Edge, con altavoces o auriculares.
+    Esta ficha no funciona sin conexión.
+  </div>
+
+  <div class="card">
+    <h2>Antes de empezar</h2>
+    <p>No vamos a poner nombres raros todavía. Vamos a entrenar el oído con preguntas
+    muy sencillas, una por bloque:</p>
+    <ul>
+      <li><strong>Bloque 1</strong> — ¿cuántos golpes has oído?</li>
+      <li><strong>Bloque 2</strong> — cuando llega el pulso marcado, ¿el sonido sigue o ya se ha callado?</li>
+      <li><strong>Bloque 3</strong> — el golpe, ¿cae justo en el pulso o entre dos pulsos?</li>
+      <li><strong>Bloque 4</strong> — juntamos las tres preguntas y ya sabrás decir el nombre.</li>
+    </ul>
+    <p>Siempre oirás primero <strong>un compás de claqueta</strong> (cuatro clics) y después el ritmo,
+    con los clics sonando por debajo. Puedes escuchar cada ejercicio las veces que quieras,
+    antes y después de responder.</p>
+    <p><button id="btn-test">Probar el sonido</button></p>
+  </div>
+
+  <p><button class="main" id="btn-start">Empezar</button></p>
+</div>
+
+<div id="screen-block" class="hidden"></div>
+<div id="screen-q" class="hidden"></div>
+<div id="screen-end" class="hidden"></div>
+
+</div>
+
+<nav class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</nav>
+
+<script id="items-data" type="application/json">
+{
+  "tool": "mus_audicion_ataque-duracion_v1",
+  "title": "¿Cuántos golpes y hasta dónde suena?",
+  "category": "audicion",
+  "scoring": "auto",
+  "compas": [4, 4],
+  "tempo": 72,
+  "blocks": [
+    {
+      "id": "b1",
+      "label": "Bloque 1: ¿Cuántos golpes?",
+      "question": "¿Cuántos golpes has oído?",
+      "intro": "Un <strong>golpe</strong> (o ataque) es cada vez que el sonido <em>empieza de nuevo</em>. Un sonido largo que no se corta es UN solo golpe, aunque dure mucho.",
+      "options": [
+        { "value": "un_golpe", "label": "Un golpe" },
+        { "value": "dos_golpes", "label": "Dos golpes" }
+      ],
+      "demos": [
+        { "pattern": [{"s":0,"d":4}], "answer": "un_golpe",
+          "explain": "El sonido empieza una sola vez y se mantiene los cuatro pulsos. Es UN golpe, aunque sea largo." },
+        { "pattern": [{"s":0,"d":2},{"s":2,"d":2}], "answer": "dos_golpes",
+          "explain": "El sonido se corta y vuelve a empezar en el pulso 3. Son DOS golpes." }
+      ],
+      "items": [
+        { "n": 1, "topic": "ataque_cuenta", "pattern": [{"s":0,"d":4}], "expected": "un_golpe",
+          "explain": "Un solo ataque que dura los cuatro pulsos: una redonda." },
+        { "n": 2, "topic": "ataque_cuenta", "pattern": [{"s":0,"d":1},{"s":1,"d":3}], "expected": "dos_golpes",
+          "explain": "Un ataque corto en el pulso 1 y otro en el pulso 2 que se alarga: dos golpes." },
+        { "n": 3, "topic": "ataque_cuenta", "pattern": [{"s":0,"d":3}], "expected": "un_golpe",
+          "explain": "Un ataque de tres pulsos y un pulso de silencio al final. Un solo golpe." },
+        { "n": 4, "topic": "ataque_cuenta", "pattern": [{"s":0,"d":1},{"s":2,"d":2}], "expected": "dos_golpes",
+          "explain": "Golpe corto, silencio, y un segundo golpe más largo. Dos golpes." },
+        { "n": 5, "topic": "ataque_cuenta", "pattern": [{"s":0,"d":2}], "expected": "un_golpe",
+          "explain": "Un ataque de dos pulsos y dos pulsos de silencio. Un solo golpe." }
+      ]
+    },
+    {
+      "id": "b2",
+      "label": "Bloque 2: ¿Sigue sonando o se ha callado?",
+      "question": "Cuando llega el pulso marcado en azul, ¿el sonido sigue o ya se ha callado?",
+      "intro": "Ahora no cuentes golpes: <strong>vigila un pulso concreto</strong>, el que verás marcado en azul. Cuando el clic de ese pulso suene, pregúntate si el sonido todavía está sonando encima o si ya hay silencio.",
+      "options": [
+        { "value": "sigue_sonando", "label": "Sigue sonando encima del pulso" },
+        { "value": "ya_callado", "label": "Ya se ha callado: hay silencio" }
+      ],
+      "demos": [
+        { "pattern": [{"s":0,"d":2}], "target": 2, "answer": "sigue_sonando",
+          "explain": "El sonido empieza en el pulso 1 y dura dos pulsos: cuando llega el pulso 2 todavía suena." },
+        { "pattern": [{"s":0,"d":1}], "target": 2, "answer": "ya_callado",
+          "explain": "El sonido dura solo un pulso. Cuando llega el pulso 2 ya hay silencio." }
+      ],
+      "items": [
+        { "n": 1, "topic": "ataque_sostiene", "pattern": [{"s":1,"d":2}], "target": 3, "expected": "sigue_sonando",
+          "explain": "Empieza en el pulso 2 y dura dos pulsos: al llegar el 3 sigue sonando, sin volver a atacar." },
+        { "n": 2, "topic": "ataque_sostiene", "pattern": [{"s":1,"d":1}], "target": 3, "expected": "ya_callado",
+          "explain": "Empieza en el pulso 2 y dura un pulso. Al llegar el 3 ya hay silencio." },
+        { "n": 3, "topic": "ataque_sostiene", "pattern": [{"s":0,"d":3}], "target": 3, "expected": "sigue_sonando",
+          "explain": "Un sonido largo de tres pulsos: pasa por encima del 2 y del 3 sin cortarse." },
+        { "n": 4, "topic": "ataque_sostiene", "pattern": [{"s":2,"d":2}], "target": 4, "expected": "sigue_sonando",
+          "explain": "Empieza en el pulso 3 y dura dos pulsos: al llegar el 4 todavía suena." },
+        { "n": 5, "topic": "ataque_sostiene", "pattern": [{"s":2,"d":1}], "target": 4, "expected": "ya_callado",
+          "explain": "Empieza en el pulso 3 y dura un pulso. Al llegar el 4 hay silencio." }
+      ]
+    },
+    {
+      "id": "b3",
+      "label": "Bloque 3: ¿En el pulso o entre pulsos?",
+      "question": "El golpe, ¿cae justo en el pulso o entre dos pulsos?",
+      "intro": "Oirás <strong>un solo golpe</strong>. Fíjate en si suena a la vez que un clic (justo en el pulso) o si se cuela en el hueco que hay entre dos clics.",
+      "options": [
+        { "value": "en_pulso", "label": "Justo en el pulso, a la vez que el clic" },
+        { "value": "entre_pulsos", "label": "Entre dos pulsos, en el hueco" }
+      ],
+      "demos": [
+        { "pattern": [{"s":0,"d":1}], "answer": "en_pulso",
+          "explain": "El golpe suena exactamente a la vez que el clic del pulso 1." },
+        { "pattern": [{"s":0.5,"d":0.5}], "answer": "entre_pulsos",
+          "explain": "El golpe cae en el hueco entre el pulso 1 y el pulso 2. Ningún clic suena con él." }
+      ],
+      "items": [
+        { "n": 1, "topic": "ataque_posicion", "pattern": [{"s":2,"d":1}], "expected": "en_pulso",
+          "explain": "El golpe coincide con el clic del pulso 3." },
+        { "n": 2, "topic": "ataque_posicion", "pattern": [{"s":1.5,"d":0.5}], "expected": "entre_pulsos",
+          "explain": "El golpe cae en el hueco entre el pulso 2 y el pulso 3." },
+        { "n": 3, "topic": "ataque_posicion", "pattern": [{"s":1,"d":1}], "expected": "en_pulso",
+          "explain": "El golpe coincide con el clic del pulso 2." },
+        { "n": 4, "topic": "ataque_posicion", "pattern": [{"s":2.5,"d":0.5}], "expected": "entre_pulsos",
+          "explain": "El golpe cae en el hueco entre el pulso 3 y el pulso 4." }
+      ]
+    },
+    {
+      "id": "b4",
+      "label": "Bloque 4: Ponerle nombre",
+      "question": "¿Qué ritmo es?",
+      "intro": "Ahora usa las tres preguntas seguidas, siempre en el mismo orden. No hace falta adivinar: la regla decide por ti.",
+      "options": [
+        { "value": "normal", "label": "Ritmo normal" },
+        { "value": "contratiempo", "label": "Contratiempo" },
+        { "value": "sincopa", "label": "Síncopa" }
+      ],
+      "demos": [
+        { "pattern": [{"s":0,"d":1},{"s":1,"d":1},{"s":2,"d":1},{"s":3,"d":1}], "answer": "normal",
+          "explain": "Todos los golpes caen justo en el pulso. Primera pregunta contestada: ritmo normal." },
+        { "pattern": [{"s":0.5,"d":0.5},{"s":2.5,"d":0.5}], "answer": "contratiempo",
+          "explain": "Los golpes caen en los huecos y, cuando llega el pulso, hay silencio: nada suena encima. Contratiempo." },
+        { "pattern": [{"s":0,"d":0.5},{"s":0.5,"d":1},{"s":1.5,"d":2.5}], "answer": "sincopa",
+          "explain": "Los golpes empiezan en el hueco y el sonido sigue sonando por encima del pulso siguiente. Síncopa." }
+      ],
+      "items": [
+        { "n": 1, "topic": "ritmo_normal", "pattern": [{"s":0,"d":2},{"s":2,"d":1},{"s":3,"d":1}], "expected": "normal",
+          "explain": "Los tres golpes empiezan justo en un pulso (1, 3 y 4). Ritmo normal." },
+        { "n": 2, "topic": "contratiempo", "pattern": [{"s":0.5,"d":0.5},{"s":1.5,"d":0.5},{"s":2.5,"d":0.5},{"s":3.5,"d":0.5}], "expected": "contratiempo",
+          "explain": "Todos los golpes van en el hueco y todos los pulsos quedan en silencio: no hay sonido encima de ningún pulso. Contratiempo." },
+        { "n": 3, "topic": "sincopa", "pattern": [{"s":0,"d":0.5},{"s":0.5,"d":1},{"s":1.5,"d":1},{"s":2.5,"d":1.5}], "expected": "sincopa",
+          "explain": "Los golpes empiezan en el hueco y cada sonido cruza por encima del pulso siguiente sin volver a atacar. Síncopa." },
+        { "n": 4, "topic": "sincopa", "pattern": [{"s":0,"d":1},{"s":1,"d":1},{"s":2,"d":0.5},{"s":2.5,"d":1.5}], "expected": "sincopa",
+          "explain": "Empieza normal, pero el último golpe entra en el hueco tras el pulso 3 y sigue sonando encima del pulso 4. Síncopa." }
+      ]
+    }
+  ]
+}
+</script>
+
+<script>
+/* ============================================================
+   mus_audicion_ataque-duracion_v1
+   Conforme a MUSIC_GUIDE.md v1.5
+     §2   nombre de fichero y clave localStorage
+     §3.1 formato dual + botón Copiar registro (execCommand + clipboard)
+     §3.2 schema andre-music-log/v1 con listens / listen_sec / time_sec
+     §3.3 append a andre_music_history
+     §3.4 helper isoLocal
+     §3.5 andre_music_completed (mutable, con contador times)
+     §3.6 scoring: "auto"
+     §3.7 re-escucha libre siempre; las de repaso no alteran listens/listen_sec
+     §5   navbar, demo previa, feedback inmediato, mood
+   ============================================================ */
+
+var DATA = JSON.parse(document.getElementById('items-data').textContent);
+
+var TOOL = DATA.tool;
+var LS_KEY = 'andre_' + TOOL;
+var HIST_KEY = 'andre_music_history';
+var DONE_KEY = 'andre_music_completed';
+
+/* Tempo fijo. 72 BPM = 0.8333 s/pulso.
+   Rationale: a este tempo la corchea dura 0.417 s, suficiente para distinguir
+   ataque y hueco sin que el patrón se perciba como legato.
+
+   GAP_S = 0.035 s — tolerancia de render (§5 "tolerancias documentadas junto a
+   la constante"). Es el silencio que se recorta al final de cada nota para que
+   dos notas contiguas suenen como dos ataques y no como uno solo sostenido.
+   35 ms es audible como reataque y demasiado corto para leerse como silencio
+   rítmico (el silencio rítmico más breve aquí es la semicorchea, 208 ms). */
+var TEMPO = DATA.tempo;
+var SPB = 60 / TEMPO;
+var BEATS = DATA.compas[0];
+var GAP_S = 0.035;
+
+var LEAD_S = 0.25;                                  /* margen antes del primer clic */
+var TAIL_S = 0.30;                                  /* cola tras el último pulso */
+var PLAY_SEC = LEAD_S + 2 * BEATS * SPB + TAIL_S;   /* duración de UNA reproducción */
+
+/* ---------- §3.4 helper de timestamp con zona horaria ---------- */
+function isoLocal(d) {
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var off = -d.getTimezoneOffset();
+  var sign = off >= 0 ? '+' : '-';
+  var abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+
+function stamp(d) {
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear()
+    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+/* ---------------------------- audio ---------------------------- */
+var ctx = null, master = null;
+
+function ensureCtx() {
+  if (!ctx) {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = 0.9;
+    master.connect(ctx.destination);
+  }
+  if (ctx.state === 'suspended') { ctx.resume(); }
+  return ctx;
+}
+
+function click(t, accent) {
+  var o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'square';
+  o.frequency.value = accent ? 1900 : 1250;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(accent ? 0.16 : 0.09, t + 0.002);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
+  o.connect(g); g.connect(master);
+  o.start(t); o.stop(t + 0.07);
+}
+
+function tone(t, durSec) {
+  var sound = Math.max(0.12, durSec - GAP_S);
+  var o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'triangle';
+  o.frequency.value = 392; /* Sol4 */
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(0.28, t + 0.012);
+  g.gain.setValueAtTime(0.28, t + Math.max(0.02, sound - 0.05));
+  g.gain.exponentialRampToValueAtTime(0.0001, t + sound);
+  o.connect(g); g.connect(master);
+  o.start(t); o.stop(t + sound + 0.05);
+}
+
+var playTimers = [];
+function clearTimers() {
+  playTimers.forEach(function (id) { clearTimeout(id); });
+  playTimers = [];
+}
+
+/* Reproduce: 1 compás de claqueta + 1 compás con el patrón. */
+function play(pattern, onPulse, onSound, onEnd) {
+  ensureCtx();
+  clearTimers();
+  var t0 = ctx.currentTime + LEAD_S;
+  var i, k;
+
+  for (i = 0; i < BEATS; i++) {
+    click(t0 + i * SPB, i === 0);
+    (function (idx) {
+      playTimers.push(setTimeout(function () { if (onPulse) onPulse(idx, 'count'); },
+        (LEAD_S + idx * SPB) * 1000));
+    })(i);
+  }
+  var t1 = t0 + BEATS * SPB;
+  for (i = 0; i < BEATS; i++) {
+    click(t1 + i * SPB, i === 0);
+    (function (idx) {
+      playTimers.push(setTimeout(function () { if (onPulse) onPulse(idx, 'play'); },
+        (LEAD_S + BEATS * SPB + idx * SPB) * 1000));
+    })(i);
+  }
+  for (k = 0; k < pattern.length; k++) {
+    var ev = pattern[k];
+    tone(t1 + ev.s * SPB, ev.d * SPB);
+    (function (idx, ev2) {
+      playTimers.push(setTimeout(function () { if (onSound) onSound(idx, true); },
+        (LEAD_S + BEATS * SPB + ev2.s * SPB) * 1000));
+      playTimers.push(setTimeout(function () { if (onSound) onSound(idx, false); },
+        (LEAD_S + BEATS * SPB + (ev2.s + ev2.d) * SPB) * 1000 - GAP_S * 1000));
+    })(k, ev);
+  }
+  playTimers.push(setTimeout(function () { if (onEnd) onEnd(); }, PLAY_SEC * 1000));
+}
+
+/* ---------------------------- estado ---------------------------- */
+var SESSION_START = new Date();
+var queue = [];
+var pos = 0;
+var results = [];
+var mood = null;
+
+/* instrumentación del ítem en curso (§3.2) */
+var q = null;
+
+function newQState() {
+  return {
+    listens: 0,          /* reproducciones ANTES de responder */
+    listenSec: 0,        /* segundos de reproducción antes de responder */
+    listenAfterEnable: 0,/* de esos, los posteriores a habilitar la respuesta */
+    enabledAt: null,     /* momento en que la interfaz de respuesta se habilita */
+    reviewing: false     /* §3.7: tras responder, las escuchas no se contabilizan */
+  };
+}
+
+function shuffle(a) {
+  var arr = a.slice();
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+
+DATA.blocks.forEach(function (b) {
+  shuffle(b.items).forEach(function (it, k) {
+    queue.push({ block: b, item: it, firstOfBlock: k === 0 });
+  });
+});
+
+/* ---------------------------- pantallas ---------------------------- */
+var $intro = document.getElementById('screen-intro');
+var $block = document.getElementById('screen-block');
+var $q = document.getElementById('screen-q');
+var $end = document.getElementById('screen-end');
+
+function show(el) {
+  [$intro, $block, $q, $end].forEach(function (e) { e.classList.add('hidden'); });
+  el.classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function pulsesHTML(target) {
+  var h = '<div class="pulses" id="pulses">';
+  for (var i = 0; i < BEATS; i++) {
+    h += '<div class="pulse' + (target === i + 1 ? ' target' : '') + '" data-p="' + i + '">'
+      + (i + 1) + '</div>';
+  }
+  return h + '</div>';
+}
+
+function soundHTML(pattern) {
+  var h = '<div class="sound" id="sound">';
+  for (var k = 0; k < pattern.length; k++) {
+    var ev = pattern[k];
+    h += '<div class="bar" data-b="' + k + '" style="left:' + (ev.s / BEATS * 100)
+      + '%;width:' + (ev.d / BEATS * 100) + '%"></div>';
+  }
+  return h + '</div>';
+}
+
+/* Reproductor genérico. onFinish se llama al terminar la reproducción. */
+function makePlayer(pattern, btn, onFinish) {
+  return function () {
+    var pulses = document.querySelectorAll('#pulses .pulse');
+    var bars = document.querySelectorAll('#sound .bar');
+    Array.prototype.forEach.call(bars, function (b) { b.classList.remove('lit'); });
+    if (btn) { btn.disabled = true; }
+    play(pattern,
+      function (i, phase) {
+        Array.prototype.forEach.call(pulses, function (p) { p.classList.remove('on'); });
+        if (pulses[i]) { pulses[i].classList.add('on'); }
+        if (phase === 'count' && i === 0) {
+          Array.prototype.forEach.call(bars, function (b) { b.classList.remove('lit'); });
+        }
+      },
+      function (idx, on) {
+        if (bars[idx]) { bars[idx].classList.toggle('lit', on); }
+      },
+      function () {
+        Array.prototype.forEach.call(pulses, function (p) { p.classList.remove('on'); });
+        Array.prototype.forEach.call(bars, function (b) { b.classList.remove('lit'); });
+        if (btn) { btn.disabled = false; }
+        if (onFinish) { onFinish(); }
+      });
+  };
+}
+
+function labelOf(b, value) {
+  var found = null;
+  b.options.forEach(function (o) { if (o.value === value) { found = o.label; } });
+  return found || value;
+}
+
+/* ---------------------------- bloque + demo ---------------------------- */
+var demoIdx = 0;
+
+function renderBlock(b) {
+  demoIdx = 0;
+  var rule = '';
+  if (b.id === 'b4') {
+    rule = '<div class="rule">'
+      + '<p><strong>1.</strong> ¿El golpe cae justo <em>en</em> el pulso? &rarr; <strong>ritmo normal</strong>.</p>'
+      + '<p><strong>2.</strong> ¿No, y el pulso se queda <em>en silencio</em>? &rarr; <strong>contratiempo</strong>.</p>'
+      + '<p><strong>3.</strong> ¿No, y el sonido <em>sigue sonando</em> encima del pulso? &rarr; <strong>síncopa</strong>.</p>'
+      + '<p class="muted">Contesta siempre en este orden. Si la 1 es «sí», ya has terminado.</p>'
+      + '</div>';
+  }
+  $block.innerHTML = '<h1>' + b.label + '</h1>'
+    + '<div class="card"><p>' + b.intro + '</p>' + rule + '</div>'
+    + '<div id="demo-box"></div>';
+  show($block);
+  renderDemo(b);
+}
+
+function renderDemo(b) {
+  var d = b.demos[demoIdx];
+  var box = document.getElementById('demo-box');
+  if (!d) {
+    box.innerHTML = '<p><button class="main" id="btn-go">Empezar el bloque</button></p>';
+    document.getElementById('btn-go').onclick = function () { clearTimers(); renderQuestion(); };
+    return;
+  }
+  box.innerHTML = '<div class="card">'
+    + '<p class="prog">Ejemplo resuelto ' + (demoIdx + 1) + ' de ' + b.demos.length + '</p>'
+    + pulsesHTML(d.target || 0)
+    + soundHTML(d.pattern)
+    + '<p><button id="btn-demo-play">Escuchar el ejemplo</button></p>'
+    + '<div class="fb ok"><p class="verdict">Respuesta: ' + labelOf(b, d.answer) + '</p>'
+    + '<p>' + d.explain + '</p></div>'
+    + '<p><button class="main" id="btn-demo-next">'
+    + (demoIdx + 1 < b.demos.length ? 'Siguiente ejemplo' : 'Ya lo entiendo, vamos') + '</button></p>'
+    + '</div>';
+  var pb = document.getElementById('btn-demo-play');
+  pb.onclick = makePlayer(d.pattern, pb, null);
+  document.getElementById('btn-demo-next').onclick = function () {
+    clearTimers(); demoIdx++; renderDemo(b);
+  };
+}
+
+/* ---------------------------- pregunta ---------------------------- */
+function renderQuestion() {
+  var entry = queue[pos];
+  var b = entry.block, it = entry.item;
+  q = newQState();
+
+  var opts = shuffle(b.options);
+  var h = '<p class="prog">' + b.label + ' &middot; pregunta ' + (pos + 1) + ' de ' + queue.length + '</p>'
+    + '<h2>' + b.question + '</h2>'
+    + pulsesHTML(it.target || 0)
+    + soundHTML(it.pattern)
+    + '<p><button id="btn-play">Escuchar otra vez</button></p>'
+    + '<p class="muted" id="hint">Escucha el ejemplo entero antes de responder.</p>'
+    + '<div class="opts" id="opts">';
+  opts.forEach(function (o) {
+    h += '<button data-v="' + o.value + '" disabled>' + o.label + '</button>';
+  });
+  h += '</div><div id="fb"></div>';
+  $q.innerHTML = h;
+  show($q);
+
+  var pb = document.getElementById('btn-play');
+
+  /* §3.2: time_sec se cuenta desde que la interfaz de respuesta queda
+     habilitada, es decir tras la PRIMERA reproducción completa. */
+  var onFinish = function () {
+    if (q.enabledAt === null) {
+      q.enabledAt = Date.now();
+      document.getElementById('hint').textContent =
+        'Ya puedes responder. Puedes volver a escuchar las veces que necesites.';
+      Array.prototype.forEach.call(document.querySelectorAll('#opts button'), function (btn) {
+        btn.disabled = false;
+      });
+    }
+  };
+
+  var doPlay = makePlayer(it.pattern, pb, onFinish);
+
+  var countedPlay = function () {
+    if (!q.reviewing) {
+      q.listens += 1;
+      q.listenSec += PLAY_SEC;
+      if (q.enabledAt !== null) { q.listenAfterEnable += PLAY_SEC; }
+    }
+    doPlay();
+  };
+
+  pb.onclick = countedPlay;
+  countedPlay(); /* primera escucha automática: cuenta como listen nº1 */
+
+  Array.prototype.forEach.call(document.querySelectorAll('#opts button'), function (btn) {
+    btn.onclick = function () { answer(entry, btn.getAttribute('data-v')); };
+  });
+}
+
+function answer(entry, value) {
+  var b = entry.block, it = entry.item;
+  var ok = (value === it.expected);
+
+  /* §3.2 time_sec = razonamiento = (ahora - habilitado) - escuchas posteriores */
+  var raw = (Date.now() - q.enabledAt) / 1000 - q.listenAfterEnable;
+  var thinkSec = Math.max(0, Math.round(raw));
+
+  q.reviewing = true; /* §3.7: a partir de aquí las escuchas no se contabilizan */
+
+  results.push({
+    n: results.length + 1,
+    block: b.id,
+    topic: it.topic,
+    expected: it.expected,
+    answered: value,
+    correct: ok,
+    attempts: 1,
+    time_sec: thinkSec,
+    listens: q.listens,
+    listen_sec: Math.round(q.listenSec)
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('#opts button'), function (btn) {
+    btn.disabled = true;
+  });
+  document.getElementById('hint').textContent =
+    'Vuelve a escucharlo ahora que sabes la respuesta: es la parte que más enseña.';
+
+  var fb = document.getElementById('fb');
+  fb.innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '">'
+    + '<p class="verdict">'
+    + (ok ? 'Correcto' : 'No era eso: era «' + labelOf(b, it.expected) + '»') + '</p>'
+    + '<p>' + it.explain + '</p></div>'
+    + '<p><button class="main" id="btn-next">'
+    + (pos + 1 < queue.length ? 'Siguiente' : 'Ver resultados') + '</button></p>';
+
+  document.getElementById('btn-next').onclick = function () {
+    clearTimers();
+    pos++;
+    if (pos >= queue.length) { renderMood(); return; }
+    if (queue[pos].firstOfBlock) { renderBlock(queue[pos].block); }
+    else { renderQuestion(); }
+  };
+}
+
+/* ---------------------------- mood + final ---------------------------- */
+function renderMood() {
+  $end.innerHTML = '<h1>Ya está</h1>'
+    + '<div class="card"><h2>¿Cómo te has sentido?</h2>'
+    + '<div class="opts">'
+    + '<button data-m="1">&#128533; Difícil, me ha costado</button>'
+    + '<button data-m="2">&#128528; Normal</button>'
+    + '<button data-m="3">&#128512; Fácil y divertido</button>'
+    + '</div>'
+    + '<p><button id="btn-skip">Prefiero no contestar</button></p></div>';
+  show($end);
+  Array.prototype.forEach.call($end.querySelectorAll('.opts button'), function (btn) {
+    btn.onclick = function () { mood = parseInt(btn.getAttribute('data-m'), 10); renderEnd(); };
+  });
+  document.getElementById('btn-skip').onclick = function () { mood = null; renderEnd(); };
+}
+
+function buildSession() {
+  var end = new Date();
+  var scored = results.filter(function (r) { return typeof r.correct === 'boolean'; });
+  var correct = scored.filter(function (r) { return r.correct; }).length;
+  var total = scored.length;
+  var blocks = [];
+  DATA.blocks.forEach(function (b) {
+    var rs = scored.filter(function (r) { return r.block === b.id; });
+    if (rs.length === 0) { return; } /* §3.2: blocks con total 0 se omiten */
+    blocks.push({
+      id: b.id,
+      label: b.label,
+      correct: rs.filter(function (r) { return r.correct; }).length,
+      total: rs.length
+    });
+  });
+  return {
+    schema: 'andre-music-log/v1',
+    tool: TOOL,
+    category: DATA.category,
+    scoring: DATA.scoring,
+    session: {
+      start: isoLocal(SESSION_START),
+      end: isoLocal(end),
+      duration_sec: Math.round((end - SESSION_START) / 1000)
+    },
+    score: { correct: correct, total: total, pct: Math.round(correct / total * 1000) / 10 },
+    blocks: blocks,
+    items: results,
+    mood: mood
+  };
+}
+
+function renderEnd() {
+  var s = buildSession();
+  var blocksLine = s.blocks.map(function (b) {
+    return b.label + ' ' + b.correct + '/' + b.total;
+  }).join(' · ');
+
+  var copy = DATA.title + ' · ' + stamp(new Date()) + '\n'
+    + 'Resultado: ' + s.score.correct + ' de ' + s.score.total + ' (' + s.score.pct + '%)\n'
+    + 'Bloques: ' + blocksLine + '\n'
+    + '---JSON---\n'
+    + JSON.stringify(s);
+
+  var rows = s.blocks.map(function (b) {
+    return '<tr><td>' + b.label + '</td><td>' + b.correct + ' de ' + b.total + '</td></tr>';
+  }).join('');
+
+  $end.innerHTML = '<h1>Resultado</h1>'
+    + '<div class="card"><h2>' + s.score.correct + ' de ' + s.score.total + '</h2>'
+    + '<table><tr><th>Bloque</th><th>Aciertos</th></tr>' + rows + '</table>'
+    + '<p class="muted">Lo importante de esta ficha no es la nota: es que las tres preguntas '
+    + '(cuántos golpes · sigue o se calla · en el pulso o entre pulsos) empiecen a salir solas.</p></div>'
+    + '<div class="card"><h2>Para papá</h2>'
+    + '<p class="muted">Pulsa el botón y pégalo en la conversación.</p>'
+    + '<textarea id="log" readonly></textarea>'
+    + '<p><button class="main" id="btn-copy">Copiar registro</button></p></div>';
+  show($end);
+
+  document.getElementById('log').value = copy;
+
+  /* §3.1: execCommand (funciona en file://) con fallback a clipboard (https) */
+  document.getElementById('btn-copy').onclick = function () {
+    var self = this;
+    var ta = document.getElementById('log');
+    var done = function () { self.textContent = 'Copiado'; };
+    var failed = function () { self.textContent = 'Selecciona el texto y cópialo a mano'; };
+    try {
+      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      if (document.execCommand('copy')) { done(); return; }
+    } catch (e) { /* cae al fallback */ }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(done, failed);
+    } else { failed(); }
+  };
+
+  /* §3.3 histórico append-only */
+  try {
+    var hist = JSON.parse(localStorage.getItem(HIST_KEY) || '[]');
+    hist.push(s);
+    localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+  } catch (e) { /* la sesión sigue siendo copiable a mano */ }
+
+  /* §3.5 registro de completado, mutable, con contador times */
+  try {
+    var done = JSON.parse(localStorage.getItem(DONE_KEY) || '{}');
+    var prev = done[TOOL];
+    done[TOOL] = {
+      title: DATA.title,
+      date: s.session.end,
+      correct: s.score.correct,
+      total: s.score.total,
+      pct: s.score.pct,
+      times: (prev && typeof prev.times === 'number' ? prev.times : 0) + 1
+    };
+    localStorage.setItem(DONE_KEY, JSON.stringify(done));
+  } catch (e) { /* idem */ }
+
+  /* §2 estado propio de la herramienta */
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      last: s.session.end, score: s.score, mood: s.mood
+    }));
+  } catch (e) { /* idem */ }
+}
+
+/* ---------------------------- navbar (§5) ---------------------------- */
+document.getElementById('btn-reset').onclick = function () {
+  if (!confirm('¿Reiniciar este ejercicio? Se borra solo el progreso de esta ficha. '
+    + 'El histórico de sesiones no se toca.')) { return; }
+  try { localStorage.removeItem(LS_KEY); } catch (e) { /* nada que hacer */ }
+  location.reload();
+};
+
+/* ---------------------------- arranque ---------------------------- */
+document.getElementById('btn-test').onclick = function () {
+  ensureCtx();
+  var t = ctx.currentTime + 0.1;
+  click(t, true);
+  tone(t + 0.5, 0.8);
+};
+
+document.getElementById('btn-start').onclick = function () {
+  ensureCtx();
+  SESSION_START = new Date();
+  pos = 0;
+  renderBlock(queue[0].block);
+};
+</script>
+</body>
+</html>
