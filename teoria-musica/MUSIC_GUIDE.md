@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.4 · Julio 2026
+> Referenciado desde CLAUDE.md. Versión: 1.5 · Julio 2026
 
 ---
 
@@ -71,7 +71,13 @@ la antigua. Documentar la clave antigua en un comentario.
 Toda herramienta evaluativa (`teoria`, `dictado`, `audicion`) termina con:
 
 1. **Resumen humano** para André: resultado por bloque, en texto claro.
-2. **Textarea copiable** con este contenido exacto:
+2. **Textarea copiable + botón "Copiar registro"** con este contenido exacto.
+   El botón es **obligatorio**: copia el bloque **completo** (resumen humano +
+   delimitador `---JSON---` + JSON), no solo el JSON ni solo el resumen. Una
+   textarea readonly sin botón **no cumple** — seleccionar todo a mano es
+   fricción real en móvil. Implementación de referencia: `textarea.select()` +
+   `document.execCommand('copy')` (funciona en `file://`) con fallback a
+   `navigator.clipboard.writeText` (GitHub Pages https).
 
 ```
 [Nombre herramienta] · [fecha local dd/mm/aaaa hh:mm]
@@ -259,6 +265,27 @@ decidir si André avanza al siguiente material (§6) — un 90% autoevaluado con
 guardas parciales no es evidencia tan fuerte como un 90% de corrección
 algorítmica completa.
 
+### 3.7 Límite de re-escucha y modo repaso (herramientas con audio)
+
+Si una herramienta limita cuántas veces se puede reproducir el estímulo (para
+que el ejercicio no se vuelva trivial), ese límite **solo aplica ANTES de
+responder**. En cuanto se muestra la corrección/feedback del ítem, la
+re-escucha queda **libre** (sin límite): André tiene que poder volver a oír el
+sonido después de ver el error para entenderlo. Un límite que se agota antes de
+la corrección y no se levanta le impide el repaso — es un bug, no una feature.
+
+Implementación de referencia: un flag por ítem (`reviewMode` / `cur.reviewing`)
+que se pone a `true` al comprobar la respuesta; el manejador de reproducción y
+la etiqueta de "te quedan N repeticiones" lo consultan para saltarse el límite
+y re-habilitar el botón de audio. Reglas:
+
+- Las re-escuchas de repaso ocurren **después** de registrar el ítem, así que
+  **no** deben alterar `listens` ni `listen_sec` (§3.2), que miden solo hasta
+  la respuesta.
+- El flag se resetea al pintar el siguiente ítem.
+- Una herramienta con re-escucha siempre libre (sin límite) ya cumple esta
+  regla — el límite es opcional; levantarlo tras corregir, no.
+
 ---
 
 ## 4. Vocabulario de topics — modelo de dos niveles
@@ -332,6 +359,9 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
 - [ ] JS extraído pasa `node --check` sin errores.
 - [ ] Nombre de fichero y clave localStorage siguen la convención §2.
 - [ ] Si usa audio: advertencia visible "necesita sonido" en la pantalla inicial.
+- [ ] Si usa audio con límite de re-escuchas: el límite aplica solo antes de
+      responder; tras el feedback la re-escucha es libre (§3.7) y no altera
+      `listens`/`listen_sec`.
 - [ ] Barra de navegación al final del `<body>` (`.navbar`): botón
       "🔄 Reiniciar ejercicio" (confirm + borra solo la clave propia
       `andre_[tool]` + `location.reload()`) y enlace "🏠 Volver al índice" a
@@ -341,6 +371,10 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
 - [ ] Ejemplo o demo antes de la primera pregunta evaluada.
 - [ ] Feedback inmediato tras cada respuesta con explicación del porqué.
 - [ ] Pantalla final con formato dual §3.1 y JSON que pasa `JSON.parse`.
+- [ ] Botón "Copiar registro" que copia el bloque dual **completo** (§3.1);
+      textarea readonly sin botón no basta.
+- [ ] Escribe `andre_music_completed` al terminar (§3.5) para que `index.html`
+      marque la tarjeta como completada — misma clave que su `data-tool`.
 - [ ] Pregunta de mood al final.
 - [ ] Histórico append en `andre_music_history`.
 - [ ] Cada pregunta tiene exactamente una respuesta correcta.
