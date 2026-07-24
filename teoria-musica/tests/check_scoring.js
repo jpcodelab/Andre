@@ -32,6 +32,7 @@ const EVALUATIVE_FILES = [
   'mus_audicion_fuerte-debil_v1.html',
   'mus_audicion_puente-sincopa_v2.html',
   'mus_audicion_sincopa-contratiempo_v1.html',
+  'mus_audicion_sincopa-contratiempo_v2.html',
   'mus_audicion_silencio-sostenido_v1.html',
   'mus_teoria_armaduras_v1.html',
   'mus_dictado_simple-s5_v1.html',

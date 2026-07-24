@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Síncopa, contratiempo o normal</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ok:#2e7d32; --bad:#c62828; --accent:#5b4636; --line:#ddd;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Lora',serif; background:#fff; color:#000;
+    max-width:640px; margin:0 auto; padding:20px 16px 60px;
+    line-height:1.5;
+  }
+  h1{font-size:1.4rem; margin-bottom:4px;}
+  h2{font-size:1.15rem; margin:0 0 8px;}
+  .sub{color:#555; font-size:0.95rem; margin-bottom:18px;}
+  .card{
+    border:1px solid var(--line); border-radius:10px; padding:18px;
+    margin-bottom:16px;
+  }
+  .theory{
+    background:#faf7f2; border:1px solid #e6ddcf; border-radius:10px;
+    padding:16px; margin-bottom:16px; font-size:0.98rem;
+  }
+  .theory b{color:var(--accent);}
+  button{
+    font-family:'Lora',serif; font-size:1rem; padding:10px 18px;
+    border-radius:8px; border:1px solid #333; background:#fff; color:#000;
+    cursor:pointer; margin:4px 6px 4px 0;
+  }
+  button:hover:not(:disabled){background:#f2f2f2;}
+  button:disabled{opacity:0.4; cursor:not-allowed;}
+  button.primary{background:#222; color:#fff;}
+  button.primary:hover:not(:disabled){background:#000;}
+  .choices{margin-top:14px; display:flex; flex-wrap:wrap; gap:8px;}
+  .choices button{flex:1; min-width:110px;}
+  .listen-info{font-size:0.85rem; color:#666; margin-top:6px;}
+  .feedback{margin-top:14px; padding:12px; border-radius:8px; font-size:0.95rem;}
+  .feedback.ok{background:#e8f5e9; border:1px solid var(--ok);}
+  .feedback.bad{background:#ffebee; border:1px solid var(--bad);}
+  .progress{font-size:0.85rem; color:#777; margin-bottom:10px;}
+  .warn{
+    background:#fff8e1; border:1px solid #e0c34a; border-radius:8px;
+    padding:10px 14px; font-size:0.9rem; margin-bottom:16px;
+  }
+  textarea{
+    width:100%; min-height:170px; font-family:monospace; font-size:0.8rem;
+    padding:10px; border:1px solid var(--line); border-radius:8px;
+  }
+  .navbar{
+    margin-top:36px; padding-top:16px; border-top:1px solid var(--line);
+    display:flex; gap:14px; font-size:0.9rem;
+  }
+  .navbar a, .navbar button{font-size:0.9rem;}
+  .mood-row{display:flex; gap:10px; margin-top:10px;}
+  .mood-row button{font-size:1.3rem; flex:1;}
+  .hidden{display:none;}
+  .term-tag{
+    display:inline-block; font-size:0.78rem; text-transform:uppercase;
+    letter-spacing:0.04em; color:#888; margin-bottom:6px;
+  }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+(function(){
+
+// ---------- Migración de clave legacy (no aplica: herramienta nueva) ----------
+
+// ---------- Configuración de audio ----------
+const BPM = 90;
+const beatSec = 60 / BPM;
+const unitSec = beatSec / 2;      // 1 unidad = corchea
+const measureSec = 8 * unitSec;   // 1 compás 4/4 = 4 pulsos = 8 corcheas
+
+let ctx = null;
+function getCtx(){
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  return ctx;
+}
+
+function scheduleClick(time, accent){
+  const c = getCtx();
+  const osc = c.createOscillator();
+  const gain = c.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = accent ? 1100 : 850;
+  gain.gain.setValueAtTime(0.001, time);
+  gain.gain.exponentialRampToValueAtTime(accent ? 0.22 : 0.15, time + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+  osc.connect(gain).connect(c.destination);
+  osc.start(time);
+  osc.stop(time + 0.07);
+}
+
+function scheduleNote(time, durSec){
+  const c = getCtx();
+  const osc = c.createOscillator();
+  const gain = c.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = 440;
+  const rel = Math.min(0.05, durSec * 0.25);
+  gain.gain.setValueAtTime(0.0001, time);
+  gain.gain.exponentialRampToValueAtTime(0.3, time + 0.015);
+  gain.gain.setValueAtTime(0.3, Math.max(time + 0.015, time + durSec - rel));
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + durSec);
+  osc.connect(gain).connect(c.destination);
+  osc.start(time);
+  osc.stop(time + durSec + 0.02);
+}
+
+// notes: array of [onsetUnit, durationUnits]
+function playPattern(notes, onDone){
+  const c = getCtx();
+  if (c.state === 'suspended') c.resume();
+  const t0 = c.currentTime + 0.08;
+  for (let b = 0; b < 4; b++){
+    scheduleClick(t0 + b * beatSec, b === 0);
+  }
+  notes.forEach(([onset, dur]) => {
+    scheduleNote(t0 + onset * unitSec, dur * unitSec);
+  });
+  const totalSec = measureSec + 0.15;
+  if (onDone) setTimeout(onDone, totalSec * 1000);
+  return totalSec;
+}
+
+// ---------- Banco de patrones (verificado: tests/check_sincopa_contratiempo_v2.js) ----------
+const PATTERNS = {
+  sincopa: {
+    S1: [[0,1],[1,2],[4,1],[5,2]],
+    S2: [[1,2],[3,1],[6,2]],
+    S3: [[3,2],[6,1]],
+    S4: [[0,2],[3,2],[6,1],[7,1]],
+    S5: [[1,2],[4,2],[7,1]],
+  },
+  contratiempo: {
+    C1: [[1,1],[3,1],[5,1],[7,1]],
+    C2: [[1,1],[3,1],[7,1]],
+    C3: [[3,1],[5,1],[7,1]],
+    C4: [[1,1],[5,1],[7,1]],
+    C5: [[1,1],[3,1],[5,1]],
+  },
+  normal: {
+    N1: [[0,2],[2,2],[4,2],[6,2]],
+    N2: [[0,4],[4,4]],
+    N3: [[0,2],[2,2],[4,4]],
+    N4: [[0,4],[4,2],[6,2]],
+    N5: [[0,2],[4,2],[6,2]],
+  }
+};
+
+const TERM_INFO = {
+  sincopa: {
+    label: 'Síncopa',
+    theory: 'La <b>síncopa</b> es una nota que empieza en una parte <b>débil</b> del compás y se prolonga «tragándose» el golpe fuerte siguiente. El metrónomo marca el pulso fuerte, pero la nota ya sonaba desde antes y sigue sonando por encima — no se oye un ataque nuevo justo en el golpe.',
+    howToListen: 'Escucha si, justo cuando suena el clic fuerte, hay o no un ataque nuevo de la nota. En la síncopa, NO lo hay: la nota ya venía sonando.',
+    demo: 'S1'
+  },
+  contratiempo: {
+    label: 'Contratiempo',
+    theory: 'El <b>contratiempo</b> suena únicamente <b>entre</b> los golpes del metrónomo. Los golpes fuertes se quedan siempre en silencio — nunca hay nota justo encima del clic.',
+    howToListen: 'Escucha los golpes fuertes del metrónomo: en el contratiempo están vacíos, todo el sonido aparece en los huecos de en medio.',
+    demo: 'C1'
+  },
+  normal: {
+    label: 'Ritmo normal',
+    theory: 'El <b>ritmo normal</b> es el más sencillo: cada nota coincide exactamente con un golpe del metrónomo. No se adelanta ni se atrasa nada.',
+    howToListen: 'Escucha si cada nota "cae" justo encima de un clic, sin sorpresas.',
+    demo: 'N1'
+  }
+};
+
+function getPattern(type, id){ return PATTERNS[type][id]; }
+
+// ---------- Definición de ítems ----------
+// Calentamiento (no evaluado, correct:null)
+const WARMUP = [
+  { term: 'sincopa', patId: 'S1' },
+  { term: 'contratiempo', patId: 'C1' },
+  { term: 'normal', patId: 'N1' },
+];
+
+// Bloques por término: binario Sí/No
+const BLOCK_SINCOPA = [
+  { patType: 'sincopa', patId: 'S2', expected: 'si' },
+  { patType: 'contratiempo', patId: 'C2', expected: 'no' },
+  { patType: 'sincopa', patId: 'S3', expected: 'si' },
+  { patType: 'normal', patId: 'N2', expected: 'no' },
+  { patType: 'sincopa', patId: 'S4', expected: 'si' },
+];
+const BLOCK_CONTRATIEMPO = [
+  { patType: 'contratiempo', patId: 'C3', expected: 'si' },
+  { patType: 'sincopa', patId: 'S5', expected: 'no' },
+  { patType: 'contratiempo', patId: 'C4', expected: 'si' },
+  { patType: 'normal', patId: 'N3', expected: 'no' },
+  { patType: 'contratiempo', patId: 'C5', expected: 'si' },
+];
+const BLOCK_NORMAL = [
+  { patType: 'normal', patId: 'N4', expected: 'si' },
+  { patType: 'sincopa', patId: 'S1', expected: 'no' },
+  { patType: 'normal', patId: 'N5', expected: 'si' },
+  { patType: 'contratiempo', patId: 'C1', expected: 'no' },
+  { patType: 'normal', patId: 'N2', expected: 'si' },
+];
+// Bloque mixto: 3 opciones, 10 ítems (4 síncopa / 3 contratiempo / 3 normal)
+const BLOCK_MIXTO = [
+  { patType: 'sincopa', patId: 'S3' },
+  { patType: 'contratiempo', patId: 'C2' },
+  { patType: 'normal', patId: 'N1' },
+  { patType: 'sincopa', patId: 'S5' },
+  { patType: 'contratiempo', patId: 'C4' },
+  { patType: 'normal', patId: 'N4' },
+  { patType: 'sincopa', patId: 'S2' },
+  { patType: 'contratiempo', patId: 'C1' },
+  { patType: 'normal', patId: 'N3' },
+  { patType: 'sincopa', patId: 'S4' },
+];
+
+const TOOL_ID = 'mus_audicion_sincopa-contratiempo_v2';
+const STORAGE_KEY = 'andre_' + TOOL_ID;
+const TOOL_TITLE = 'Síncopa, contratiempo o normal';
+
+// ---------- Estado global de sesión ----------
+let sessionStart = new Date();
+let itemLog = [];      // todos los items (incluye calentamiento con correct:null)
+let itemCounter = 0;
+
+// ---------- Helpers ----------
+function isoLocal(d){
+  const pad = n => String(n).padStart(2, '0');
+  const off = -d.getTimezoneOffset();
+  const sign = off >= 0 ? '+' : '-';
+  const abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+function fmtDateHuman(d){
+  const pad = n => String(n).padStart(2,'0');
+  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+
+const app = document.getElementById('app');
+
+// ---------- Máquina de pantallas ----------
+const flow = [];
+flow.push({ type: 'intro' });
+flow.push({ type: 'warmup-intro' });
+WARMUP.forEach((w, i) => flow.push({ type: 'warmup-item', data: w, idx: i }));
+flow.push({ type: 'term-intro', term: 'sincopa' });
+BLOCK_SINCOPA.forEach((it, i) => flow.push({ type: 'scored-binary', term: 'sincopa', block: 'b_sincopa', blockLabel: 'Síncopa: reconocerla', data: it, idx: i, of: BLOCK_SINCOPA.length }));
+flow.push({ type: 'term-intro', term: 'contratiempo' });
+BLOCK_CONTRATIEMPO.forEach((it, i) => flow.push({ type: 'scored-binary', term: 'contratiempo', block: 'b_contratiempo', blockLabel: 'Contratiempo: reconocerlo', data: it, idx: i, of: BLOCK_CONTRATIEMPO.length }));
+flow.push({ type: 'term-intro', term: 'normal' });
+BLOCK_NORMAL.forEach((it, i) => flow.push({ type: 'scored-binary', term: 'normal', block: 'b_normal', blockLabel: 'Ritmo normal: reconocerlo', data: it, idx: i, of: BLOCK_NORMAL.length }));
+flow.push({ type: 'mixto-intro' });
+BLOCK_MIXTO.forEach((it, i) => flow.push({ type: 'scored-mixto', block: 'b_mixto', blockLabel: 'Mixto: pon el nombre', data: it, idx: i, of: BLOCK_MIXTO.length }));
+flow.push({ type: 'mood' });
+flow.push({ type: 'final' });
+
+let step = 0;
+
+function next(){ step++; render(); }
+
+function render(){
+  const s = flow[step];
+  if (!s) return;
+  window.scrollTo(0,0);
+  switch(s.type){
+    case 'intro': return renderIntro();
+    case 'warmup-intro': return renderWarmupIntro();
+    case 'warmup-item': return renderWarmupItem(s.data, s.idx);
+    case 'term-intro': return renderTermIntro(s.term);
+    case 'scored-binary': return renderScoredBinary(s);
+    case 'mixto-intro': return renderMixtoIntro();
+    case 'scored-mixto': return renderScoredMixto(s);
+    case 'mood': return renderMood();
+    case 'final': return renderFinal();
+  }
+}
+
+function renderIntro(){
+  app.innerHTML = `
+    <h1>${TOOL_TITLE}</h1>
+    <p class="sub">Discriminación auditiva · síncopa, contratiempo y ritmo normal</p>
+    <div class="warn">🔊 Esta actividad necesita sonido. Sube el volumen antes de empezar.</div>
+    <div class="card">
+      <p>Vas a escuchar patrones rítmicos de 4 pulsos con el metrónomo marcando el compás. Tienes que decidir qué está pasando entre las notas y el pulso.</p>
+      <p>Empezamos con un repaso rápido de los tres tipos, luego uno por uno, y al final los mezclamos todos.</p>
+    </div>
+    <button class="primary" id="start">Empezar</button>
+  `;
+  document.getElementById('start').onclick = next;
+}
+
+function renderWarmupIntro(){
+  app.innerHTML = `
+    <h2>Calentamiento rápido</h2>
+    <p class="sub">Un ejemplo de cada tipo, solo para refrescar el oído. No se puntúa.</p>
+    <button class="primary" id="go">Vale, vamos</button>
+  `;
+  document.getElementById('go').onclick = next;
+}
+
+function renderWarmupItem(w, idx){
+  const info = TERM_INFO[w.term];
+  const pattern = getPattern(w.term, w.patId);
+  let listens = 0, listenSec = 0, enabledAt = null, playing = false;
+
+  app.innerHTML = `
+    <div class="progress">Calentamiento ${idx+1} de ${WARMUP.length}</div>
+    <div class="term-tag">${info.label}</div>
+    <div class="theory">${info.theory}<br><br>${info.howToListen}</div>
+    <div class="card">
+      <button id="play">▶ Escuchar ejemplo</button>
+      <div class="listen-info" id="info"></div>
+      <div style="margin-top:14px;">
+        <button class="primary" id="continue" disabled>Entendido, continuar</button>
+      </div>
+    </div>
+  `;
+  const btnPlay = document.getElementById('play');
+  const btnContinue = document.getElementById('continue');
+  const info_el = document.getElementById('info');
+
+  btnPlay.onclick = () => {
+    if (playing) return;
+    playing = true;
+    btnPlay.disabled = true;
+    const dur = playPattern(pattern, () => {
+      playing = false;
+      btnPlay.disabled = false;
+      listens++; listenSec += dur;
+      info_el.textContent = `Escuchado ${listens} vez/veces.`;
+      btnContinue.disabled = false;
+      if (enabledAt === null) enabledAt = Date.now();
+    });
+  };
+  btnContinue.onclick = () => {
+    const timeSec = enabledAt ? Math.max(0, Math.round((Date.now() - enabledAt) / 1000)) : 0;
+    itemLog.push({
+      n: ++itemCounter, block: 'calentamiento', topic: w.term,
+      expected: w.term, answered: 'escuchado', correct: null,
+      attempts: 1, time_sec: timeSec, listens, listen_sec: Math.round(listenSec)
+    });
+    next();
+  };
+}
+
+function renderTermIntro(term){
+  const info = TERM_INFO[term];
+  app.innerHTML = `
+    <h2>${info.label}</h2>
+    <div class="theory">${info.theory}<br><br>${info.howToListen}</div>
+    <div class="card">
+      <p>Ejemplo de ${info.label.toLowerCase()}:</p>
+      <button id="demo">▶ Escuchar ejemplo</button>
+    </div>
+    <button class="primary" id="start-block">Empezar preguntas</button>
+  `;
+  const pattern = getPattern(term, info.demo);
+  let playing = false;
+  document.getElementById('demo').onclick = (e) => {
+    if (playing) return;
+    playing = true;
+    e.target.disabled = true;
+    playPattern(pattern, () => { playing = false; e.target.disabled = false; });
+  };
+  document.getElementById('start-block').onclick = next;
+}
+
+function renderMixtoIntro(){
+  app.innerHTML = `
+    <h2>Ahora mezclamos los tres</h2>
+    <div class="theory">
+      Para cada patrón, decide si es <b>síncopa</b>, <b>contratiempo</b> o <b>ritmo normal</b>.
+      Recuerda: síncopa = nota que ya sonaba y se traga el golpe fuerte. Contratiempo = todo el sonido
+      entre golpes, los golpes fuertes en silencio. Normal = cada nota justo encima de un golpe.
+    </div>
+    <button class="primary" id="go">Empezar</button>
+  `;
+  document.getElementById('go').onclick = next;
+}
+
+function scoreItemUI(container, opts){
+  // opts: { pattern, maxListens, onAnswer(answeredValue) }
+  let listens = 0, listenSec = 0, enabledAt = null, replayDuring = 0, answered = false, playing = false;
+
+  const btnPlay = container.querySelector('#play');
+  const info_el = container.querySelector('#info');
+  const choiceButtons = Array.from(container.querySelectorAll('.choice-btn'));
+
+  function doPlay(){
+    if (playing) return;
+    if (!answered && listens >= opts.maxListens) return;
+    playing = true;
+    btnPlay.disabled = true;
+    const t0 = Date.now();
+    const dur = playPattern(opts.pattern, () => {
+      playing = false;
+      const elapsed = (Date.now() - t0) / 1000;
+      if (!answered){
+        listens++; listenSec += dur;
+        if (enabledAt === null) enabledAt = Date.now();
+        else replayDuring += elapsed;
+        if (listens >= opts.maxListens){
+          btnPlay.disabled = true;
+          info_el.textContent = `Escuchado ${listens}/${opts.maxListens} veces. Ya puedes responder.`;
+        } else {
+          btnPlay.disabled = false;
+          info_el.textContent = `Escuchado ${listens}/${opts.maxListens} veces.`;
+        }
+        choiceButtons.forEach(b => b.disabled = false);
+      } else {
+        btnPlay.disabled = false; // repaso libre tras responder
+      }
+    });
+  }
+  btnPlay.onclick = doPlay;
+
+  choiceButtons.forEach(b => {
+    b.disabled = true;
+    b.onclick = () => {
+      if (answered) return;
+      answered = true;
+      const timeSec = enabledAt ? Math.max(0, Math.round(((Date.now() - enabledAt) / 1000) - replayDuring)) : 0;
+      choiceButtons.forEach(x => x.disabled = true);
+      btnPlay.disabled = false; // libre a partir de ahora
+      opts.onAnswer(b.dataset.val, { listens, listenSec: Math.round(listenSec), timeSec });
+    };
+  });
+}
+
+function renderScoredBinary(s){
+  const { term, block, blockLabel, data, idx, of } = s;
+  const pattern = getPattern(data.patType, data.patId);
+  const label = TERM_INFO[term].label;
+
+  app.innerHTML = `
+    <div class="progress">${blockLabel} · pregunta ${idx+1} de ${of}</div>
+    <h2>¿Es ${label.toLowerCase()}?</h2>
+    <div class="card">
+      <button id="play">▶ Escuchar</button>
+      <div class="listen-info" id="info">Sin escuchar todavía.</div>
+      <div class="choices">
+        <button class="choice-btn" data-val="si">Sí</button>
+        <button class="choice-btn" data-val="no">No</button>
+      </div>
+      <div id="feedback"></div>
+    </div>
+  `;
+  scoreItemUI(app, {
+    pattern, maxListens: 3,
+    onAnswer: (val, meta) => {
+      const correct = (val === data.expected);
+      const fb = document.getElementById('feedback');
+      fb.innerHTML = `<div class="feedback ${correct ? 'ok' : 'bad'}">
+        ${correct ? '✅ Correcto.' : '❌ No es correcto.'} ${explainAnswer(data.patType, term)}
+      </div>
+      <button class="primary" id="next-btn" style="margin-top:12px;">Siguiente</button>`;
+      document.getElementById('next-btn').onclick = () => {
+        itemLog.push({
+          n: ++itemCounter, block, topic: data.patType === 'normal' ? 'ritmo_normal' : data.patType,
+          expected: data.expected, answered: val, correct,
+          attempts: 1, time_sec: meta.timeSec, listens: meta.listens, listen_sec: meta.listenSec
+        });
+        next();
+      };
+    }
+  });
+}
+
+function explainAnswer(actualType, askedTerm){
+  const map = {
+    sincopa: 'La nota empezaba en una parte débil y se prolongaba sobre el golpe fuerte — no había ataque nuevo justo en el clic.',
+    contratiempo: 'Todo el sonido caía entre los golpes; los golpes fuertes del metrónomo quedaban en silencio.',
+    normal: 'Cada nota coincidía exactamente con un golpe del metrónomo, sin adelantos ni retrasos.'
+  };
+  return `Lo que sonaba en realidad era <b>${TERM_INFO[actualType].label.toLowerCase()}</b>: ${map[actualType]}`;
+}
+
+function renderScoredMixto(s){
+  const { block, blockLabel, data, idx, of } = s;
+  const pattern = getPattern(data.patType, data.patId);
+
+  app.innerHTML = `
+    <div class="progress">${blockLabel} · pregunta ${idx+1} de ${of}</div>
+    <h2>¿Qué es?</h2>
+    <div class="card">
+      <button id="play">▶ Escuchar</button>
+      <div class="listen-info" id="info">Sin escuchar todavía.</div>
+      <div class="choices">
+        <button class="choice-btn" data-val="sincopa">Síncopa</button>
+        <button class="choice-btn" data-val="contratiempo">Contratiempo</button>
+        <button class="choice-btn" data-val="normal">Normal</button>
+      </div>
+      <div id="feedback"></div>
+    </div>
+  `;
+  scoreItemUI(app, {
+    pattern, maxListens: 3,
+    onAnswer: (val, meta) => {
+      const correct = (val === data.patType);
+      const fb = document.getElementById('feedback');
+      fb.innerHTML = `<div class="feedback ${correct ? 'ok' : 'bad'}">
+        ${correct ? '✅ Correcto.' : '❌ No es correcto.'} ${explainAnswer(data.patType, null)}
+      </div>
+      <button class="primary" id="next-btn" style="margin-top:12px;">Siguiente</button>`;
+      document.getElementById('next-btn').onclick = () => {
+        itemLog.push({
+          n: ++itemCounter, block, topic: data.patType === 'normal' ? 'ritmo_normal' : data.patType,
+          expected: data.patType, answered: val, correct,
+          attempts: 1, time_sec: meta.timeSec, listens: meta.listens, listen_sec: meta.listenSec
+        });
+        next();
+      };
+    }
+  });
+}
+
+let moodValue = null;
+function renderMood(){
+  app.innerHTML = `
+    <h2>¿Cómo te has sentido?</h2>
+    <div class="mood-row">
+      <button data-v="1">😣<br><span style="font-size:0.7rem;">Difícil</span></button>
+      <button data-v="2">🙂<br><span style="font-size:0.7rem;">Normal</span></button>
+      <button data-v="3">😄<br><span style="font-size:0.7rem;">Fácil</span></button>
+    </div>
+    <button id="skip" style="margin-top:16px; font-size:0.85rem; color:#888;">Saltar esta pregunta</button>
+  `;
+  document.querySelectorAll('.mood-row button').forEach(b => {
+    b.onclick = () => { moodValue = parseInt(b.dataset.v, 10); next(); };
+  });
+  document.getElementById('skip').onclick = () => { moodValue = null; next(); };
+}
+
+function computeBlocks(){
+  const defs = [
+    { id: 'b_sincopa', label: 'Síncopa: reconocerla' },
+    { id: 'b_contratiempo', label: 'Contratiempo: reconocerlo' },
+    { id: 'b_normal', label: 'Ritmo normal: reconocerlo' },
+    { id: 'b_mixto', label: 'Mixto: pon el nombre' },
+  ];
+  return defs.map(d => {
+    const items = itemLog.filter(it => it.block === d.id && typeof it.correct === 'boolean');
+    const correct = items.filter(it => it.correct).length;
+    const total = items.length;
+    return { id: d.id, label: d.label, correct, total };
+  }).filter(b => b.total > 0);
+}
+
+function renderFinal(){
+  const sessionEnd = new Date();
+  const blocks = computeBlocks();
+  const totalCorrect = blocks.reduce((a,b) => a + b.correct, 0);
+  const totalCount = blocks.reduce((a,b) => a + b.total, 0);
+  const pct = totalCount > 0 ? Math.round((totalCorrect / totalCount) * 1000) / 10 : 0;
+
+  const sessionJson = {
+    schema: 'andre-music-log/v1',
+    tool: TOOL_ID,
+    category: 'audicion',
+    scoring: 'auto',
+    session: {
+      start: isoLocal(sessionStart),
+      end: isoLocal(sessionEnd),
+      duration_sec: Math.round((sessionEnd - sessionStart) / 1000)
+    },
+    score: { correct: totalCorrect, total: totalCount, pct },
+    blocks: blocks.map(b => ({ id: b.id, label: b.label, correct: b.correct, total: b.total })),
+    items: itemLog,
+    mood: moodValue
+  };
+
+  const humanLines =
+    `${TOOL_TITLE} · ${fmtDateHuman(sessionEnd)}\n` +
+    `Resultado: ${totalCorrect} de ${totalCount} (${pct}%)\n` +
+    `Bloques: ${blocks.map(b => `${b.label} ${b.correct}/${b.total}`).join(' · ')}\n`;
+
+  const fullBlock = humanLines + '---JSON---\n' + JSON.stringify(sessionJson);
+
+  // Persistencia
+  try {
+    const hist = JSON.parse(localStorage.getItem('andre_music_history') || '[]');
+    hist.push(sessionJson);
+    localStorage.setItem('andre_music_history', JSON.stringify(hist));
+  } catch(e){ console.warn('No se pudo guardar el histórico', e); }
+
+  try {
+    const completed = JSON.parse(localStorage.getItem('andre_music_completed') || '{}');
+    const prevTimes = (completed[TOOL_ID] && completed[TOOL_ID].times) || 0;
+    completed[TOOL_ID] = {
+      title: TOOL_TITLE, date: isoLocal(sessionEnd),
+      correct: totalCorrect, total: totalCount, pct, times: prevTimes + 1
+    };
+    localStorage.setItem('andre_music_completed', JSON.stringify(completed));
+  } catch(e){ console.warn('No se pudo guardar el registro de completado', e); }
+
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionJson)); } catch(e){}
+
+  app.innerHTML = `
+    <h2>¡Sesión terminada!</h2>
+    <div class="card">
+      <p><b>Resultado: ${totalCorrect} de ${totalCount} (${pct}%)</b></p>
+      <ul>
+        ${blocks.map(b => `<li>${b.label}: ${b.correct}/${b.total}</li>`).join('')}
+      </ul>
+    </div>
+    <p>Copia este registro y pégaselo a papá:</p>
+    <textarea id="log" readonly>${fullBlock.replace(/</g,'&lt;')}</textarea>
+    <button class="primary" id="copy">📋 Copiar registro</button>
+    <span id="copied" style="margin-left:10px; color:var(--ok); display:none;">¡Copiado!</span>
+
+    <div class="navbar">
+      <button id="reset">🔄 Reiniciar ejercicio</button>
+      <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+    </div>
+  `;
+
+  const ta = document.getElementById('log');
+  document.getElementById('copy').onclick = () => {
+    ta.select();
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch(e){}
+    if (!copied && navigator.clipboard) {
+      navigator.clipboard.writeText(fullBlock).then(() => {
+        document.getElementById('copied').style.display = 'inline';
+      });
+    } else {
+      document.getElementById('copied').style.display = 'inline';
+    }
+  };
+  document.getElementById('reset').onclick = () => {
+    if (confirm('¿Seguro que quieres reiniciar este ejercicio? Se perderá el progreso actual (no el histórico).')){
+      try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+      location.reload();
+    }
+  };
+}
+
+render();
+})();
+</script>
+</body>
+</html>
