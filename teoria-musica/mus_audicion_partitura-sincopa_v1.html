@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Síncopa en la partitura</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="vendor/abcjs-basic-min.js"></script>
+<style>
+  :root{ --ok:#2e7d32; --bad:#c62828; --accent:#5b4636; --line:#ddd; }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Lora',serif; background:#fff; color:#000;
+    max-width:680px; margin:0 auto; padding:20px 16px 60px; line-height:1.5;
+  }
+  h1{font-size:1.4rem; margin-bottom:4px;}
+  h2{font-size:1.15rem; margin:0 0 8px;}
+  h3{font-size:1rem; margin:0 0 6px; color:var(--accent);}
+  .sub{color:#555; font-size:0.95rem; margin-bottom:18px;}
+  .card{border:1px solid var(--line); border-radius:10px; padding:18px; margin-bottom:16px;}
+  .theory{
+    background:#faf7f2; border:1px solid #e6ddcf; border-radius:10px;
+    padding:16px; margin-bottom:16px; font-size:0.98rem;
+  }
+  .theory b{color:var(--accent);}
+  .alert{
+    background:#fff8e1; border:1px solid #e0c34a; border-radius:10px;
+    padding:16px; margin-bottom:16px; font-size:0.98rem;
+  }
+  button{
+    font-family:'Lora',serif; font-size:1rem; padding:10px 18px;
+    border-radius:8px; border:1px solid #333; background:#fff; color:#000;
+    cursor:pointer; margin:4px 6px 4px 0;
+  }
+  button:hover:not(:disabled){background:#f2f2f2;}
+  button:disabled{opacity:0.4; cursor:not-allowed;}
+  button.primary{background:#222; color:#fff;}
+  button.primary:hover:not(:disabled){background:#000;}
+  .choices{margin-top:14px; display:flex; flex-wrap:wrap; gap:8px;}
+  .choices button{flex:1; min-width:110px;}
+  .score{margin:10px 0; overflow-x:auto;}
+  .score svg{max-width:100%; height:auto;}
+  .opt{
+    border:2px solid var(--line); border-radius:10px; padding:6px 10px;
+    margin-bottom:10px; cursor:pointer; background:#fff; display:block; width:100%;
+    text-align:left; font-family:'Lora',serif;
+  }
+  .opt:hover:not(:disabled){border-color:#888; background:#fafafa;}
+  .opt.picked{border-color:#222;}
+  .opt.right{border-color:var(--ok); background:#e8f5e9;}
+  .opt.wrong{border-color:var(--bad); background:#ffebee;}
+  .opt-tag{font-size:0.8rem; color:#777; letter-spacing:0.04em;}
+  .listen-info{font-size:0.85rem; color:#666; margin-top:6px;}
+  .feedback{margin-top:14px; padding:12px; border-radius:8px; font-size:0.95rem;}
+  .feedback.ok{background:#e8f5e9; border:1px solid var(--ok);}
+  .feedback.bad{background:#ffebee; border:1px solid var(--bad);}
+  .progress{font-size:0.85rem; color:#777; margin-bottom:10px;}
+  .warn{background:#fff8e1; border:1px solid #e0c34a; border-radius:8px; padding:10px 14px; font-size:0.9rem; margin-bottom:16px;}
+  .fatal{background:#ffebee; border:1px solid var(--bad); border-radius:8px; padding:14px; font-size:0.95rem;}
+  textarea{width:100%; min-height:170px; font-family:monospace; font-size:0.8rem; padding:10px; border:1px solid var(--line); border-radius:8px;}
+  .navbar{margin-top:36px; padding-top:16px; border-top:1px solid var(--line); display:flex; gap:14px; font-size:0.9rem; align-items:center;}
+  .navbar a, .navbar button{font-size:0.9rem;}
+  .mood-row{display:flex; gap:10px; margin-top:10px;}
+  .mood-row button{font-size:1.3rem; flex:1;}
+  .term-tag{display:inline-block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.04em; color:#888; margin-bottom:6px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function(){
+
+// ============================================================
+//  Banco de patrones — ÚNICA fuente de verdad.
+//  Audio y partitura se generan de aquí, así no pueden divergir.
+//  Unidad = corchea. Compás 4/4 = 8 unidades. Pulso = 2 unidades.
+// ============================================================
+const PATTERNS = {
+  sincopa: {
+    S1: [[0,1],[1,2],[4,1],[5,2]],
+    S2: [[1,2],[3,1],[6,2]],
+    S3: [[3,2],[6,1]],
+    S4: [[0,2],[3,2],[6,1],[7,1]],
+    S5: [[1,2],[4,2],[7,1]],
+  },
+  contratiempo: {
+    C1: [[1,1],[3,1],[5,1],[7,1]],
+    C2: [[1,1],[3,1],[7,1]],
+    C3: [[3,1],[5,1],[7,1]],
+    C4: [[1,1],[5,1],[7,1]],
+    C5: [[1,1],[3,1],[5,1]],
+  },
+  normal: {
+    N1: [[0,2],[2,2],[4,2],[6,2]],
+    N2: [[0,4],[4,4]],
+    N3: [[0,2],[2,2],[4,4]],
+    N4: [[0,4],[4,2],[6,2]],
+    N5: [[0,2],[4,2],[6,2]],
+  }
+};
+function pat(type, id){ return PATTERNS[type][id]; }
+function patByRef(ref){ return PATTERNS[ref[0]][ref[1]]; }
+
+// ============================================================
+//  Generador de notación ABC (verificado en tests/check_partitura_sincopa_v1.js)
+// ============================================================
+const MEASURE = 8, MID = 4, PITCH = 'B';
+const SINGLE_SYMBOL = new Set([1,2,3,4,6,8]);
+function durToAbc(u){ return u === 1 ? '' : String(u); }
+
+function splitNote(start, dur){
+  const end = start + dur;
+  const crossesMid = start < MID && end > MID;
+  const isWhole = start === 0 && end === MEASURE;
+  if (!crossesMid || isWhole){
+    if (SINGLE_SYMBOL.has(dur)) return [[start,dur]];
+    const cut = Math.floor((start+dur)/2)*2;
+    if (cut > start && cut < end) return [[start,cut-start],[cut,end-cut]];
+    return [[start,dur]];
+  }
+  const out = [];
+  for (const [s,d] of [[start, MID-start],[MID, end-MID]]){
+    if (SINGLE_SYMBOL.has(d)) out.push([s,d]);
+    else {
+      const cut = Math.floor((s+d)/2)*2;
+      if (cut > s && cut < s+d) out.push([s,cut-s],[cut,s+d-cut]);
+      else out.push([s,d]);
+    }
+  }
+  return out;
+}
+
+function splitRest(start, dur){
+  const end = start + dur;
+  const pieces = [];
+  let cur = start;
+  while (cur < end){
+    let nxt = Math.min(end, (Math.floor(cur/2)+1)*2);
+    if (cur < MID && nxt > MID) nxt = MID;
+    pieces.push([cur, nxt-cur]);
+    cur = nxt;
+  }
+  // Fusionar SOLO pulsos completos: nunca silencios con puntillo que oculten el pulso.
+  const merged = [];
+  for (const p of pieces){
+    const last = merged[merged.length-1];
+    if (last){
+      const ls = last[0], ld = last[1], comb = ld + p[1];
+      const bothFull = ls%2===0 && ld%2===0 && p[0]%2===0 && p[1]===2;
+      const sameHalf = (ls < MID) === (p[0] < MID);
+      if (bothFull && sameHalf && ls+ld === p[0] && SINGLE_SYMBOL.has(comb)){ last[1] = comb; continue; }
+    }
+    merged.push([p[0], p[1]]);
+  }
+  return merged;
+}
+
+function patternToAbc(notes){
+  const sorted = notes.slice().sort((a,b)=>a[0]-b[0]);
+  const events = [];
+  let cursor = 0;
+  for (const [onset,dur] of sorted){
+    if (onset > cursor) events.push({type:'rest', start:cursor, dur:onset-cursor});
+    events.push({type:'note', start:onset, dur:dur});
+    cursor = onset + dur;
+  }
+  if (cursor < MEASURE) events.push({type:'rest', start:cursor, dur:MEASURE-cursor});
+
+  const symbols = [];
+  for (const ev of events){
+    if (ev.type === 'note'){
+      const parts = splitNote(ev.start, ev.dur);
+      parts.forEach((p,i) => symbols.push({type:'note', start:p[0], dur:p[1], tieNext: i < parts.length-1}));
+    } else {
+      splitRest(ev.start, ev.dur).forEach(p => symbols.push({type:'rest', start:p[0], dur:p[1]}));
+    }
+  }
+  let out = '', prevBeat = -1;
+  for (const s of symbols){
+    const beat = Math.floor(s.start/2);
+    if (prevBeat !== -1 && beat !== prevBeat) out += ' ';
+    prevBeat = beat;
+    out += (s.type === 'note')
+      ? PITCH + durToAbc(s.dur) + (s.tieNext ? '-' : '')
+      : 'z' + durToAbc(s.dur);
+  }
+  return out.trim();
+}
+
+function buildAbcTune(notes){
+  return ['X:1','M:4/4','L:1/8','K:C','|' + patternToAbc(notes) + '|'].join('\n');
+}
+
+function renderScore(el, notes, opts){
+  const o = opts || {};
+  if (typeof window.ABCJS === 'undefined'){
+    el.innerHTML = '<div class="fatal">No se ha podido cargar el dibujo de partituras.</div>';
+    return;
+  }
+  el.innerHTML = '';
+  try {
+    window.ABCJS.renderAbc(el, buildAbcTune(notes), {
+      scale: o.scale || 1.5,
+      staffwidth: o.staffwidth || 340,
+      paddingtop: 4, paddingbottom: 4, paddingleft: 4, paddingright: 4
+    });
+  } catch(e){
+    el.innerHTML = '<div class="fatal">No se pudo dibujar esta partitura.</div>';
+  }
+}
+
+// ============================================================
+//  Audio (Web Audio API)
+// ============================================================
+const BPM = 90;
+const beatSec = 60 / BPM;
+const unitSec = beatSec / 2;
+const measureSec = 8 * unitSec;
+let ctx = null;
+function getCtx(){ if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); return ctx; }
+
+function scheduleClick(t, accent){
+  const c = getCtx(), osc = c.createOscillator(), g = c.createGain();
+  osc.type = 'sine'; osc.frequency.value = accent ? 1100 : 850;
+  g.gain.setValueAtTime(0.001, t);
+  g.gain.exponentialRampToValueAtTime(accent ? 0.22 : 0.15, t + 0.005);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+  osc.connect(g).connect(c.destination); osc.start(t); osc.stop(t + 0.07);
+}
+function scheduleNote(t, dur){
+  const c = getCtx(), osc = c.createOscillator(), g = c.createGain();
+  osc.type = 'sine'; osc.frequency.value = 440;
+  const rel = Math.min(0.05, dur * 0.25);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.3, t + 0.015);
+  g.gain.setValueAtTime(0.3, Math.max(t + 0.015, t + dur - rel));
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.connect(g).connect(c.destination); osc.start(t); osc.stop(t + dur + 0.02);
+}
+function playPattern(notes, onDone){
+  const c = getCtx();
+  if (c.state === 'suspended') c.resume();
+  const t0 = c.currentTime + 0.08;
+  for (let b = 0; b < 4; b++) scheduleClick(t0 + b*beatSec, b === 0);
+  notes.forEach(([onset,dur]) => scheduleNote(t0 + onset*unitSec, dur*unitSec));
+  const total = measureSec + 0.15;
+  if (onDone) setTimeout(onDone, total * 1000);
+  return total;
+}
+
+// ============================================================
+//  Contenido
+// ============================================================
+const TERM = {
+  sincopa: {
+    label: 'Síncopa',
+    demo: 'S1',
+    short: 'Empieza fuera del pulso Y se prolonga por encima del pulso siguiente.',
+    theory: 'La <b>síncopa</b> tiene que cumplir <b>dos condiciones a la vez</b>:<br>' +
+            '<b>1)</b> la nota empieza en una parte débil (fuera del golpe), y<br>' +
+            '<b>2)</b> se prolonga por encima del golpe siguiente, tapándolo.<br><br>' +
+            'En la partitura la reconoces por dos señales: una nota larga que arranca fuera del pulso ' +
+            '(la figura corchea–negra–corchea), o una <b>ligadura de unión</b> que cruza por encima de un pulso.'
+  },
+  contratiempo: {
+    label: 'Contratiempo',
+    demo: 'C1',
+    short: 'Suena solo en los huecos; los golpes quedan en silencio.',
+    theory: 'El <b>contratiempo</b> suena únicamente <b>entre</b> los golpes. En la partitura lo ves clarísimo: ' +
+            'sobre cada pulso hay un <b>silencio</b>, y la nota aparece justo después. ' +
+            'Nunca se prolonga por encima del golpe siguiente — por eso no es síncopa.'
+  },
+  normal: {
+    label: 'Ritmo normal',
+    demo: 'N1',
+    short: 'Cada nota empieza justo encima de un golpe.',
+    theory: 'En el <b>ritmo normal</b> cada nota empieza justo encima de un golpe del pulso. ' +
+            'Puede haber notas largas (blancas, redondas), pero todas <b>arrancan en el pulso</b>.'
+  }
+};
+
+const WARMUP = [
+  { type:'sincopa', patId:'S1' },
+  { type:'contratiempo', patId:'C1' },
+  { type:'normal', patId:'N1' },
+];
+
+// Bloque A — leer la partitura y ponerle nombre
+const BLOCK_LECTURA = [
+  { patType:'sincopa',      patId:'S2' },
+  { patType:'normal',       patId:'N2' },   // el patrón que falló el 25/07
+  { patType:'contratiempo', patId:'C3' },
+  { patType:'sincopa',      patId:'S5' },
+  { patType:'normal',       patId:'N5' },
+];
+
+// Bloque B — escuchar y elegir la partitura
+const BLOCK_ESCUCHA = [
+  { correct:['sincopa','S2'],      options:[['sincopa','S2'],['contratiempo','C4'],['normal','N3']] },
+  { correct:['contratiempo','C1'], options:[['normal','N1'],['contratiempo','C1'],['sincopa','S1']] },
+  { correct:['normal','N2'],       options:[['sincopa','S4'],['contratiempo','C5'],['normal','N2']] },
+  { correct:['sincopa','S4'],      options:[['contratiempo','C1'],['sincopa','S4'],['normal','N1']] },
+  { correct:['normal','N3'],       options:[['contratiempo','C3'],['sincopa','S5'],['normal','N3']] },
+];
+
+// Bloque C — mixto, alternando las dos direcciones
+const BLOCK_MIXTO = [
+  { dir:'lectura', patType:'sincopa',      patId:'S5' },
+  { dir:'escucha', correct:['contratiempo','C2'], options:[['contratiempo','C2'],['normal','N4'],['sincopa','S5']] },
+  { dir:'lectura', patType:'normal',       patId:'N3' },
+  { dir:'escucha', correct:['sincopa','S1'],      options:[['normal','N1'],['sincopa','S1'],['contratiempo','C1']] },
+  { dir:'lectura', patType:'contratiempo', patId:'C4' },
+  { dir:'escucha', correct:['normal','N5'],       options:[['sincopa','S2'],['contratiempo','C3'],['normal','N5']] },
+  { dir:'lectura', patType:'sincopa',      patId:'S3' },
+  { dir:'escucha', correct:['contratiempo','C5'], options:[['contratiempo','C5'],['sincopa','S5'],['normal','N4']] },
+];
+
+const TOOL_ID = 'mus_audicion_partitura-sincopa_v1';
+const STORAGE_KEY = 'andre_' + TOOL_ID;
+const TOOL_TITLE = 'Síncopa en la partitura';
+const MAX_LISTENS = 3;
+
+function topicOf(type){ return type === 'normal' ? 'ritmo_normal' : type; }
+
+// ============================================================
+//  Estado
+// ============================================================
+let sessionStart = new Date();
+let itemLog = [];
+let itemCounter = 0;
+let moodValue = null;
+
+function isoLocal(d){
+  const pad = n => String(n).padStart(2,'0');
+  const off = -d.getTimezoneOffset(), sign = off >= 0 ? '+' : '-', abs = Math.abs(off);
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())
+    +'T'+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())
+    +sign+pad(Math.floor(abs/60))+':'+pad(abs%60);
+}
+function fmtDateHuman(d){
+  const pad = n => String(n).padStart(2,'0');
+  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+
+const app = document.getElementById('app');
+
+// ============================================================
+//  Flujo
+// ============================================================
+const flow = [{type:'intro'}, {type:'teoria'}, {type:'warmup-intro'}];
+WARMUP.forEach((w,i) => flow.push({type:'warmup-item', data:w, idx:i}));
+flow.push({type:'block-intro', block:'lectura'});
+BLOCK_LECTURA.forEach((it,i) => flow.push({type:'q-lectura', block:'b_lectura', blockLabel:'Leer la partitura', data:it, idx:i, of:BLOCK_LECTURA.length}));
+flow.push({type:'block-intro', block:'escucha'});
+BLOCK_ESCUCHA.forEach((it,i) => flow.push({type:'q-escucha', block:'b_escucha', blockLabel:'Escuchar y elegir', data:it, idx:i, of:BLOCK_ESCUCHA.length}));
+flow.push({type:'block-intro', block:'mixto'});
+BLOCK_MIXTO.forEach((it,i) => {
+  const base = {block:'b_mixto', blockLabel:'Mixto', data:it, idx:i, of:BLOCK_MIXTO.length};
+  flow.push(it.dir === 'lectura' ? Object.assign({type:'q-lectura'}, base) : Object.assign({type:'q-escucha'}, base));
+});
+flow.push({type:'mood'});
+flow.push({type:'final'});
+
+let step = 0;
+function next(){ step++; render(); }
+
+function render(){
+  const s = flow[step];
+  if (!s) return;
+  window.scrollTo(0,0);
+  switch(s.type){
+    case 'intro':        return renderIntro();
+    case 'teoria':       return renderTeoria();
+    case 'warmup-intro': return renderWarmupIntro();
+    case 'warmup-item':  return renderWarmupItem(s.data, s.idx);
+    case 'block-intro':  return renderBlockIntro(s.block);
+    case 'q-lectura':    return renderLectura(s);
+    case 'q-escucha':    return renderEscucha(s);
+    case 'mood':         return renderMood();
+    case 'final':        return renderFinal();
+  }
+}
+
+function renderIntro(){
+  const missing = (typeof window.ABCJS === 'undefined');
+  app.innerHTML = `
+    <h1>${TOOL_TITLE}</h1>
+    <p class="sub">Reconocer síncopa, contratiempo y ritmo normal <b>en la partitura</b></p>
+    ${missing ? `<div class="fatal"><b>Falta un fichero.</b> Esta actividad necesita la carpeta
+      <code>vendor/</code> al lado del fichero HTML. Avisa a papá.</div>` : ''}
+    <div class="warn">🔊 Esta actividad necesita sonido. Sube el volumen antes de empezar.</div>
+    <div class="card">
+      <p>Hasta ahora reconocías estos ritmos <b>de oído</b>. Hoy vamos a unirlo con lo que ves escrito:
+      primero leyendo la partitura, después escuchando y buscando cuál es.</p>
+      <p>Empezamos con un repaso de cómo se escribe cada uno.</p>
+    </div>
+    <button class="primary" id="start" ${missing ? 'disabled' : ''}>Empezar</button>
+  `;
+  if (!missing) document.getElementById('start').onclick = next;
+}
+
+function renderTeoria(){
+  app.innerHTML = `
+    <h2>Cómo se escribe cada uno</h2>
+    <div id="t-sincopa"></div>
+    <div id="t-contratiempo"></div>
+    <div id="t-normal"></div>
+    <div class="alert">
+      <h3>⚠️ Mucho cuidado con esto</h3>
+      <p>Una nota larga <b>no</b> es síncopa por el hecho de ser larga. Mira estas dos blancas:</p>
+      <div class="score" id="t-trap"></div>
+      <p>Tapan los pulsos 2 y 4… pero <b>empiezan justo en el pulso</b>. Les falta la primera condición,
+      así que esto es <b>ritmo normal</b>, no síncopa.</p>
+      <button id="play-trap">▶ Escuchar</button>
+    </div>
+    <button class="primary" id="go">Lo tengo, seguimos</button>
+  `;
+  ['sincopa','contratiempo','normal'].forEach(t => {
+    const info = TERM[t];
+    const host = document.getElementById('t-' + t);
+    host.className = 'theory';
+    host.innerHTML = `<h3>${info.label}</h3><p>${info.theory}</p>
+      <div class="score" id="sc-${t}"></div>
+      <button id="pl-${t}">▶ Escuchar</button>`;
+    renderScore(document.getElementById('sc-' + t), pat(t, info.demo));
+    let busy = false;
+    document.getElementById('pl-' + t).onclick = e => {
+      if (busy) return; busy = true; e.target.disabled = true;
+      playPattern(pat(t, info.demo), () => { busy = false; e.target.disabled = false; });
+    };
+  });
+  renderScore(document.getElementById('t-trap'), pat('normal','N2'));
+  let busyTrap = false;
+  document.getElementById('play-trap').onclick = e => {
+    if (busyTrap) return; busyTrap = true; e.target.disabled = true;
+    playPattern(pat('normal','N2'), () => { busyTrap = false; e.target.disabled = false; });
+  };
+  document.getElementById('go').onclick = next;
+}
+
+function renderWarmupIntro(){
+  app.innerHTML = `
+    <h2>Calentamiento</h2>
+    <p class="sub">Un ejemplo de cada tipo: lo ves y lo escuchas. No se puntúa.</p>
+    <button class="primary" id="go">Vamos</button>
+  `;
+  document.getElementById('go').onclick = next;
+}
+
+function renderWarmupItem(w, idx){
+  const info = TERM[w.type];
+  const notes = pat(w.type, w.patId);
+  let listens = 0, listenSec = 0, startedAt = Date.now(), playing = false;
+
+  app.innerHTML = `
+    <div class="progress">Calentamiento ${idx+1} de ${WARMUP.length}</div>
+    <div class="term-tag">${info.label}</div>
+    <div class="theory">${info.short}</div>
+    <div class="card">
+      <div class="score" id="sc"></div>
+      <button id="play">▶ Escuchar</button>
+      <div class="listen-info" id="info"></div>
+      <div style="margin-top:14px;">
+        <button class="primary" id="cont" disabled>Entendido, continuar</button>
+      </div>
+    </div>
+  `;
+  renderScore(document.getElementById('sc'), notes);
+  const btnPlay = document.getElementById('play');
+  const btnCont = document.getElementById('cont');
+  const infoEl = document.getElementById('info');
+  btnPlay.onclick = () => {
+    if (playing) return;
+    playing = true; btnPlay.disabled = true;
+    const d = playPattern(notes, () => {
+      playing = false; btnPlay.disabled = false;
+      listens++; listenSec += d;
+      infoEl.textContent = `Escuchado ${listens} vez/veces.`;
+      btnCont.disabled = false;
+    });
+  };
+  btnCont.onclick = () => {
+    itemLog.push({
+      n: ++itemCounter, block:'calentamiento', topic: topicOf(w.type),
+      expected: w.type, answered:'escuchado', correct: null, attempts: 1,
+      time_sec: Math.max(0, Math.round((Date.now()-startedAt)/1000)),
+      listens, listen_sec: Math.round(listenSec)
+    });
+    next();
+  };
+}
+
+function renderBlockIntro(which){
+  const copy = {
+    lectura: {
+      h: 'Bloque 1 · Leer la partitura',
+      p: 'Ves el compás escrito y decides qué es. Después de responder lo escucharás, para ' +
+         'unir lo que ves con lo que suena.'
+    },
+    escucha: {
+      h: 'Bloque 2 · Escuchar y elegir',
+      p: 'Ahora al revés: escuchas el ritmo y eliges cuál de las tres partituras es. ' +
+         'Puedes escuchar hasta ' + MAX_LISTENS + ' veces antes de responder.'
+    },
+    mixto: {
+      h: 'Bloque 3 · Todo mezclado',
+      p: 'Las dos cosas alternadas, sin avisar cuál toca. Es el bloque que dice de verdad si lo tienes.'
+    }
+  }[which];
+  app.innerHTML = `<h2>${copy.h}</h2><div class="theory">${copy.p}</div>
+    <button class="primary" id="go">Empezar</button>`;
+  document.getElementById('go').onclick = next;
+}
+
+// --- Pregunta tipo A: partitura -> nombre ---
+function renderLectura(s){
+  const d = s.data;
+  const notes = pat(d.patType, d.patId);
+  let answered = false, startedAt = Date.now(), playing = false;
+
+  app.innerHTML = `
+    <div class="progress">${s.blockLabel} · pregunta ${s.idx+1} de ${s.of}</div>
+    <h2>¿Qué ritmo está escrito aquí?</h2>
+    <div class="card">
+      <div class="score" id="sc"></div>
+      <div class="choices">
+        <button class="choice-btn" data-val="sincopa">Síncopa</button>
+        <button class="choice-btn" data-val="contratiempo">Contratiempo</button>
+        <button class="choice-btn" data-val="normal">Normal</button>
+      </div>
+      <div id="feedback"></div>
+    </div>
+  `;
+  renderScore(document.getElementById('sc'), notes);
+  const btns = Array.from(app.querySelectorAll('.choice-btn'));
+  btns.forEach(b => b.onclick = () => {
+    if (answered) return;
+    answered = true;
+    const timeSec = Math.max(0, Math.round((Date.now()-startedAt)/1000));
+    btns.forEach(x => x.disabled = true);
+    const val = b.dataset.val;
+    const correct = (val === d.patType);
+    document.getElementById('feedback').innerHTML =
+      `<div class="feedback ${correct?'ok':'bad'}">${correct?'✅ Correcto.':'❌ No es correcto.'}
+        ${explain(d.patType)}</div>
+       <p style="margin-top:10px;">Escúchalo ahora, para unir lo que ves con lo que suena:</p>
+       <button id="play">▶ Escuchar</button>
+       <button class="primary" id="next-btn" style="margin-top:12px;">Siguiente</button>`;
+    const pb = document.getElementById('play');
+    pb.onclick = () => {
+      if (playing) return; playing = true; pb.disabled = true;
+      playPattern(notes, () => { playing = false; pb.disabled = false; });
+    };
+    document.getElementById('next-btn').onclick = () => {
+      itemLog.push({
+        n: ++itemCounter, block: s.block, topic: topicOf(d.patType),
+        expected: d.patType, answered: val, correct, attempts: 1,
+        time_sec: timeSec, listens: 0, listen_sec: 0
+      });
+      next();
+    };
+  });
+}
+
+// --- Pregunta tipo B: audio -> partitura ---
+function renderEscucha(s){
+  const d = s.data;
+  const notes = patByRef(d.correct);
+  let listens = 0, listenSec = 0, enabledAt = null, replayDuring = 0, answered = false, playing = false;
+
+  app.innerHTML = `
+    <div class="progress">${s.blockLabel} · pregunta ${s.idx+1} de ${s.of}</div>
+    <h2>Escucha. ¿Cuál de estas partituras es?</h2>
+    <div class="card">
+      <button id="play">▶ Escuchar</button>
+      <div class="listen-info" id="info">Escúchalo antes de elegir.</div>
+      <div id="opts" style="margin-top:14px;">
+        ${d.options.map((o,i) => `<button class="opt" data-i="${i}" disabled>
+            <span class="opt-tag">Opción ${'ABC'[i]}</span>
+            <div class="score" id="opt-sc-${i}"></div>
+          </button>`).join('')}
+      </div>
+      <div id="feedback"></div>
+    </div>
+  `;
+  d.options.forEach((o,i) => renderScore(document.getElementById('opt-sc-'+i), patByRef(o), {scale:1.3, staffwidth:300}));
+
+  const btnPlay = document.getElementById('play');
+  const infoEl = document.getElementById('info');
+  const optBtns = Array.from(app.querySelectorAll('.opt'));
+
+  btnPlay.onclick = () => {
+    if (playing) return;
+    if (!answered && listens >= MAX_LISTENS) return;
+    playing = true; btnPlay.disabled = true;
+    const t0 = Date.now();
+    const dur = playPattern(notes, () => {
+      playing = false;
+      const elapsed = (Date.now()-t0)/1000;
+      if (!answered){
+        listens++; listenSec += dur;
+        if (enabledAt === null) enabledAt = Date.now(); else replayDuring += elapsed;
+        if (listens >= MAX_LISTENS){
+          btnPlay.disabled = true;
+          infoEl.textContent = `Escuchado ${listens}/${MAX_LISTENS} veces. Ya toca elegir.`;
+        } else {
+          btnPlay.disabled = false;
+          infoEl.textContent = `Escuchado ${listens}/${MAX_LISTENS} veces.`;
+        }
+        optBtns.forEach(b => b.disabled = false);
+      } else {
+        btnPlay.disabled = false;  // repaso libre tras responder
+      }
+    });
+  };
+
+  optBtns.forEach(b => b.onclick = () => {
+    if (answered) return;
+    answered = true;
+    const i = parseInt(b.dataset.i, 10);
+    const chosen = d.options[i];
+    const correctIdx = d.options.findIndex(o => o[0] === d.correct[0] && o[1] === d.correct[1]);
+    const correct = (i === correctIdx);
+    const timeSec = enabledAt ? Math.max(0, Math.round(((Date.now()-enabledAt)/1000) - replayDuring)) : 0;
+
+    optBtns.forEach((x,j) => {
+      x.disabled = true;
+      if (j === correctIdx) x.classList.add('right');
+      else if (j === i) x.classList.add('wrong');
+    });
+    btnPlay.disabled = false;
+
+    document.getElementById('feedback').innerHTML =
+      `<div class="feedback ${correct?'ok':'bad'}">${correct?'✅ Correcto.':'❌ La correcta era la marcada en verde.'}
+        ${explain(d.correct[0])}</div>
+       <button class="primary" id="next-btn" style="margin-top:12px;">Siguiente</button>`;
+    document.getElementById('next-btn').onclick = () => {
+      itemLog.push({
+        n: ++itemCounter, block: s.block, topic: topicOf(d.correct[0]),
+        expected: d.correct[1], answered: chosen[1], correct, attempts: 1,
+        time_sec: timeSec, listens, listen_sec: Math.round(listenSec)
+      });
+      next();
+    };
+  });
+}
+
+function explain(type){
+  const m = {
+    sincopa: 'Era <b>síncopa</b>: la nota arranca fuera del pulso y se prolonga tapando el golpe siguiente ' +
+             '(figura corchea–negra–corchea, o ligadura que cruza el pulso).',
+    contratiempo: 'Era <b>contratiempo</b>: sobre cada pulso hay un silencio y la nota entra justo después, ' +
+                  'sin prolongarse por encima del golpe siguiente.',
+    normal: 'Era <b>ritmo normal</b>: todas las notas arrancan justo encima de un pulso, aunque alguna sea larga.'
+  };
+  return m[type];
+}
+
+function renderMood(){
+  app.innerHTML = `
+    <h2>¿Cómo te has sentido?</h2>
+    <div class="mood-row">
+      <button data-v="1">😣<br><span style="font-size:0.7rem;">Difícil</span></button>
+      <button data-v="2">🙂<br><span style="font-size:0.7rem;">Normal</span></button>
+      <button data-v="3">😄<br><span style="font-size:0.7rem;">Fácil</span></button>
+    </div>
+    <button id="skip" style="margin-top:16px; font-size:0.85rem; color:#888;">Saltar</button>
+  `;
+  app.querySelectorAll('.mood-row button').forEach(b =>
+    b.onclick = () => { moodValue = parseInt(b.dataset.v,10); next(); });
+  document.getElementById('skip').onclick = () => { moodValue = null; next(); };
+}
+
+function computeBlocks(){
+  const defs = [
+    {id:'b_lectura', label:'Leer la partitura'},
+    {id:'b_escucha', label:'Escuchar y elegir'},
+    {id:'b_mixto',   label:'Mixto'},
+  ];
+  return defs.map(d => {
+    const items = itemLog.filter(it => it.block === d.id && typeof it.correct === 'boolean');
+    return {id:d.id, label:d.label, correct: items.filter(i=>i.correct).length, total: items.length};
+  }).filter(b => b.total > 0);
+}
+
+function renderFinal(){
+  const sessionEnd = new Date();
+  const blocks = computeBlocks();
+  const totalCorrect = blocks.reduce((a,b)=>a+b.correct,0);
+  const totalCount = blocks.reduce((a,b)=>a+b.total,0);
+  const pct = totalCount ? Math.round((totalCorrect/totalCount)*1000)/10 : 0;
+
+  const sessionJson = {
+    schema: 'andre-music-log/v1',
+    tool: TOOL_ID,
+    category: 'audicion',
+    scoring: 'auto',
+    session: {
+      start: isoLocal(sessionStart), end: isoLocal(sessionEnd),
+      duration_sec: Math.round((sessionEnd - sessionStart)/1000)
+    },
+    score: {correct: totalCorrect, total: totalCount, pct},
+    blocks: blocks.map(b => ({id:b.id, label:b.label, correct:b.correct, total:b.total})),
+    items: itemLog,
+    mood: moodValue
+  };
+
+  const human =
+    `${TOOL_TITLE} · ${fmtDateHuman(sessionEnd)}\n` +
+    `Resultado: ${totalCorrect} de ${totalCount} (${pct}%)\n` +
+    `Bloques: ${blocks.map(b => `${b.label} ${b.correct}/${b.total}`).join(' · ')}\n`;
+  const fullBlock = human + '---JSON---\n' + JSON.stringify(sessionJson);
+
+  try {
+    const hist = JSON.parse(localStorage.getItem('andre_music_history') || '[]');
+    hist.push(sessionJson);
+    localStorage.setItem('andre_music_history', JSON.stringify(hist));
+  } catch(e){ console.warn('histórico', e); }
+
+  try {
+    const comp = JSON.parse(localStorage.getItem('andre_music_completed') || '{}');
+    const prev = (comp[TOOL_ID] && comp[TOOL_ID].times) || 0;
+    comp[TOOL_ID] = {title: TOOL_TITLE, date: isoLocal(sessionEnd),
+      correct: totalCorrect, total: totalCount, pct, times: prev + 1};
+    localStorage.setItem('andre_music_completed', JSON.stringify(comp));
+  } catch(e){ console.warn('completado', e); }
+
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionJson)); } catch(e){}
+
+  app.innerHTML = `
+    <h2>¡Sesión terminada!</h2>
+    <div class="card">
+      <p><b>Resultado: ${totalCorrect} de ${totalCount} (${pct}%)</b></p>
+      <ul>${blocks.map(b => `<li>${b.label}: ${b.correct}/${b.total}</li>`).join('')}</ul>
+    </div>
+    <p>Copia este registro y pégaselo a papá:</p>
+    <textarea id="log" readonly>${fullBlock.replace(/</g,'&lt;')}</textarea>
+    <button class="primary" id="copy">📋 Copiar registro</button>
+    <span id="copied" style="margin-left:10px; color:var(--ok); display:none;">¡Copiado!</span>
+    <div class="navbar">
+      <button id="reset">🔄 Reiniciar ejercicio</button>
+      <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+    </div>
+  `;
+  const ta = document.getElementById('log');
+  document.getElementById('copy').onclick = () => {
+    ta.select();
+    let done = false;
+    try { done = document.execCommand('copy'); } catch(e){}
+    if (!done && navigator.clipboard){
+      navigator.clipboard.writeText(fullBlock).then(() => {
+        document.getElementById('copied').style.display = 'inline';
+      });
+    } else {
+      document.getElementById('copied').style.display = 'inline';
+    }
+  };
+  document.getElementById('reset').onclick = () => {
+    if (confirm('¿Seguro que quieres reiniciar este ejercicio? Se perderá el progreso actual (no el histórico).')){
+      try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+      location.reload();
+    }
+  };
+}
+
+render();
+})();
+</script>
+</body>
+</html>
