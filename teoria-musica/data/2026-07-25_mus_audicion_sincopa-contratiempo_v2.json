@@ -1,0 +1,49 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_audicion_sincopa-contratiempo_v2",
+  "category": "audicion",
+  "scoring": "auto",
+  "session": {
+    "start": "2026-07-25T12:05:39+01:00",
+    "end": "2026-07-25T12:32:28+01:00",
+    "duration_sec": 1609
+  },
+  "score": { "correct": 24, "total": 25, "pct": 96 },
+  "blocks": [
+    { "id": "b_sincopa", "label": "Síncopa: reconocerla", "correct": 4, "total": 5 },
+    { "id": "b_contratiempo", "label": "Contratiempo: reconocerlo", "correct": 5, "total": 5 },
+    { "id": "b_normal", "label": "Ritmo normal: reconocerlo", "correct": 5, "total": 5 },
+    { "id": "b_mixto", "label": "Mixto: pon el nombre", "correct": 10, "total": 10 }
+  ],
+  "items": [
+    {"n":1,"block":"calentamiento","topic":"sincopa","expected":"sincopa","answered":"escuchado","correct":null,"attempts":1,"time_sec":93,"listens":5,"listen_sec":14},
+    {"n":2,"block":"calentamiento","topic":"contratiempo","expected":"contratiempo","answered":"escuchado","correct":null,"attempts":1,"time_sec":103,"listens":6,"listen_sec":17},
+    {"n":3,"block":"calentamiento","topic":"normal","expected":"normal","answered":"escuchado","correct":null,"attempts":1,"time_sec":101,"listens":5,"listen_sec":14},
+    {"n":4,"block":"b_sincopa","topic":"sincopa","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":34,"listens":3,"listen_sec":8},
+    {"n":5,"block":"b_sincopa","topic":"contratiempo","expected":"no","answered":"no","correct":true,"attempts":1,"time_sec":22,"listens":3,"listen_sec":8},
+    {"n":6,"block":"b_sincopa","topic":"sincopa","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":8,"listens":2,"listen_sec":6},
+    {"n":7,"block":"b_sincopa","topic":"ritmo_normal","expected":"no","answered":"si","correct":false,"attempts":1,"time_sec":11,"listens":2,"listen_sec":6},
+    {"n":8,"block":"b_sincopa","topic":"sincopa","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":23,"listens":3,"listen_sec":8},
+    {"n":9,"block":"b_contratiempo","topic":"contratiempo","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":13,"listens":3,"listen_sec":8},
+    {"n":10,"block":"b_contratiempo","topic":"sincopa","expected":"no","answered":"no","correct":true,"attempts":1,"time_sec":22,"listens":3,"listen_sec":8},
+    {"n":11,"block":"b_contratiempo","topic":"contratiempo","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":4,"listens":1,"listen_sec":3},
+    {"n":12,"block":"b_contratiempo","topic":"ritmo_normal","expected":"no","answered":"no","correct":true,"attempts":1,"time_sec":9,"listens":1,"listen_sec":3},
+    {"n":13,"block":"b_contratiempo","topic":"contratiempo","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":2,"listens":1,"listen_sec":3},
+    {"n":14,"block":"b_normal","topic":"ritmo_normal","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":3,"listens":1,"listen_sec":3},
+    {"n":15,"block":"b_normal","topic":"sincopa","expected":"no","answered":"no","correct":true,"attempts":1,"time_sec":2,"listens":1,"listen_sec":3},
+    {"n":16,"block":"b_normal","topic":"ritmo_normal","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":6,"listens":1,"listen_sec":3},
+    {"n":17,"block":"b_normal","topic":"contratiempo","expected":"no","answered":"no","correct":true,"attempts":1,"time_sec":4,"listens":1,"listen_sec":3},
+    {"n":18,"block":"b_normal","topic":"ritmo_normal","expected":"si","answered":"si","correct":true,"attempts":1,"time_sec":2,"listens":1,"listen_sec":3},
+    {"n":19,"block":"b_mixto","topic":"sincopa","expected":"sincopa","answered":"sincopa","correct":true,"attempts":1,"time_sec":12,"listens":3,"listen_sec":8},
+    {"n":20,"block":"b_mixto","topic":"contratiempo","expected":"contratiempo","answered":"contratiempo","correct":true,"attempts":1,"time_sec":3,"listens":1,"listen_sec":3},
+    {"n":21,"block":"b_mixto","topic":"ritmo_normal","expected":"normal","answered":"normal","correct":true,"attempts":1,"time_sec":3,"listens":1,"listen_sec":3},
+    {"n":22,"block":"b_mixto","topic":"sincopa","expected":"sincopa","answered":"sincopa","correct":true,"attempts":1,"time_sec":7,"listens":2,"listen_sec":6},
+    {"n":23,"block":"b_mixto","topic":"contratiempo","expected":"contratiempo","answered":"contratiempo","correct":true,"attempts":1,"time_sec":11,"listens":1,"listen_sec":3},
+    {"n":24,"block":"b_mixto","topic":"ritmo_normal","expected":"normal","answered":"normal","correct":true,"attempts":1,"time_sec":4,"listens":1,"listen_sec":3},
+    {"n":25,"block":"b_mixto","topic":"sincopa","expected":"sincopa","answered":"sincopa","correct":true,"attempts":1,"time_sec":11,"listens":2,"listen_sec":6},
+    {"n":26,"block":"b_mixto","topic":"contratiempo","expected":"contratiempo","answered":"contratiempo","correct":true,"attempts":1,"time_sec":2,"listens":1,"listen_sec":3},
+    {"n":27,"block":"b_mixto","topic":"ritmo_normal","expected":"normal","answered":"normal","correct":true,"attempts":1,"time_sec":2,"listens":1,"listen_sec":3},
+    {"n":28,"block":"b_mixto","topic":"sincopa","expected":"sincopa","answered":"sincopa","correct":true,"attempts":1,"time_sec":4,"listens":1,"listen_sec":3}
+  ],
+  "mood": 3
+}
