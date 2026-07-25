@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.6 · 23 de julio de 2026
+> Referenciado desde CLAUDE.md. Versión: 1.7 · 25 de julio de 2026
 
 ---
 
@@ -61,6 +61,68 @@ andre_music_history                     → histórico global de sesiones (array
 Al renombrar un fichero existente, incluir al inicio del `<script>` un bloque
 de migración que lea la clave antigua si existe, la copie a la nueva y borre
 la antigua. Documentar la clave antigua en un comentario.
+
+### Librerías vendorizadas — `teoria-musica/vendor/`
+
+La regla por defecto sigue siendo **HTML autocontenido y sin dependencias**.
+Una herramienta solo puede depender de una librería externa cuando dibujar
+ese contenido a mano comprometería la calidad pedagógica del material — hoy
+el único caso reconocido es la **notación musical**.
+
+Cuando se autorice, la librería se **vendoriza**, nunca se carga desde un CDN:
+
+- Se copia a `teoria-musica/vendor/[nombre]-[version].min.js` y se commitea
+  al repositorio junto con su fichero de licencia.
+- Se referencia con ruta relativa: `<script src="vendor/[fichero]"></script>`.
+- Versión **congelada**: actualizar una librería vendorizada es un cambio
+  explícito con su commit, nunca automático.
+- Licencia permisiva obligatoria (MIT, BSD, Apache 2.0 o equivalente),
+  documentada en `teoria-musica/vendor/README.md`.
+
+**Regla general**: nada de `<script src="https://cdn...">`. Un CDN introduce
+dependencia de red en ejecución y riesgo de que el material deje de funcionar
+dentro de unos años. La única excepción externa permanente es Google Fonts
+(Lora).
+
+#### Prioridad ante conflicto
+
+Si la calidad pedagógica de un material exige una dependencia que **no se
+puede vendorizar** — típicamente porque su licencia prohíbe redistribuirla —
+la calidad gana y la herramienta puede requerir conexión. Es preferible un
+ejercicio mejor que solo funciona en línea a un ejercicio peor que funciona
+sin red.
+
+Esa excepción se concede caso por caso y bajo condiciones estrictas:
+
+- **Versión fijada explícitamente en la URL.** Nunca `@latest` ni un rango.
+- **Degradación con sentido**: si la librería no carga, mensaje claro en
+  pantalla explicando que hace falta conexión. Nunca una pantalla en blanco.
+- **Aviso visible** en la tarjeta del índice: requiere conexión.
+- Se documenta en la tabla de esta sección, igual que las vendorizadas.
+
+**Offline y durabilidad no son lo mismo, y no ceden igual.** Que un ejercicio
+no funcione sin red es una molestia acotada. Que dentro de dos años se abra y
+esté roto porque la dependencia cambió bajo los pies es la pérdida del
+material. Lo primero es negociable a cambio de mejor calidad; lo segundo no
+lo es en ningún caso: por eso la versión fijada es obligatoria incluso cuando
+se acepta ir en línea.
+
+Antes de invocar esta excepción hay que descartar el vendorizado de verdad:
+el tamaño del fichero **no** es motivo suficiente (unos megabytes en el repo
+son aceptables), solo lo es la imposibilidad legal o técnica de copiarlo.
+
+**Consecuencia a asumir**: una herramienta que use `vendor/` deja de ser un
+fichero único portable — necesita la carpeta `vendor/` a su lado. Debe
+indicarse en su tarjeta del índice.
+
+Librerías autorizadas actualmente:
+
+| Librería | Versión | Licencia | Modo | Uso |
+|---|---|---|---|---|
+| `abcjs` | 6.6.4 | MIT | vendorizada | Renderizado de partitura (notación ABC → SVG) |
+
+(Modo: `vendorizada` = copiada en `vendor/`, funciona sin red · `en línea` =
+excepción concedida, requiere conexión.)
 
 ---
 
@@ -360,7 +422,9 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
 ## 5. Checklist de calidad
 
 ### Común a todas las herramientas
-- [ ] HTML autocontenido: sin frameworks, sin dependencias externas salvo Google Fonts (Lora).
+- [ ] HTML autocontenido: sin frameworks, sin dependencias externas salvo
+      Google Fonts (Lora) y las librerías vendorizadas autorizadas en §2
+      (referenciadas siempre con ruta relativa a `vendor/`, nunca por CDN).
 - [ ] Fondo blanco, texto negro, responsive (max-width, unidades relativas).
 - [ ] JS extraído pasa `node --check` sin errores.
 - [ ] Nombre de fichero y clave localStorage siguen la convención §2.
@@ -402,6 +466,26 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
   en comentario junto a la constante.
 - [ ] El script de test valida además un registro de sesión real pasado como
       argumento (`node tests/test_x.js data/YYYY-MM-DD_x.json`).
+
+### Con notación musical (herramientas que dibujan partitura)
+
+- [ ] La partitura se genera desde la **misma estructura de datos** que el
+      audio. Nunca se escribe la notación a mano por separado: si audio y
+      partitura tienen dos fuentes, acabarán divergiendo.
+- [ ] Los silencios se parten en los límites de pulso; no se generan
+      silencios con puntillo que oculten el pulso (p. ej. silencio de negra
+      con puntillo al inicio de un 4/4).
+- [ ] Toda nota que cruce la mitad del compás se escribe con **ligadura de
+      unión**, no como una figura larga que oculte el tiempo fuerte.
+- [ ] El test de la herramienta verifica que cada compás generado suma
+      exactamente su duración declarada.
+- [ ] Comprobación visual real antes de entregar: renderizar y mirar la
+      partitura, no solo contar símbolos.
+- [ ] Degradación con sentido si la librería no carga: mensaje claro en
+      pantalla, nunca un hueco en blanco.
+- [ ] Si la herramienta depende de una librería **en línea** (§2, excepción):
+      versión fijada explícitamente en la URL, nunca `@latest`, y aviso de
+      "requiere conexión" en su tarjeta del índice.
 
 ### Imprimibles (`mapa`)
 - [ ] Media query `@media print` con resultado correcto en A4.
@@ -477,3 +561,8 @@ Fases incrementales sobre el mismo schema. Ninguna rompe la anterior:
   matemáticamente antes de la entrega.
 - El feedback de sesión es el mecanismo de coordinación entre sesiones:
   sin registro no hay diseño de la sesión siguiente.
+- Las librerías externas se vendorizan por defecto en `teoria-musica/vendor/`
+  con versión congelada, no se cargan desde un CDN. Si la calidad pedagógica
+  exige una dependencia que no se puede vendorizar, la calidad gana y la
+  herramienta puede requerir conexión — pero la versión sigue siendo fija y
+  el aviso, visible (§2, "Prioridad ante conflicto").
