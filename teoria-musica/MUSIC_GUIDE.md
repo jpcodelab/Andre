@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.7 · 25 de julio de 2026
+> Referenciado desde CLAUDE.md. Versión: 1.8 · 26 de julio de 2026
 
 ---
 
@@ -500,10 +500,19 @@ Documentadas para el index (orden de tarjetas) y para retomar el trabajo:
 **Repasos teóricos:** Nivel 1 → Nivel 2 → Nivel 3 → Final → Compás →
 Gran Repaso 1 → Gran Repaso 2.
 
-**Ritmo (rama auditiva):**
-Dictado S1 → Dictado S2 →
+**Dictado rítmico/melódico:**
+Dictado S1 → Dictado S2 → Dictado 3/8 → Dictado S5 (negra con puntillo).
+El dictado melódico S1 (reconocer notas, Do Mayor) es una rama aparte —
+oído de alturas, no de ritmo — y no depende de completar los anteriores.
+
+**Discriminación auditiva:**
 Fuerte/Débil (paso 1) → Ataque y duración (paso 1.5) →
-Puente síncopa (paso 2) → Síncopa vs Contratiempo (paso 3).
+Puente síncopa (paso 2) → Síncopa vs Contratiempo (paso 3) →
+Síncopa en la partitura (paso siguiente, lee la partitura y luego la
+contrasta de oído).
+Silencio sostenido (¿sigue sonando o hay silencio?) es un micro-refuerzo en
+paralelo, no un paso numerado — se puede intercalar en cualquier punto tras
+el paso 1.
 
 Paso 1.5 (`mus_audicion_ataque-duracion_v1`) se añadió el 23/07/2026 como
 prerrequisito perceptivo: distinguir un sonido sostenido de un ataque corto +

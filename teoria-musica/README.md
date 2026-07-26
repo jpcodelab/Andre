@@ -18,3 +18,12 @@ Foco de cada dictado rítmico:
 |---|---|
 | Simple S1 | 4/4 y 3/4 |
 | Simple S2 | Corchea por posición |
+
+## Ficheros conservados sin enlazar en index.html
+
+- `mus_audicion_sincopa-contratiempo_v1.html` — precede a v2, no se enlaza
+  desde el index. Se conserva porque su sesión de datos del 23/07/2026
+  (`data/2026-07-23_mus_audicion_sincopa-contratiempo_v1.json`) sigue siendo
+  relevante para el diagnóstico. No enlazar ni borrar sin revisar antes ese
+  registro — es una trampa latente para quien limpie ficheros "obsoletos"
+  sin comprobar `data/` primero.

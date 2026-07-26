@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * test_dictado_3-8.js
+ * check_dictado_3-8.js
  *
  * Valida mus_dictado_3-8_v1.html en tres niveles:
  *   1. Aritmética de los patrones rítmicos (cada compás suma 3 corcheas).
@@ -9,10 +9,10 @@
  *      time_sec siempre 0 y answered genérico).
  *
  * Además puede validar un registro de sesión real:
- *   node test_dictado_3-8.js ../data/2026-07-25_mus_dictado_3-8_v1.json
+ *   node check_dictado_3-8.js ../data/2026-07-25_mus_dictado_3-8_v1.json
  *
  * Uso normal:
- *   node teoria-musica/tests/test_dictado_3-8.js
+ *   node teoria-musica/tests/check_dictado_3-8.js
  */
 
 const fs = require('fs');

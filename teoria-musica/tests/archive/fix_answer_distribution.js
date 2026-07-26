@@ -1,6 +1,12 @@
 /**
- * fix_answer_distribution.js
- * Reordena las opciones de cada pregunta en los ficheros HTML de teoría
+ * fix_answer_distribution.js — ARCHIVADO, no ejecutar.
+ * Utilidad de un solo uso ya consumida: reordenó una vez las opciones en los
+ * ficheros de teoría pre-renombrado (examen_musica_andre.html y similares,
+ * anteriores a la Fase B de MUSIC_GUIDE §2). Esos ficheros ya no existen —
+ * FILES apunta a rutas muertas. La vigilancia permanente de la distribución
+ * la hace tests/check_answer_distribution.js.
+ *
+ * Reordenaba las opciones de cada pregunta en los ficheros HTML de teoría
  * para lograr una distribución equilibrada de la clave `c`.
  *
  * Estrategia determinista: para la pregunta i (0-based, global en el fichero),
@@ -9,8 +15,6 @@
  * donde 3 es un primo que garantiza recorrer todas las posiciones.
  * El resto de opciones se mantiene en su orden relativo, solo se inserta
  * la correcta en la nueva posición.
- *
- * Uso: node teoria-musica/tests/fix_answer_distribution.js
  */
 
 'use strict';

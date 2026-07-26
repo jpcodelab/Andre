@@ -12,8 +12,7 @@
  *
  * Nombrado check_ (no test_) para seguir la convención real de los tests por
  * herramienta en este repo (check_puente_sincopa_v2.js, check_silencio_sostenido_v1.js,
- * check_dictado_simple-s5.js, check_dictado_melodico-s1.js). test_dictado_3-8.js es
- * el único outlier con el prefijo test_.
+ * check_dictado_simple-s5.js, check_dictado_melodico-s1.js, check_dictado_3-8.js).
  */
 
 'use strict';

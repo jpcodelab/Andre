@@ -17,39 +17,26 @@ const DATA_DIR = path.join(BASE, 'data');
 
 const VALID_SCORING = new Set(['self', 'self_guarded', 'auto']);
 
-const EVALUATIVE_FILES = [
-  'mus_teoria_nivel1_v1.html',
-  'mus_teoria_nivel2_v1.html',
-  'mus_teoria_nivel3_v1.html',
-  'mus_teoria_repaso-final_v1.html',
-  'mus_teoria_compas_v1.html',
-  'mus_teoria_gran-repaso1_v1.html',
-  'mus_teoria_gran-repaso2_v1.html',
-  'mus_teoria_armadura-refuerzo_v1.html',
-  'mus_dictado_simple-s1_v1.html',
-  'mus_dictado_simple-s2_v1.html',
-  'mus_dictado_3-8_v1.html',
-  'mus_audicion_fuerte-debil_v1.html',
-  'mus_audicion_puente-sincopa_v2.html',
-  'mus_audicion_sincopa-contratiempo_v1.html',
-  'mus_audicion_sincopa-contratiempo_v2.html',
-  'mus_audicion_partitura-sincopa_v1.html',
-  'mus_audicion_silencio-sostenido_v1.html',
-  'mus_teoria_armaduras_v1.html',
-  'mus_dictado_simple-s5_v1.html',
-  'mus_dictado_melodico-s1_v1.html'
-];
+// mus_mapa_* son fichas para imprimir (MUSIC_GUIDE §1): no son evaluativas,
+// no llevan "scoring" y no deben entrar en este chequeo. Cualquier otra
+// mus_*.html nueva entra por defecto — sacarla de aquí es una decisión
+// consciente, no un olvido (ver incidente sincopa-contratiempo_v2 / 26/07/2026).
+const NON_EVALUATIVE = new Set([
+  'mus_mapa_compas_v1.html',
+  'mus_mapa_grados-tonalidades_v1.html',
+  'mus_mapa_resto-temario_v1.html'
+]);
+
+const EVALUATIVE_FILES = fs.readdirSync(BASE)
+  .filter(f => f.startsWith('mus_') && f.endsWith('.html'))
+  .filter(f => !NON_EVALUATIVE.has(f))
+  .sort();
 
 let failures = 0;
 
 console.log('--- (a) scoring declarado en cada herramienta evaluativa ---');
 EVALUATIVE_FILES.forEach(file => {
   const filePath = path.join(BASE, file);
-  if (!fs.existsSync(filePath)) {
-    console.log(`  FAIL: ${file} — fichero no encontrado`);
-    failures++;
-    return;
-  }
   const content = fs.readFileSync(filePath, 'utf-8');
   const m = content.match(/scoring\s*:\s*['"]([^'"]+)['"]/);
   if (!m) {
