@@ -126,7 +126,7 @@
   <div id="final-summary"></div>
   <p style="margin-top:16px; font-weight:600;">Para papá — copia esto y pégalo en el chat:</p>
   <textarea id="final-textarea" readonly></textarea>
-  <button id="btn-copy-final" onclick="var t=document.getElementById('final-textarea');t.focus();t.select();t.setSelectionRange(0,99999);var ok=false;try{ok=document.execCommand('copy');}catch(e){}if(!ok&&navigator.clipboard){navigator.clipboard.writeText(t.value).catch(function(){});}this.textContent='¡Copiado! ✅';" style="margin-top:10px;padding:10px 22px;border-radius:8px;border:1px solid #000;background:#f5f5f5;cursor:pointer;font-family:inherit;font-size:1em;">📋 Copiar registro</button>
+  <button id="btn-copy-final" style="margin-top:10px;padding:10px 22px;border-radius:8px;border:1px solid #000;background:#f5f5f5;cursor:pointer;font-family:inherit;font-size:1em;">📋 Copiar registro</button>
   <p class="warning" id="storage-warning" style="display:none;">
     ⚠️ No se pudo guardar el histórico en este ordenador. Copia igualmente el texto de arriba.
   </p>
@@ -501,6 +501,24 @@
     const pad = n => String(n).padStart(2, '0');
     return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
+
+  /* §3.1: execCommand (funciona en file://) con fallback a clipboard (https) */
+  document.getElementById('btn-copy-final').onclick = function () {
+    var self = this;
+    var ta = document.getElementById('final-textarea');
+    try {
+      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      if (document.execCommand('copy')) { self.textContent = '¡Copiado! ✅'; return; }
+    } catch (e) { /* cae al fallback */ }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(
+        function () { self.textContent = '¡Copiado! ✅'; },
+        function () { self.textContent = 'Selecciona el texto y copia manualmente'; }
+      );
+    } else {
+      self.textContent = 'Selecciona el texto y copia manualmente';
+    }
+  };
 
 })();
 </script>

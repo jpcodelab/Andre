@@ -314,8 +314,24 @@ ${JSON.stringify(json,null,2)}`;
   </div>`);
   window._copy=copy;
 }
-function copyLog(btn){ navigator.clipboard.writeText(window._copy).then(()=>btn.textContent='¡Copiado! ✅')
-  .catch(()=>btn.textContent='Selecciona el texto y copia manualmente'); }
+function copyLog(btn){
+  var ta = document.createElement('textarea');
+  ta.value = window._copy;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  if (ok) { btn.textContent = '¡Copiado! ✅'; return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(window._copy).then(()=>btn.textContent='¡Copiado! ✅')
+      .catch(()=>btn.textContent='Selecciona el texto y copia manualmente');
+  } else {
+    btn.textContent = 'Selecciona el texto y copia manualmente';
+  }
+}
 
 document.getElementById('btn-reset').addEventListener('click', () => {
   if (!confirm('¿Seguro que quieres reiniciar el ejercicio y empezar de cero?')) return;
