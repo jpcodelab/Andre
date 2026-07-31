@@ -44,6 +44,24 @@ analizar registros futuros.
   `listens × 7`, es decir un valor derivado, no medido. No aporta señal
   independiente sobre `listens`. §3.2 pide segundos reales de reproducción.
 
+### Consolidado de `check_conformance.js` tras el lote de copyLog — 31/07/2026
+
+- **`listens`/`listen_sec` ausentes por completo**: `mus_dictado_simple-s1_v1`,
+  `mus_dictado_simple-s2_v1`. `simple-s1` tiene sesión archivada del
+  21/07/2026 (`2026-07-21_mus_dictado_simple-s1_v1.json`) con ese hueco.
+- **`listens`/`listen_sec` mal nombrados como `replays`**:
+  `mus_dictado_melodico-s1_v1`, `mus_dictado_simple-s5_v1` (excepción de
+  notación §3.2 aparte — este es el defecto de nombre de campo, no de
+  vocabulario). Ambos con sesión archivada (31/07/2026).
+- **Navbar incompleta**: los 3 `mus_mapa_*` (`compas`, `grados-tonalidades`,
+  `resto-temario`) — no son evaluativos y no llevan `.navbar` de vuelta al
+  índice ni reinicio.
+- **Implementación de referencia de `time_sec` conforme a §3.2**:
+  `mus_dictado_3-8_v1.html` — `cur.t0` se difiere hasta el `.then()` de la
+  primera reproducción completa y se descuenta `cur.extraListenMs` de las
+  re-escuchas posteriores. Usarla como patrón al instrumentar herramientas
+  nuevas.
+
 ## Inventario del repositorio — reconciliado 31/07/2026
 
 Cruce de los 24 `.html` de `teoria-musica/` contra las tarjetas de `index.html`,
