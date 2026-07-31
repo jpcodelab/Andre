@@ -1,5 +1,25 @@
 # teoria-musica/data/ — notas para el análisis longitudinal
 
+## Anomalías
+
+- **2026-07-21 10:00:49 · `mus_dictado_simple-s1_v1` · 8/9 (88,9%) — sesión
+  fantasma. NO archivada.** Firma de código anterior a `f3f225e` (`time_sec:0`,
+  `answered` literal `'bien'`/`'repasar'`, `start==end`, `duration_sec:0`).
+  Origen: estado residual en `localStorage` de una partida previa al arreglo
+  del 20/07 18:24, cerrada al reabrir la herramienta el 21/07 y pulsar el
+  emoji de humor. No representa rendimiento — no usar para ningún análisis.
+  La sesión real de ese día (10:01:01–10:10:15, 7/9, 77,8%) sí está archivada
+  en `2026-07-21_mus_dictado_simple-s1_v1.json` y empieza justo después
+  (10:01:01) de que la fantasma cerrara (10:00:49).
+
+- **Endurecimiento de `mus_dictado_simple-s2_v1` — sigue BLOQUEADO.** La
+  única sesión archivada (`2026-07-20_mus_dictado_simple-s2_v1.json`) es
+  anterior a `f3f225e` y no contiene transcripciones reales
+  (`answered:"bien"` en los 9 ítems, `time_sec:0`), por lo que no sirve para
+  verificar nada sobre el rendimiento real de André en esta herramienta. Sin
+  una sesión posterior al arreglo, no hay base para endurecer `s2` de la
+  misma forma que `s1` (bloqueo de suma de tiempos / `self_guarded`).
+
 ## Corte de comparabilidad en `time_sec` — 23/07/2026
 
 Antes de esta fecha, las 4 herramientas de `audicion` (`mus_audicion_fuerte-debil_v1`,
@@ -50,13 +70,16 @@ analizar registros futuros.
   `mus_dictado_simple-s2_v1`. `simple-s1` tiene sesión archivada del
   21/07/2026 (`2026-07-21_mus_dictado_simple-s1_v1.json`) con ese hueco.
   `simple-s2` también, en `2026-07-20_mus_dictado_simple-s2_v1.json`.
-- **`check_scoring.js` FALLA para `2026-07-20_mus_dictado_simple-s2_v1.json`**
-  ("no declara `scoring`"): la sesión es del 20/07/2026, anterior a que el
-  campo `scoring` se añadiera al schema (22/07/2026, commit `444412f`). No
-  se ha corregido el JSON archivado — a diferencia de `simple-s1` (que sí
-  lleva un `scoring` retroactivo con `_migration_note`), aquí se ha
-  preferido archivar el registro tal cual salió del export, sin tocar su
-  contenido. El FALLA es esperado y no indica una regresión.
+- **`check_scoring.js` — `2026-07-20_mus_dictado_simple-s2_v1.json` ya no falla
+  (corregido 31/07/2026)**: la sesión es del 20/07/2026, anterior a que el
+  campo `scoring` se añadiera al schema (22/07/2026, commit `444412f`). Se le
+  ha añadido `scoring:"self"` + `_migration_note` retroactivos, mismo
+  tratamiento que ya llevaba `2026-07-21_mus_dictado_simple-s1_v1.json` — se
+  unifica el criterio: todo registro archivado sin `scoring` por ser anterior
+  al schema recibe el valor retroactivo que corresponda a la mecánica real de
+  la herramienta en esa fecha (determinable por commit), documentado en
+  `_migration_note`, sin tocar `score`/`items`/`session`. `check_scoring.js`
+  pasa limpio y puede usarse como gate.
 - **`listens`/`listen_sec` mal nombrados como `replays`**:
   `mus_dictado_melodico-s1_v1`, `mus_dictado_simple-s5_v1` (excepción de
   notación §3.2 aparte — este es el defecto de nombre de campo, no de

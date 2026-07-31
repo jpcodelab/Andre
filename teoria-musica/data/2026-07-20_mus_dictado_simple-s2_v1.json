@@ -2,6 +2,8 @@
   "schema": "andre-music-log/v1",
   "tool": "mus_dictado_simple-s2_v1",
   "category": "dictado",
+  "scoring": "self",
+  "_migration_note": "scoring añadido retroactivamente (MUSIC_GUIDE v1.3), mismo tratamiento que 2026-07-21_mus_dictado_simple-s1_v1.json — esta sesión (20/07, 12:53) es anterior al campo scoring en el schema (commit 444412f, 22/07) y anterior también a la captura real de transcripción/tiempo (commit f3f225e, 20/07 18:24): answered es el literal 'bien' en los 9 ítems y time_sec:0 en todos. Autoevaluación pura ('self') — s2 nunca ha tenido el bloqueo de suma de tiempos que sí tiene s1 (self_guarded), así que no hay valor 'self_guarded' que atribuirle ni antes ni después de esa fecha.",
   "session": {
     "start": "2026-07-20T12:53:19+01:00",
     "end": "2026-07-20T12:57:19+01:00",
