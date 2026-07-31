@@ -26,3 +26,20 @@ afectados y siguen siendo comparables.
 
 `listens` y `listen_sec` tampoco existen en estos 4 registros del 23/07/2026 (mismo
 hallazgo de conformidad, corregido a partir de esa fecha) — ausentes, no cero.
+
+## Deuda de instrumentación
+
+Detectada el 31/07/2026. No corregida — se documenta para que no se pierda al
+analizar registros futuros.
+
+- **`mus_audicion_fuerte-debil_v1`** — `time_sec = 0` en 12 de 14 ítems de los
+  bloques `point` y `classify`; en `tap` mide bien (4–16 s). Incumple §3.2.
+  Causa probable: el cronómetro arranca al terminar la reproducción y André
+  responde antes de que acabe el estímulo. No se corrige: la herramienta está
+  saturada (100% en tres pasadas) y sale de rotación.
+- **`mus_audicion_fuerte-debil_v1`** — ítem con `tap_misses: 2` registrado
+  como `correct: true`. Tolerancia implícita sin documentar. §5 exige
+  documentarla junto a la constante. Detectado ya el 23/07/2026, sigue abierto.
+- **`mus_audicion_ataque-duracion_v1`** — `listen_sec` es siempre
+  `listens × 7`, es decir un valor derivado, no medido. No aporta señal
+  independiente sobre `listens`. §3.2 pide segundos reales de reproducción.

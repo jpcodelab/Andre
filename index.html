@@ -1293,18 +1293,45 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
   (function markCompletedCards() {
     let registry;
     try { registry = readCompleted(); } catch (e) { return; }
+    // "Dominado": times >= 2 y último pct >= 90. El registro andre_music_completed
+    // guarda pct de la última sesión (§3.5 MUSIC_GUIDE), así que se puede usar
+    // directamente sin leer el histórico completo.
+    function isDominado(entry) {
+      return entry.times >= 2 && typeof entry.pct === 'number' && entry.pct >= 90;
+    }
+    const dominatedCards = [];
     document.querySelectorAll('.card[data-tool]').forEach(card => {
       const entry = registry[card.getAttribute('data-tool')];
       if (!entry) return;
       const body = card.querySelector('.card-body');
       if (!body) return;
-      const mark = document.createElement('p');
-      mark.style.cssText = 'font-size:.72rem; color:#2e7d32; font-weight:700; margin-top:-6px; margin-bottom:10px;';
-      let text = `✅ Completado el ${formatDateHuman(entry.date)}`;
-      if (entry.times && entry.times > 1) text += ` (completado ${entry.times} veces)`;
-      mark.textContent = text;
-      body.appendChild(mark);
+      try {
+        const mark = document.createElement('p');
+        mark.style.cssText = 'font-size:.72rem; color:#2e7d32; font-weight:700; margin-top:-6px; margin-bottom:10px;';
+        let text = `✅ Completado el ${formatDateHuman(entry.date)}`;
+        if (entry.times && entry.times > 1) text += ` (completado ${entry.times} veces)`;
+        mark.textContent = text;
+        body.appendChild(mark);
+
+        if (isDominado(entry)) {
+          const badge = document.createElement('p');
+          badge.style.cssText = 'font-size:.72rem; color:#000; font-weight:700; margin-top:-4px; margin-bottom:10px;';
+          badge.textContent = `✅ Dominado · ${entry.times} veces`;
+          body.appendChild(badge);
+          dominatedCards.push(card);
+        }
+      } catch (e) { /* si algo falla al pintar, la tarjeta se queda como estaba */ }
     });
+
+    // Mover las tarjetas dominadas al final de su propia subsección (mismo
+    // contenedor .grid) para que dejen de ser lo primero que ve André.
+    // Reordenado en JS al pintar — el HTML estático no cambia.
+    try {
+      dominatedCards.forEach(card => {
+        const parent = card.parentElement;
+        if (parent) parent.appendChild(card);
+      });
+    } catch (e) { /* si falla el reordenado, las tarjetas quedan en su sitio */ }
   })();
 
   const btnResetCompletados = document.getElementById('btn-reset-completados');
