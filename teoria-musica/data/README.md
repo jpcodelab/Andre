@@ -43,3 +43,39 @@ analizar registros futuros.
 - **`mus_audicion_ataque-duracion_v1`** — `listen_sec` es siempre
   `listens × 7`, es decir un valor derivado, no medido. No aporta señal
   independiente sobre `listens`. §3.2 pide segundos reales de reproducción.
+
+## Inventario del repositorio — reconciliado 31/07/2026
+
+Cruce de los 24 `.html` de `teoria-musica/` contra las tarjetas de `index.html`,
+los JSON de `data/` y los scripts de `tests/`.
+
+**Herramientas en el repo sin tarjeta en el índice** (invisibles para André):
+- `mus_audicion_sincopa-contratiempo_v1` — superada por v2 en la secuencia
+  pedagógica (§6 MUSIC_GUIDE), pero el fichero sigue en el repo sin ningún
+  enlace en `index.html`. Conserva un registro de sesión en `data/`
+  (23/07/2026) de cuando aún estaba en uso.
+
+**Tarjetas del índice que apuntan a un fichero inexistente**: ninguna — los 23
+`data-tool`/`href` de la sección "Escuela de Música" coinciden 1:1 con
+ficheros existentes.
+
+**Herramientas evaluativas sin ningún JSON en `data/` (nunca estrenadas)**:
+12 de 21.
+- Repasos teóricos, 8 de 9 sin registro: `nivel1`, `nivel3`, `armaduras`,
+  `armadura-refuerzo`, `compas`, `repaso-final`, `gran-repaso1`,
+  `gran-repaso2` (solo `nivel2` tiene registro).
+- Dictados, 4 de 5 sin registro: `3-8`, `simple-s2`, `simple-s5`,
+  `melodico-s1` (solo `simple-s1` tiene registro).
+- Auditivas: las 7 tienen al menos un registro.
+
+**Herramientas evaluativas sin script de check en `tests/`**: 10 de 21 sin
+ninguna cobertura.
+- Los 9 repasos teóricos (no existe ningún `check_teoria_*.js`).
+- `mus_audicion_fuerte-debil_v1` (sin check dedicado; `check_audicion_patterns.js`
+  no la cubre — solo `sincopa-contratiempo_v1`).
+
+Cobertura parcial a tener en cuenta (verifican solo la matemática de los
+patrones rítmicos, no el checklist completo §5 como los demás `check_*.js`
+dedicados): `mus_dictado_simple-s1_v1` y `mus_dictado_simple-s2_v1`
+(`check_dictado_patterns.js`), `mus_audicion_sincopa-contratiempo_v1`
+(`check_audicion_patterns.js`).
