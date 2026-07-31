@@ -1,5 +1,25 @@
 # teoria-musica/data/ — notas para el análisis longitudinal
 
+## Estado del inventario de sesiones — CERRADO (31/07/2026)
+
+Reconciliación completa entre los exports de histórico y `data/`:
+
+- **Brave** (`https://jpcodelab.github.io`): 16 sesiones exportadas, una de
+  ellas la fantasma del 21/07 (`mus_dictado_simple-s1_v1`, 10:00:49,
+  `start==end`) ya documentada en Anomalías → **15 sesiones reales**.
+- **Edge** (`https://jpcodelab.github.io`): 1 sesión
+  (`mus_dictado_simple-s5_v1`, 31/07, 16:11–16:14, 6/8), ya archivada.
+- **Total real: 16 sesiones · Ficheros en `data/`: 16 · correspondencia 1:1**
+  verificada por `tool` + `session.start`/`session.end` + `score` — sin
+  huérfanos en ningún sentido (ni sesión real sin fichero, ni fichero sin
+  sesión real que lo respalde).
+- No se detectó ningún silo `file://` (sesiones jugadas abriendo el HTML
+  directamente en disco, fuera de `https://jpcodelab.github.io`).
+
+No reabrir este inventario sin repetir la reconciliación completa (los dos
+exports + comparación tool/timestamps/score contra `data/`) — ver
+"Mitigación" en Anomalías para por qué puede volver a desincronizarse.
+
 ## Anomalías
 
 - **2026-07-21 10:00:49 · `mus_dictado_simple-s1_v1` · 8/9 (88,9%) — sesión
@@ -19,6 +39,25 @@
   verificar nada sobre el rendimiento real de André en esta herramienta. Sin
   una sesión posterior al arreglo, no hay base para endurecer `s2` de la
   misma forma que `s1` (bloqueo de suma de tiempos / `self_guarded`).
+
+- **Riesgo de `localStorage` multi-navegador.** `localStorage` no se
+  comparte entre navegadores ni perfiles. El 31/07 André abrió
+  `mus_dictado_simple-s5_v1` en Edge en lugar de Brave, creando un
+  histórico paralelo (`andre_music_history` propio de Edge) que no
+  apareció en el primer export — hubo que pedir un segundo export desde
+  Edge para recuperar esa sesión y archivarla.
+  **Consecuencia no obvia:** `andre_music_completed` también es por
+  navegador. En un navegador distinto el índice aparece virgen — sin
+  marcas de completado ni badges de "Dominado" — que es justo la condición
+  que el 31/07 llevó a repetir dos herramientas ya saturadas
+  (`mus_audicion_fuerte-debil_v1`, `mus_audicion_ataque-duracion_v1`: ver
+  sesiones del 31/07 en el export de Brave, ambas ya al 100%/saturadas en
+  pasadas anteriores).
+  **Mitigación:** usar siempre Brave y entrar por
+  `https://jpcodelab.github.io/Andre/` mediante acceso directo. El botón
+  "Exportar histórico" solo exporta el navegador en que se pulsa — no basta
+  con un único export para dar por cerrado un inventario si ha podido haber
+  uso desde más de un navegador.
 
 ## Corte de comparabilidad en `time_sec` — 23/07/2026
 
