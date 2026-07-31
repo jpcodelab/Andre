@@ -114,6 +114,9 @@ function isoLocal(d){const p=n=>String(n).padStart(2,'0');const o=-d.getTimezone
 function fmtHuman(d){const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes());}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function names(keys){return keys.map(k=>NOTES[k].name).join(' → ');}
+/* §3.2 "Caja del vocabulario": expected/answered en minúsculas_sin_tildes_guion_bajo.
+   Las etiquetas en pantalla (names(), con mayúscula y flecha) no cambian. */
+function vocabToken(s){return s.toLowerCase().split(' → ').join('_');}
 
 /* ================= Banco de preguntas ================= */
 const BLOCKS={ A:'Do, Re o Mi', B:'Toda la escala (con anclas Do y Sol)', C:'Mini-dictado de 2 notas' };
@@ -237,7 +240,7 @@ function answer(k){
   const t=Math.round((Date.now()-state.qStart)/1000);
   if(ok) state.correct++;
   state.items.push({ n:state.i+1, block:q.block, topic:q.topic,
-    expected:q._correct, answered:chosen, correct:ok, attempts:1, time_sec:t, replays:state.replays });
+    expected:vocabToken(q._correct), answered:vocabToken(chosen), correct:ok, attempts:1, time_sec:t, replays:state.replays });
   document.querySelectorAll('#opts button').forEach((b,idx)=>{
     b.disabled=true;
     if(q._opts[idx]===q._correct) b.classList.add('correct');

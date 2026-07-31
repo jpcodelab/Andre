@@ -60,12 +60,13 @@ los JSON de `data/` y los scripts de `tests/`.
 ficheros existentes.
 
 **Herramientas evaluativas sin ningún JSON en `data/` (nunca estrenadas)**:
-12 de 21.
+11 de 21.
 - Repasos teóricos, 8 de 9 sin registro: `nivel1`, `nivel3`, `armaduras`,
   `armadura-refuerzo`, `compas`, `repaso-final`, `gran-repaso1`,
   `gran-repaso2` (solo `nivel2` tiene registro).
-- Dictados, 4 de 5 sin registro: `3-8`, `simple-s2`, `simple-s5`,
-  `melodico-s1` (solo `simple-s1` tiene registro).
+- Dictados, 3 de 5 sin registro: `simple-s2`, `simple-s5`, `melodico-s1`
+  (`simple-s1` y `3-8` tienen registro; `3-8` archivado el 31/07/2026 desde
+  una sesión recuperada de conversación, ver `2026-07-26_mus_dictado_3-8_v1.json`).
 - Auditivas: las 7 tienen al menos un registro.
 
 **Herramientas evaluativas sin script de check en `tests/`**: 10 de 21 sin

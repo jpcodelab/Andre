@@ -1,0 +1,183 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_dictado_3-8_v1",
+  "category": "dictado",
+  "scoring": "auto",
+  "session": {
+    "start": "2026-07-26T12:57:25+01:00",
+    "end": "2026-07-26T13:08:01+01:00",
+    "duration_sec": 636
+  },
+  "score": {
+    "correct": 6,
+    "total": 10,
+    "pct": 60
+  },
+  "blocks": [
+    {
+      "id": "identificar",
+      "label": "Identificar",
+      "correct": 4,
+      "total": 4
+    },
+    {
+      "id": "construir",
+      "label": "Construir",
+      "correct": 2,
+      "total": 4
+    },
+    {
+      "id": "dictado2",
+      "label": "Dictado de 2 compases",
+      "correct": 0,
+      "total": 2
+    }
+  ],
+  "items": [
+    {
+      "n": 1,
+      "block": "calibracion",
+      "topic": "dictado_3-8_calibracion",
+      "expected": null,
+      "answered": "realizado",
+      "correct": null,
+      "attempts": 1,
+      "time_sec": 30,
+      "listens": 6,
+      "listen_sec": 22
+    },
+    {
+      "n": 2,
+      "block": "calibracion",
+      "topic": "dictado_3-8_calibracion",
+      "expected": null,
+      "answered": "realizado",
+      "correct": null,
+      "attempts": 1,
+      "time_sec": 9,
+      "listens": 3,
+      "listen_sec": 11
+    },
+    {
+      "n": 3,
+      "block": "identificar",
+      "topic": "dictado_3-8_unidad-compas",
+      "expected": "N.",
+      "answered": "N.",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 4,
+      "listens": 1,
+      "listen_sec": 4
+    },
+    {
+      "n": 4,
+      "block": "identificar",
+      "topic": "dictado_3-8_tres-corcheas",
+      "expected": "C-C-C",
+      "answered": "C-C-C",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 5,
+      "listens": 1,
+      "listen_sec": 4
+    },
+    {
+      "n": 5,
+      "block": "identificar",
+      "topic": "dictado_3-8_negra-corchea",
+      "expected": "N-C",
+      "answered": "N-C",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 4,
+      "listens": 1,
+      "listen_sec": 4
+    },
+    {
+      "n": 6,
+      "block": "identificar",
+      "topic": "dictado_3-8_negra-corchea",
+      "expected": "N-C",
+      "answered": "N-C",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 11,
+      "listens": 2,
+      "listen_sec": 7
+    },
+    {
+      "n": 7,
+      "block": "construir",
+      "topic": "dictado_3-8_corchea-negra",
+      "expected": "C-N",
+      "answered": "N.",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 11,
+      "listens": 3,
+      "listen_sec": 11
+    },
+    {
+      "n": 8,
+      "block": "construir",
+      "topic": "dictado_3-8_silencio",
+      "expected": "C-s-C",
+      "answered": "C-s-C",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 30,
+      "listens": 3,
+      "listen_sec": 11
+    },
+    {
+      "n": 9,
+      "block": "construir",
+      "topic": "dictado_3-8_silencio",
+      "expected": "s-C-C",
+      "answered": "s-N",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 34,
+      "listens": 2,
+      "listen_sec": 7
+    },
+    {
+      "n": 10,
+      "block": "construir",
+      "topic": "dictado_3-8_negra-corchea",
+      "expected": "N-C",
+      "answered": "N-C",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 6,
+      "listens": 1,
+      "listen_sec": 4
+    },
+    {
+      "n": 11,
+      "block": "dictado2",
+      "topic": "dictado_3-8_dos-compases",
+      "expected": "C-C-C|N.",
+      "answered": "C-C-C|s-C-C",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 37,
+      "listens": 2,
+      "listen_sec": 11
+    },
+    {
+      "n": 12,
+      "block": "dictado2",
+      "topic": "dictado_3-8_dos-compases",
+      "expected": "N-C|C-N",
+      "answered": "N.|N-C",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 13,
+      "listens": 2,
+      "listen_sec": 11
+    }
+  ],
+  "mood": 2
+}
