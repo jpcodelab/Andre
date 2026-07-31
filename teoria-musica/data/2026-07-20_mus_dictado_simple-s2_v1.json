@@ -1,0 +1,122 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_dictado_simple-s2_v1",
+  "category": "dictado",
+  "session": {
+    "start": "2026-07-20T12:53:19+01:00",
+    "end": "2026-07-20T12:57:19+01:00",
+    "duration_sec": 240
+  },
+  "score": {
+    "correct": 9,
+    "total": 9,
+    "pct": 100
+  },
+  "blocks": [
+    {
+      "id": "bloque_1",
+      "label": "Bloque 1 (4/4)",
+      "correct": 5,
+      "total": 5
+    },
+    {
+      "id": "bloque_2",
+      "label": "Bloque 2 (3/4)",
+      "correct": 4,
+      "total": 4
+    }
+  ],
+  "items": [
+    {
+      "n": 1,
+      "block": "bloque_1",
+      "topic": "compas_4",
+      "expected": "corcheas negra negra negra",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    },
+    {
+      "n": 2,
+      "block": "bloque_1",
+      "topic": "compas_4",
+      "expected": "negra negra corcheas negra",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    },
+    {
+      "n": 3,
+      "block": "bloque_1",
+      "topic": "compas_4",
+      "expected": "negra negra negra corcheas",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    },
+    {
+      "n": 4,
+      "block": "bloque_1",
+      "topic": "compas_4",
+      "expected": "negra corcheas negra silencio",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    },
+    {
+      "n": 5,
+      "block": "bloque_1",
+      "topic": "compas_4",
+      "expected": "corcheas negra silencio negra",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    },
+    {
+      "n": 6,
+      "block": "bloque_2",
+      "topic": "compas_3",
+      "expected": "corcheas negra negra",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    },
+    {
+      "n": 7,
+      "block": "bloque_2",
+      "topic": "compas_3",
+      "expected": "negra corcheas negra",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    },
+    {
+      "n": 8,
+      "block": "bloque_2",
+      "topic": "compas_3",
+      "expected": "negra negra corcheas",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    },
+    {
+      "n": 9,
+      "block": "bloque_2",
+      "topic": "compas_3",
+      "expected": "negra corcheas silencio",
+      "answered": "bien",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0
+    }
+  ],
+  "mood": 3
+}

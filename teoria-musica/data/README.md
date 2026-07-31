@@ -49,6 +49,14 @@ analizar registros futuros.
 - **`listens`/`listen_sec` ausentes por completo**: `mus_dictado_simple-s1_v1`,
   `mus_dictado_simple-s2_v1`. `simple-s1` tiene sesión archivada del
   21/07/2026 (`2026-07-21_mus_dictado_simple-s1_v1.json`) con ese hueco.
+  `simple-s2` también, en `2026-07-20_mus_dictado_simple-s2_v1.json`.
+- **`check_scoring.js` FALLA para `2026-07-20_mus_dictado_simple-s2_v1.json`**
+  ("no declara `scoring`"): la sesión es del 20/07/2026, anterior a que el
+  campo `scoring` se añadiera al schema (22/07/2026, commit `444412f`). No
+  se ha corregido el JSON archivado — a diferencia de `simple-s1` (que sí
+  lleva un `scoring` retroactivo con `_migration_note`), aquí se ha
+  preferido archivar el registro tal cual salió del export, sin tocar su
+  contenido. El FALLA es esperado y no indica una regresión.
 - **`listens`/`listen_sec` mal nombrados como `replays`**:
   `mus_dictado_melodico-s1_v1`, `mus_dictado_simple-s5_v1` (excepción de
   notación §3.2 aparte — este es el defecto de nombre de campo, no de
@@ -78,16 +86,28 @@ los JSON de `data/` y los scripts de `tests/`.
 ficheros existentes.
 
 **Herramientas evaluativas sin ningún JSON en `data/` (nunca estrenadas)**:
-10 de 21.
+9 de 21.
 - Repasos teóricos, 8 de 9 sin registro: `nivel1`, `nivel3`, `armaduras`,
   `armadura-refuerzo`, `compas`, `repaso-final`, `gran-repaso1`,
   `gran-repaso2` (solo `nivel2` tiene registro).
-- Dictados, 2 de 5 sin registro: `simple-s2`, `melodico-s1`
-  (`simple-s1`, `3-8` y `simple-s5` tienen registro; `3-8` archivado el
+- Dictados, 1 de 5 sin registro: `melodico-s1` es el único dictado que
+  André no ha jugado todavía. Los otros 4 sí tienen sesión archivada:
+  `simple-s1` (21/07/2026), `simple-s2` (20/07/2026, 100% — archivada el
+  31/07/2026 desde el export reconciliado, ver
+  `2026-07-20_mus_dictado_simple-s2_v1.json`), `3-8` (archivado el
   31/07/2026 desde una sesión recuperada de conversación, ver
-  `2026-07-26_mus_dictado_3-8_v1.json`; `simple-s5` archivado el 31/07/2026,
-  ver `2026-07-31_mus_dictado_simple-s5_v1.json`).
+  `2026-07-26_mus_dictado_3-8_v1.json`) y `simple-s5` (archivado el
+  31/07/2026, ver `2026-07-31_mus_dictado_simple-s5_v1.json`).
 - Auditivas: las 7 tienen al menos un registro.
+
+**Nota de método**: la ausencia de fichero en `data/` NO implica que la
+herramienta no se haya usado — solo implica que esa sesión aún no se ha
+reconciliado y archivado desde `andre_music_history`. La fuente de verdad
+sobre si André ha jugado una herramienta es `andre_music_history` (el
+export completo), no el contenido de `data/`. El caso de `simple-s2` es
+el ejemplo: constaba aquí como "sin estrenar" hasta el 31/07/2026 pese a
+tener una sesión jugada y reconciliada el 20/07/2026 — el inventario de
+`data/` simplemente no se había puesto al día.
 
 **Herramientas evaluativas sin script de check en `tests/`**: 10 de 21 sin
 ninguna cobertura.
