@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.8 · 26 de julio de 2026
+> Referenciado desde CLAUDE.md. Versión: 1.9 · 31 de julio de 2026
 
 ---
 
@@ -124,6 +124,23 @@ Librerías autorizadas actualmente:
 (Modo: `vendorizada` = copiada en `vendor/`, funciona sin red · `en línea` =
 excepción concedida, requiere conexión.)
 
+### Ciclo de vida de una herramienta
+
+Una herramienta se considera **dominada** cuando `times >= 2` y el `pct` de
+la última sesión es `>= 85` (mismo umbral de "Dominado" que el resto del
+índice, ver §1 de `data/README.md`/histórico). `index.html` la marca como
+"✅ Dominado · N veces" en su tarjeta y la reordena al final de su
+subsección (después de las tarjetas sin esa marca).
+
+No se oculta ni se deshabilita: André puede seguir repitiéndola, solo deja
+de ser lo primero que ve al entrar en la sección — el objetivo es dirigir
+su atención hacia material nuevo sin quitarle la opción de repasar.
+
+Motivo: el 31/07/2026 André gastó sus dos sesiones evaluativas del día
+repitiendo dos herramientas ya saturadas desde el 23/07 (100% en varias
+pasadas), en vez de avanzar a material nuevo, porque seguían apareciendo
+primero en su subsección.
+
 ---
 
 ## 3. Esquema de feedback estructurado
@@ -195,7 +212,9 @@ Reglas:
 - `items`: una entrada por pregunta, siempre. `expected` y `answered` usan
   valores del vocabulario de topics cuando aplique, o texto corto.
 - `attempts`: nº de intentos hasta acertar o agotar (los repasos adaptativos
-  ya permiten hasta 3).
+  ya permiten hasta 3). En herramientas que no ofrecen reintento, `attempts`
+  vale siempre `1` y no aporta diagnóstico — solo es significativo en
+  repasos adaptativos.
 - `time_sec`: segundos **de razonamiento**, no de reloj. Se mide desde que la
   interfaz de respuesta queda habilitada (es decir, tras la primera
   reproducción completa, no al pintar la pregunta) hasta el clic en
@@ -203,10 +222,15 @@ Reglas:
   Redondeado a entero. Un `time_sec` de 0 en todos los ítems es un fallo de
   instrumentación, no un dato.
 - `listens`: número de veces que se reprodujo el estímulo en ese ítem.
-  Obligatorio en `dictado` y `audicion`; opcional en `teoria`.
+  Obligatorio en `dictado` y `audicion`; opcional en `teoria`. Nombre
+  **obligatorio y literal**: sinónimos como `replays` son un defecto, no una
+  variante.
 - `listen_sec`: segundos totales de reproducción en ese ítem, redondeado a
   entero. Separar escucha de razonamiento evita confundir "lento" con
-  "dudoso": son diagnósticos distintos y piden material distinto.
+  "dudoso": son diagnósticos distintos y piden material distinto. Debe
+  **medirse** (acumulando la duración real de cada reproducción); calcularlo
+  como `listens × constante` no cumple — un valor derivado de `listens` no
+  aporta señal independiente sobre `listens`.
 - `answered`: la respuesta **real** del alumno, expresada en el vocabulario de
   la herramienta (mismo formato que `expected`), nunca un genérico del tipo
   `"bien"` / `"mal"` / `"ok"`. En preguntas de opción múltiple se registra el
@@ -217,6 +241,13 @@ Reglas:
   ve André son independientes y sí llevan tildes y mayúsculas. Motivo: dos
   herramientas emitiendo `"Síncopa"` y `"sincopa"` para el mismo concepto
   rompen la agregación entre sesiones (detectado el 23/07/2026).
+  **Excepción de notación**: las herramientas que transcriben ritmo usan
+  vocabulario de notación en vez de ids de topic. Sigue siendo minúsculas y
+  sin tildes, y además: `|` separa compases, `_` une elementos dentro de una
+  figura, `-` no se usa. Conforme: `np_c|cc|n`. No conforme: `C-N|N`
+  (mayúsculas y guion). `mus_dictado_3-8_v1` queda marcado como no conforme
+  conocido con esta regla (usa mayúsculas y `-` como separador); no se
+  corrige ni la herramienta ni los datos ya archivados.
 - `correct` puede ser `null` en ítems de bloques de calentamiento o
   calibración (no evaluados). El `score` agrega **únicamente** los ítems con
   `correct` booleano; `blocks` con `total: 0` se omiten del array. El ítem se
@@ -225,6 +256,10 @@ Reglas:
   (1 = difícil/frustrante, 2 = normal, 3 = fácil/divertido). Pregunta única:
   "¿Cómo te has sentido?" con 3 botones (emoji + texto). Opcional responder:
   si se salta, `mood: null`.
+- `conditions` (opcional, a nivel de ítem): objeto con las variables
+  manipuladas del ítem cuando la herramienta altera deliberadamente el
+  estímulo (p. ej. `{"acentos": false}`). Sin él, un fallo bajo condición
+  modificada es indistinguible de un fallo normal.
 
 ### 3.3 Persistencia del histórico
 
@@ -436,6 +471,11 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
       "🔄 Reiniciar ejercicio" (confirm + borra solo la clave propia
       `andre_[tool]` + `location.reload()`) y enlace "🏠 Volver al índice" a
       `../index.html#lenguaje-musical` (ruta relativa desde `teoria-musica/`).
+- [ ] Pasa `tests/check_conformance.js`. Los checks dedicados por
+      herramienta cubren la matemática de patrones; la conformidad de
+      schema del checklist §5 la cubre el transversal. Un check dedicado
+      que reporta OK no implica conformidad — puede no haber comprobado
+      nunca esos puntos.
 
 ### Evaluativas (`teoria`, `dictado`, `audicion`)
 - [ ] Ejemplo o demo antes de la primera pregunta evaluada.
@@ -453,6 +493,9 @@ El script `tests/check_topics_map.js` verifica la integridad del mapa.
 - [ ] `answered` en el vocabulario de la herramienta, verificado en el test.
 - [ ] Declara `"scoring"` (`self` / `self_guarded` / `auto`) en el JSON de
       sesión — verificado en el test (§3.6).
+- [ ] Toda tolerancia de acierto (p. ej. `tap_misses > 0` aceptado como
+      `correct: true`) está documentada en un comentario junto a la
+      constante que la define.
 
 ### Con patrones rítmicos (`dictado`, `audicion`)
 - [ ] **Verificación matemática**: cada patrón suma exactamente el compás declarado.
@@ -550,8 +593,9 @@ decidir si André avanza de paso.
 Fases incrementales sobre el mismo schema. Ninguna rompe la anterior:
 
 1. **Actual**: registro copiable pegado manualmente en la conversación con Claude.
-2. **Exportación**: botón "Exportar histórico completo" en el index que vuelca
-   `andre_music_history` como fichero JSON descargable.
+2. **Exportación** (pendiente): botón "Exportar histórico" en el index que
+   vuelca `andre_music_history` como fichero JSON descargable, nombrado
+   `andre_music_history_YYYY-MM-DD.json`.
 3. **Repositorio como datos**: carpeta `teoria-musica/data/` con los JSON de
    sesión commiteados; histórico consultable con git.
 4. **Diagnóstico automático**: llamada a la API de Claude con el histórico
@@ -575,3 +619,20 @@ Fases incrementales sobre el mismo schema. Ninguna rompe la anterior:
   exige una dependencia que no se puede vendorizar, la calidad gana y la
   herramienta puede requerir conexión — pero la versión sigue siendo fija y
   el aviso, visible (§2, "Prioridad ante conflicto").
+
+---
+
+## Changelog
+
+- **v1.9 · 31/07/2026** — (1) §2: nueva subsección "Ciclo de vida de una
+  herramienta" (umbral de "Dominado", reordenado en el índice sin ocultar).
+  (2) §3.2: excepción de notación en la caja del vocabulario (`|`, `_`, sin
+  `-`); `mus_dictado_3-8_v1` marcado no conforme conocido. (3) §3.2:
+  `listens`/`listen_sec` con nombre obligatorio y literal — `replays` es
+  defecto, no variante; `listen_sec` debe medirse, no derivarse de
+  `listens`. (4) §3.2: `attempts` precisado como no diagnóstico fuera de
+  repasos adaptativos. (5) §3.2: campo opcional `conditions` para ítems con
+  estímulo deliberadamente alterado. (6) §5: toda herramienta debe pasar
+  `check_conformance.js`; toda tolerancia de acierto debe documentarse junto
+  a su constante. (7) §7: botón de exportar histórico marcado como
+  requisito pendiente de fase 2, con el nombre de fichero que produce.
