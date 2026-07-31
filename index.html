@@ -1293,11 +1293,14 @@ footer a { color: var(--teal); text-decoration: none; font-weight: 700; }
   (function markCompletedCards() {
     let registry;
     try { registry = readCompleted(); } catch (e) { return; }
-    // "Dominado": times >= 2 y último pct >= 90. El registro andre_music_completed
+    // "Dominado": times >= 2 y último pct >= 85. El registro andre_music_completed
     // guarda pct de la última sesión (§3.5 MUSIC_GUIDE), así que se puede usar
     // directamente sin leer el histórico completo.
+    // Umbral en 85, no 90: mus_audicion_ataque-duracion_v1 quedó en 88,9% con
+    // times=2 y está perceptivamente saturada; un pct global no distingue
+    // bloques dominados de bloques débiles, y 85 es el corte pragmático.
     function isDominado(entry) {
-      return entry.times >= 2 && typeof entry.pct === 'number' && entry.pct >= 90;
+      return entry.times >= 2 && typeof entry.pct === 'number' && entry.pct >= 85;
     }
     const dominatedCards = [];
     document.querySelectorAll('.card[data-tool]').forEach(card => {
