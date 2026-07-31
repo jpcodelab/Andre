@@ -1,0 +1,127 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_dictado_simple-s5_v1",
+  "category": "dictado",
+  "scoring": "auto",
+  "session": {
+    "start": "2026-07-31T16:11:19+01:00",
+    "end": "2026-07-31T16:14:27+01:00",
+    "duration_sec": 188
+  },
+  "score": {
+    "correct": 6,
+    "total": 8,
+    "pct": 75
+  },
+  "blocks": [
+    {
+      "id": "A",
+      "label": "Compás de 2/4",
+      "correct": 1,
+      "total": 2
+    },
+    {
+      "id": "B",
+      "label": "Compás de 3/4",
+      "correct": 3,
+      "total": 3
+    },
+    {
+      "id": "C",
+      "label": "Compás de 4/4",
+      "correct": 2,
+      "total": 3
+    }
+  ],
+  "items": [
+    {
+      "n": 1,
+      "block": "A",
+      "topic": "puntillo_negra",
+      "expected": "np_c",
+      "answered": "np_c",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 9,
+      "replays": 0
+    },
+    {
+      "n": 2,
+      "block": "A",
+      "topic": "corcheas",
+      "expected": "cc|n",
+      "answered": "ssss|n",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 6,
+      "replays": 0
+    },
+    {
+      "n": 3,
+      "block": "B",
+      "topic": "puntillo_negra",
+      "expected": "n|np_c",
+      "answered": "n|np_c",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 21,
+      "replays": 1
+    },
+    {
+      "n": 4,
+      "block": "B",
+      "topic": "corcheas",
+      "expected": "cc|n|cc",
+      "answered": "cc|n|cc",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 12,
+      "replays": 0
+    },
+    {
+      "n": 5,
+      "block": "B",
+      "topic": "blanca",
+      "expected": "b|n",
+      "answered": "b|n",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 8,
+      "replays": 0
+    },
+    {
+      "n": 6,
+      "block": "C",
+      "topic": "puntillo_negra",
+      "expected": "np_c|cc|n",
+      "answered": "b|cc|n",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 27,
+      "replays": 1
+    },
+    {
+      "n": 7,
+      "block": "C",
+      "topic": "semicorcheas",
+      "expected": "cc|ssss|n|sr",
+      "answered": "cc|ssss|n|sr",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 9,
+      "replays": 0
+    },
+    {
+      "n": 8,
+      "block": "C",
+      "topic": "silencios",
+      "expected": "n|sr|cc|n",
+      "answered": "n|sr|cc|n",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 12,
+      "replays": 0
+    }
+  ],
+  "mood": 3
+}

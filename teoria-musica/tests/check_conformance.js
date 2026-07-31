@@ -185,6 +185,27 @@ function checkListens(file, src, catFromName) {
 // de un callback disparado tras la reproducción: setTimeout/then/onended/
 // addEventListener/function callback) o si son una sentencia directa en
 // el flujo síncrono de pintado de la pregunta.
+//
+// La comprobación de "diferido" camina hacia fuera por las llaves que
+// envuelven la asignación (en vez de mirar una ventana fija de caracteres
+// hacia atrás): un tamaño fijo corta a mitad de token cuando el cuerpo del
+// callback tiene comentarios o líneas intermedias antes de la asignación
+// (detectado el 31/07/2026 en mus_dictado_3-8_v1.html: la ventana de 400
+// caracteres cortaba la palabra "function" a 412 caracteres del ".then(",
+// dando un falso positivo de "no diferido" sobre un cronómetro correcto).
+function findEnclosingBraceOpen(src, pos) {
+  let depth = 0;
+  for (let i = pos - 1; i >= 0; i--) {
+    const c = src[i];
+    if (c === '}') depth++;
+    else if (c === '{') {
+      if (depth === 0) return i;
+      depth--;
+    }
+  }
+  return -1;
+}
+
 function checkTimeSec(file, src, catFromName) {
   if (!AUDIO_EVALUATIVE.includes(catFromName)) {
     report(file, 'time_sec', '—', 'sin audio, no aplica la regla §3.2 de arranque tras reproducción');
@@ -206,9 +227,20 @@ function checkTimeSec(file, src, catFromName) {
   }
   const gatedTokenRe = /setTimeout\(|addEventListener\(|\.onended\s*=|\.then\(|=>\s*\{|function\s*\w*\s*\([^)]*\)\s*\{/;
   const evaluated = candidates.map(c => {
-    const windowBefore = src.slice(Math.max(0, c.index - 400), c.index);
+    // Camina hacia fuera por cada llave envolvente (if/callback/…) hasta
+    // encontrar una cuyo token inmediatamente anterior sea un disparador
+    // diferido, o hasta llegar al nivel superior del script (no diferido).
+    let gated = false;
+    let searchFrom = c.index;
+    for (let guard = 0; guard < 20; guard++) {
+      const openIdx = findEnclosingBraceOpen(src, searchFrom);
+      if (openIdx < 0) break;
+      const windowBefore = src.slice(Math.max(0, openIdx - 80), openIdx + 1);
+      if (gatedTokenRe.test(windowBefore)) { gated = true; break; }
+      searchFrom = openIdx;
+    }
     const line = src.slice(0, c.index).split('\n').length;
-    return { ...c, gated: gatedTokenRe.test(windowBefore), line };
+    return { ...c, gated, line };
   });
   const ungated = evaluated.filter(e => !e.gated);
   if (ungated.length > 0) {
