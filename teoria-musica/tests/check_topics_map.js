@@ -36,6 +36,7 @@ const EVALUATIVE_FILES = [
   'mus_dictado_simple-s5_v1.html',
   'mus_dictado_melodico-s1_v1.html',
   'mus_audicion_ataque-duracion_v1.html',
+  'mus_dictado_segmentacion_v1.html',
 ];
 
 // ---------------------------------------------------------------------------

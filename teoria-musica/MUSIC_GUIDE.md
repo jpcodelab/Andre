@@ -1,7 +1,7 @@
 # MUSIC_GUIDE.md — Especificación de herramientas de Lenguaje Musical
 
 > Documento vivo. Cualquier herramienta de música nueva o modificada debe cumplir esta guía.
-> Referenciado desde CLAUDE.md. Versión: 1.9 · 31 de julio de 2026
+> Referenciado desde CLAUDE.md. Versión: 1.10 · 1 de agosto de 2026
 
 ---
 
@@ -213,8 +213,14 @@ Reglas:
   valores del vocabulario de topics cuando aplique, o texto corto.
 - `attempts`: nº de intentos hasta acertar o agotar (los repasos adaptativos
   ya permiten hasta 3). En herramientas que no ofrecen reintento, `attempts`
-  vale siempre `1` y no aporta diagnóstico — solo es significativo en
-  repasos adaptativos.
+  vale siempre `1` y no aporta diagnóstico.
+  **Excepción — dictados con paso de autochequeo**: cuando la herramienta
+  muestra al alumno una comprobación objetiva de su propia respuesta *antes*
+  de corregirla y le ofrece rectificar, `attempts` cuenta **composiciones**:
+  `1` = confirmada a la primera, `2` = rectificada tras ver el autochequeo.
+  Aquí sí es diagnóstico: mide si la rutina de verificación se activa. La
+  herramienta documenta este significado en un comentario junto a la
+  constante o al manejador que lo asigna (§5).
 - `time_sec`: segundos **de razonamiento**, no de reloj. Se mide desde que la
   interfaz de respuesta queda habilitada (es decir, tras la primera
   reproducción completa, no al pintar la pregunta) hasta el clic en
@@ -248,6 +254,33 @@ Reglas:
   (mayúsculas y guion). `mus_dictado_3-8_v1` queda marcado como no conforme
   conocido con esta regla (usa mayúsculas y `-` como separador); no se
   corrige ni la herramienta ni los datos ya archivados.
+
+  #### Tabla de notación rítmica
+
+  Las herramientas que transcriben ritmo usan esta tabla, sin excepciones:
+
+  | Código | Figura | | Código | Silencio |
+  |---|---|---|---|---|
+  | `r` | redonda | | `zr` | silencio de redonda |
+  | `b` | blanca | | `zb` | silencio de blanca |
+  | `n` | negra | | `zn` | silencio de negra |
+  | `c` | corchea | | `zc` | silencio de corchea |
+  | `s` | semicorchea | | `zs` | silencio de semicorchea |
+
+  - **Puntillo**: sufijo `p` → `np` (negra con puntillo), `bp`, `cp`.
+  - **Silencio**: prefijo `z`. Nunca `s`: `s` es siempre semicorchea.
+  - `_` separa figuras sucesivas dentro del compás.
+  - `|` separa compases.
+  - `-` no se usa nunca.
+
+  Conforme: `n_zn_n_n` · `np_c_n_n` · `c_n|zc_c_c`
+  No conforme: `C-N` (mayúsculas y guion) · `s-C-C` (`s` como silencio)
+
+  **No conformidades conocidas, congeladas**: `mus_dictado_3-8_v1` usa
+  mayúsculas, `-` como separador y `s` como silencio. `mus_dictado_simple-s5_v1`
+  usa `s` como semicorchea y `-`/concatenación sin `_`. No se corrigen ni las
+  herramientas ni los datos ya archivados: cualquier análisis longitudinal que
+  cruce `answered` entre estas dos y las posteriores debe normalizar antes.
 - `correct` puede ser `null` en ítems de bloques de calentamiento o
   calibración (no evaluados). El `score` agrega **únicamente** los ítems con
   `correct` booleano; `blocks` con `total: 0` se omiten del array. El ítem se
@@ -548,6 +581,27 @@ Dictado S1 → Dictado S2 → Dictado 3/8 → Dictado S5 (negra con puntillo).
 El dictado melódico S1 (reconocer notas, Do Mayor) es una rama aparte —
 oído de alturas, no de ritmo — y no depende de completar los anteriores.
 
+**Refuerzo transversal (sin prerrequisito):**
+`mus_dictado_segmentacion_v1` — la frontera de segmentación. No es un paso de
+la secuencia S1 → S2 → 3/8 → S5, sino una remediación que cruza las cuatro.
+
+Motivo: sobre las 16 sesiones del histórico hasta el 31/07/2026 hay 10 errores
+de transcripción rítmica en 4 herramientas distintas. Los diez conservan la
+duración total exacta y solo fallan en la segmentación interna. Se reparten en
+dos familias de tamaño idéntico:
+
+- **Familia S (5 errores)** — misma duración y **mismo número de ataques**;
+  cambia si el sonido se prolonga o se corta (21/07 s1 n3/n5/n8 · 23/07
+  sil-sost n2/n7). Aquí contar golpes **no discrimina**: la señal útil es el
+  corte.
+- **Familia D (5 errores)** — misma duración y **distinto número de ataques**
+  (26/07 3-8 n7/n9/n12 · 31/07 S5 n2/n6). Aquí contar golpes resuelve.
+
+Consecuencia de diseño: toda herramienta de transcripción rítmica debe
+entrenar **las dos** comprobaciones —conteo de ataques *y* detección del
+corte—, no solo una. Un par mínimo cuya pregunta previa no separe a los dos
+gemelos es un defecto de diseño, no una variante; se verifica por test.
+
 **Discriminación auditiva:**
 Fuerte/Débil (paso 1) → Ataque y duración (paso 1.5) →
 Puente síncopa (paso 2) → Síncopa vs Contratiempo (paso 3) →
@@ -624,6 +678,15 @@ Fases incrementales sobre el mismo schema. Ninguna rompe la anterior:
 
 ## Changelog
 
+- **v1.10 · 01/08/2026** — (1) §3.2: tabla de notación rítmica cerrada
+  (`z` prefijo para silencio, `p` sufijo para puntillo, `_` entre figuras,
+  `|` entre compases); resuelve la colisión de `s` (semicorchea vs. silencio)
+  entre `mus_dictado_simple-s5_v1` y `mus_dictado_3-8_v1`, ambas marcadas como
+  no conformidades congeladas. (2) §3.2: `attempts` pasa a ser diagnóstico en
+  dictados con paso de autochequeo, contando composiciones. (3) §6: bloque de
+  refuerzos transversales, con el diagnóstico de las dos familias de error de
+  segmentación y la regla de que todo dictado rítmico entrene las dos
+  comprobaciones.
 - **v1.9 · 31/07/2026** — (1) §2: nueva subsección "Ciclo de vida de una
   herramienta" (umbral de "Dominado", reordenado en el índice sin ocultar).
   (2) §3.2: excepción de notación en la caja del vocabulario (`|`, `_`, sin

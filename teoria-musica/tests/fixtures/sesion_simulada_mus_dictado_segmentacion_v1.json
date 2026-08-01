@@ -1,0 +1,386 @@
+{
+  "schema": "andre-music-log/v1",
+  "tool": "mus_dictado_segmentacion_v1",
+  "category": "dictado",
+  "scoring": "auto",
+  "session": {
+    "start": "2026-08-01T09:06:51+01:00",
+    "end": "2026-08-01T09:06:53+01:00",
+    "duration_sec": 2
+  },
+  "score": {
+    "correct": 17,
+    "total": 18,
+    "pct": 94.4
+  },
+  "blocks": [
+    {
+      "id": "a_senales",
+      "label": "Las dos señales",
+      "correct": 4,
+      "total": 4
+    },
+    {
+      "id": "b_verificacion",
+      "label": "Comprobación previa",
+      "correct": 4,
+      "total": 5
+    },
+    {
+      "id": "b_eleccion",
+      "label": "Elección del gemelo",
+      "correct": 5,
+      "total": 5
+    },
+    {
+      "id": "c_libre",
+      "label": "Transcripción libre",
+      "correct": 4,
+      "total": 4
+    }
+  ],
+  "items": [
+    {
+      "n": 1,
+      "block": "a_senales",
+      "topic": "segmentacion_conteo",
+      "expected": "5",
+      "answered": "5",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 2,
+      "listen_sec": 0
+    },
+    {
+      "n": 2,
+      "block": "a_senales",
+      "topic": "segmentacion_corte",
+      "expected": "llega",
+      "answered": "llega",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0
+    },
+    {
+      "n": 3,
+      "block": "a_senales",
+      "topic": "segmentacion_conteo",
+      "expected": "4",
+      "answered": "4",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 1,
+      "listens": 1,
+      "listen_sec": 0
+    },
+    {
+      "n": 4,
+      "block": "a_senales",
+      "topic": "segmentacion_corte",
+      "expected": "silencio",
+      "answered": "silencio",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0
+    },
+    {
+      "n": 5,
+      "block": "b_verificacion",
+      "topic": "segmentacion_par_silencio",
+      "expected": "se_corta",
+      "answered": "se_corta",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "silencio",
+        "paso": "verificacion"
+      }
+    },
+    {
+      "n": 6,
+      "block": "b_eleccion",
+      "topic": "segmentacion_par_silencio",
+      "expected": "n_zn_n_n",
+      "answered": "n_zn_n_n",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "silencio",
+        "paso": "eleccion",
+        "posicion_correcta": "B"
+      }
+    },
+    {
+      "n": 7,
+      "block": "b_verificacion",
+      "topic": "segmentacion_par_desigual",
+      "expected": "3",
+      "answered": "1",
+      "correct": false,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "paso": "verificacion"
+      }
+    },
+    {
+      "n": 8,
+      "block": "b_eleccion",
+      "topic": "segmentacion_par_desigual",
+      "expected": "n_b_n",
+      "answered": "n_b_n",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "paso": "eleccion",
+        "posicion_correcta": "A"
+      }
+    },
+    {
+      "n": 9,
+      "block": "b_verificacion",
+      "topic": "segmentacion_par_silencio",
+      "expected": "suena",
+      "answered": "suena",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "silencio",
+        "paso": "verificacion"
+      }
+    },
+    {
+      "n": 10,
+      "block": "b_eleccion",
+      "topic": "segmentacion_par_silencio",
+      "expected": "n_c_c_b",
+      "answered": "n_c_c_b",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "silencio",
+        "paso": "eleccion",
+        "posicion_correcta": "B"
+      }
+    },
+    {
+      "n": 11,
+      "block": "b_verificacion",
+      "topic": "segmentacion_par_desigual",
+      "expected": "7",
+      "answered": "7",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "paso": "verificacion"
+      }
+    },
+    {
+      "n": 12,
+      "block": "b_eleccion",
+      "topic": "segmentacion_par_desigual",
+      "expected": "n_s_s_s_s_n_n",
+      "answered": "n_s_s_s_s_n_n",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "paso": "eleccion",
+        "posicion_correcta": "B"
+      }
+    },
+    {
+      "n": 13,
+      "block": "b_verificacion",
+      "topic": "segmentacion_par_silencio",
+      "expected": "llega",
+      "answered": "llega",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "silencio",
+        "paso": "verificacion"
+      }
+    },
+    {
+      "n": 14,
+      "block": "b_eleccion",
+      "topic": "segmentacion_par_silencio",
+      "expected": "zn_n_b",
+      "answered": "zn_n_b",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "silencio",
+        "paso": "eleccion",
+        "posicion_correcta": "B"
+      }
+    },
+    {
+      "n": 15,
+      "block": "c_conteo",
+      "topic": "segmentacion_transcripcion",
+      "expected": "2",
+      "answered": "2",
+      "correct": null,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "silencio",
+        "paso": "calibracion"
+      }
+    },
+    {
+      "n": 16,
+      "block": "c_libre",
+      "topic": "segmentacion_transcripcion",
+      "expected": "n_b_zn",
+      "answered": "n_b_zn",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "silencio",
+        "compas": "4/4"
+      }
+    },
+    {
+      "n": 17,
+      "block": "c_conteo",
+      "topic": "segmentacion_transcripcion",
+      "expected": "4",
+      "answered": "4",
+      "correct": null,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "paso": "calibracion"
+      }
+    },
+    {
+      "n": 18,
+      "block": "c_libre",
+      "topic": "segmentacion_transcripcion",
+      "expected": "np_c_n_n",
+      "answered": "np_c_n_n",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "compas": "4/4"
+      }
+    },
+    {
+      "n": 19,
+      "block": "c_conteo",
+      "topic": "segmentacion_transcripcion",
+      "expected": "4",
+      "answered": "4",
+      "correct": null,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "paso": "calibracion"
+      }
+    },
+    {
+      "n": 20,
+      "block": "c_libre",
+      "topic": "segmentacion_transcripcion",
+      "expected": "c_n|zc_c_c",
+      "answered": "c_n|zc_c_c",
+      "correct": true,
+      "attempts": 2,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "compas": "3/8"
+      }
+    },
+    {
+      "n": 21,
+      "block": "c_conteo",
+      "topic": "segmentacion_transcripcion",
+      "expected": "3",
+      "answered": "3",
+      "correct": null,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "paso": "calibracion"
+      }
+    },
+    {
+      "n": 22,
+      "block": "c_libre",
+      "topic": "segmentacion_transcripcion",
+      "expected": "n_c|np",
+      "answered": "n_c|np",
+      "correct": true,
+      "attempts": 1,
+      "time_sec": 0,
+      "listens": 1,
+      "listen_sec": 0,
+      "conditions": {
+        "familia": "division_desigual",
+        "compas": "3/8"
+      }
+    }
+  ],
+  "mood": 2
+}

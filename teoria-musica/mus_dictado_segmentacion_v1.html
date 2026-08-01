@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dictado · La frontera de segmentación</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --soft:#777; }
+  * { box-sizing:border-box; }
+  body { font-family:'Lora',Georgia,serif; background:#fff; color:#000;
+         margin:0; padding:1.2rem; line-height:1.55; }
+  .wrap { max-width:44rem; margin:0 auto; }
+  h1 { font-size:1.5rem; margin:0 0 .2rem; }
+  h2 { font-size:1.1rem; margin:1.4rem 0 .5rem; }
+  .sub { color:var(--soft); font-size:.9rem; margin:0 0 1.2rem; }
+  .card { border:2px solid #000; padding:1rem 1.1rem; margin:1rem 0; }
+  .warn { border:1px solid #000; padding:.6rem .8rem; font-size:.9rem; margin:.8rem 0; }
+  button { font-family:inherit; font-size:1rem; background:#fff; color:#000;
+           border:2px solid #000; padding:.55rem 1rem; cursor:pointer; margin:.25rem .3rem .25rem 0; }
+  button:hover:not(:disabled) { background:#000; color:#fff; }
+  button:hover:not(:disabled) svg .gfill { fill:#fff; }
+  button:hover:not(:disabled) svg .gstroke { stroke:#fff; }
+  button:disabled { opacity:.32; cursor:not-allowed; }
+  button.sel { background:#000; color:#fff; }
+  .big { font-size:1.05rem; padding:.7rem 1.3rem; }
+  .num { min-width:3.2rem; }
+  .opts { display:flex; flex-wrap:wrap; gap:.4rem; margin:.6rem 0; }
+  .optcard { border:2px solid #000; padding:.7rem .8rem; cursor:pointer; flex:1 1 15rem;
+             display:flex; flex-direction:column; align-items:center; gap:.4rem; background:#fff; }
+  .optcard:hover { background:#f1f1f1; }
+  .optcard.sel { background:#000; color:#fff; }
+  .optcard.sel svg .gfill { fill:#fff; }
+  .optcard.sel svg .gstroke { stroke:#fff; }
+  .optcard .lbl { font-size:.82rem; color:var(--soft); }
+  .optcard.sel .lbl { color:#fff; }
+  .rowfig { display:flex; align-items:flex-end; gap:.12rem; flex-wrap:wrap; }
+  .bar { border-left:2px solid #000; height:2.4rem; margin:0 .35rem; }
+  .prog { font-size:.85rem; color:var(--soft); margin:.2rem 0 .6rem; }
+  .meter { height:14px; border:2px solid #000; display:flex; margin:.5rem 0 .2rem; }
+  .meter i { display:block; height:100%; border-right:1px solid #ddd; }
+  .meter i.on { background:#000; }
+  .meter i.beat { border-right:2px solid #000; }
+  .fb { border-left:6px solid #000; padding:.6rem .9rem; margin:.9rem 0; background:#fafafa; }
+  .fb.bad { border-left-style:double; border-left-width:9px; }
+  .slot { border:2px dashed #000; min-height:3.8rem; padding:.35rem .45rem; margin:.35rem 0;
+          display:flex; align-items:flex-end; gap:.12rem; flex-wrap:wrap; }
+  .slot .ph { color:var(--soft); font-size:.85rem; font-style:italic; align-self:center; }
+  .pal { display:flex; flex-wrap:wrap; gap:.3rem; margin:.6rem 0; }
+  .pal button { display:flex; flex-direction:column; align-items:center; gap:.1rem;
+                padding:.4rem .5rem; min-width:4.4rem; }
+  .pal button .cap { font-size:.66rem; }
+  textarea { width:100%; height:15rem; font-family:ui-monospace,Menlo,Consolas,monospace;
+             font-size:.72rem; border:2px solid #000; padding:.6rem; margin-top:.6rem; }
+  .navbar { margin-top:2.5rem; padding-top:1rem; border-top:2px solid #000; font-size:.9rem; }
+  .navbar a { color:#000; }
+  .hide { display:none !important; }
+  .mono { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.85rem; }
+  ul { padding-left:1.2rem; } li { margin:.25rem 0; }
+  .qtext { font-size:1.08rem; font-weight:600; margin:.9rem 0 .4rem; }
+  .caplbl { font-size:.8rem; color:var(--soft); margin:.7rem 0 .1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="scr-intro">
+  <h1>Dictado · La frontera de segmentación</h1>
+  <p class="sub">Lenguaje Musical · André · 18 preguntas · unos 20–25 minutos</p>
+
+  <div class="warn"><strong>Necesitas sonido.</strong> Ponte los auriculares o sube el volumen.
+  Usa Brave, Chrome o Edge.</div>
+
+  <div class="card">
+    <h2 style="margin-top:0">De qué va esto</h2>
+    <p>Cuando escribes un dictado casi siempre aciertas <strong>cuánto dura</strong> el compás.
+    Lo que a veces se escapa es <strong>cómo se reparte</strong> esa duración por dentro.</p>
+    <p>Para no fallar hay que comprobar <strong>dos cosas</strong>, no una:</p>
+    <ul>
+      <li><strong>1 · Los golpes.</strong> ¿Cuántas veces empieza un sonido nuevo?</li>
+      <li><strong>2 · Los cortes.</strong> ¿El sonido sigue sonando o se calla?</li>
+    </ul>
+    <p>Si solo compruebas la duración, dos ritmos distintos te van a parecer el mismo.
+    Míralo en dos ejemplos.</p>
+  </div>
+  <button class="big" id="btn-start">Empezar</button>
+</div>
+
+<div id="scr-demo" class="hide">
+  <h1>Ejemplo</h1>
+  <p class="prog" id="demo-prog"></p>
+  <div class="card">
+    <p class="qtext" id="demo-title"></p>
+    <p id="demo-lead"></p>
+    <button id="demo-playA">▶ Escuchar el primero</button>
+    <button id="demo-playB">▶ Escuchar el segundo</button>
+    <div style="margin-top:1rem">
+      <p class="caplbl">Primero</p>
+      <div class="rowfig" id="demo-figA"></div>
+      <div id="demo-stripA"></div>
+      <p class="caplbl">Segundo</p>
+      <div class="rowfig" id="demo-figB"></div>
+      <div id="demo-stripB"></div>
+    </div>
+    <div class="fb" id="demo-note"></div>
+  </div>
+  <button class="big" id="demo-next">Siguiente</button>
+</div>
+
+<div id="scr-item" class="hide">
+  <p class="prog" id="it-prog"></p>
+  <h2 id="it-block" style="margin-top:0"></h2>
+
+  <div class="card">
+    <button id="it-play" class="big">▶ Escuchar</button>
+    <span class="mono" id="it-listens" style="margin-left:.5rem;color:#777"></span>
+
+    <div id="it-q" class="hide">
+      <p class="qtext" id="it-qtext"></p>
+      <div class="opts" id="it-opts"></div>
+    </div>
+
+    <div id="it-compose" class="hide">
+      <p class="qtext">Escribe el ritmo que has oído</p>
+      <div id="it-slots"></div>
+      <div class="meter" id="it-meter"></div>
+      <p class="mono" id="it-meterlbl" style="color:#777"></p>
+      <div class="pal" id="it-pal"></div>
+      <button id="it-undo">↶ Borrar la última</button>
+      <button id="it-clear">Vaciar</button>
+    </div>
+
+    <div id="it-check" class="hide">
+      <div class="fb" id="it-checktext"></div>
+      <button id="it-keep" class="big">Lo dejo así</button>
+      <button id="it-change">Quiero cambiarlo</button>
+    </div>
+
+    <button id="it-submit" class="big hide">Comprobar</button>
+
+    <div id="it-fb" class="hide">
+      <div class="fb" id="it-fbtext"></div>
+      <div id="it-fbvis"></div>
+      <button id="it-replay">▶ Volver a escucharlo</button>
+      <button id="it-next" class="big">Siguiente</button>
+    </div>
+  </div>
+</div>
+
+<div id="scr-mood" class="hide">
+  <h1>Ya está</h1>
+  <p class="qtext">¿Cómo te has sentido?</p>
+  <div class="opts">
+    <button class="big" data-mood="1">😖 Difícil</button>
+    <button class="big" data-mood="2">🙂 Normal</button>
+    <button class="big" data-mood="3">😄 Fácil</button>
+  </div>
+  <button id="mood-skip">Prefiero no decirlo</button>
+</div>
+
+<div id="scr-end" class="hide">
+  <h1>Resultado</h1>
+  <div class="card" id="end-summary"></div>
+  <h2>Registro para papá</h2>
+  <p class="sub">Pulsa el botón y pégaselo en el chat.</p>
+  <button id="btn-copy" class="big">📋 Copiar registro</button>
+  <span id="copy-ok" class="mono" style="color:#777"></span>
+  <textarea id="end-log" readonly></textarea>
+</div>
+
+<div class="navbar">
+  <button id="btn-reset">🔄 Reiniciar ejercicio</button>
+  <a href="../index.html#lenguaje-musical">🏠 Volver al índice</a>
+</div>
+
+</div>
+<script>
+/* =====================================================================
+   mus_dictado_segmentacion_v1
+   Conforme a MUSIC_GUIDE.md v1.9 + propuestas v1.10
+     (§3.2 tabla de notación rítmica · §3.2 attempts en dictados con autochequeo)
+   Clave localStorage propia: andre_mus_dictado_segmentacion_v1
+   ===================================================================== */
+
+/* ---------- 0. Helpers normativos ---------- */
+function isoLocal(d) {
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var off = -d.getTimezoneOffset();
+  var sign = off >= 0 ? '+' : '-';
+  var abs = Math.abs(off);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds())
+    + sign + pad(Math.floor(abs / 60)) + ':' + pad(abs % 60);
+}
+var TOOL = 'mus_dictado_segmentacion_v1';
+var SELFKEY = 'andre_' + TOOL;
+var TITLE = 'Dictado · La frontera de segmentación';
+
+/* ---------- 1. Duraciones (unidad interna: tick = semicorchea) ---------- */
+var DUR = { r:16, b:8, bp:12, n:4, np:6, c:2, cp:3, s:1,
+            zr:16, zb:8, zn:4, zc:2, zs:1 };
+var NAME = { r:'redonda', b:'blanca', bp:'blanca con puntillo', n:'negra',
+  np:'negra con puntillo', c:'corchea', cp:'corchea con puntillo', s:'semicorchea',
+  zr:'silencio de redonda', zb:'silencio de blanca', zn:'silencio de negra',
+  zc:'silencio de corchea', zs:'silencio de semicorchea' };
+function isRest(f) { return f.charAt(0) === 'z'; }
+
+var METER = {
+  '4/4': { measureTicks:16, beatTicks:4, beats:4, bpm:76,  countIn:4,
+           palette:['n','b','c','s','np','zn','zc','zb'] },
+  '3/8': { measureTicks:6,  beatTicks:2, beats:3, bpm:104, countIn:3,
+           palette:['c','n','np','s','zc','zn'] }
+};
+
+function parsePat(p)  { return p.split('|').map(function (m) { return m.split('_'); }); }
+function joinPat(ms)  { return ms.map(function (m) { return m.join('_'); }).join('|'); }
+function measTicks(ms){ return ms.map(function (m) {
+  return m.reduce(function (a, f) { return a + DUR[f]; }, 0); }); }
+function attacksOf(ms){ return ms.reduce(function (a, m) {
+  return a + m.filter(function (f) { return !isRest(f); }).length; }, 0); }
+
+/** Eventos absolutos {fig,onset,dur,rest} sobre el patrón completo. */
+function events(ms) {
+  var out = [], t = 0;
+  ms.forEach(function (m) { m.forEach(function (f) {
+    out.push({ fig:f, onset:t, dur:DUR[f], rest:isRest(f) }); t += DUR[f];
+  }); });
+  return out;
+}
+/** ¿Suena algo (ataque o prolongación) al inicio del pulso `beat` (1-based)? */
+function soundsAtBeat(ms, meter, beat) {
+  var t = (beat - 1) * METER[meter].beatTicks;
+  return events(ms).some(function (e) { return !e.rest && e.onset <= t && t < e.onset + e.dur; });
+}
+/** El sonido que ATACA en el pulso `beat`: 'llega' al siguiente pulso o 'se_corta'. */
+function sustainsFromBeat(ms, meter, beat) {
+  var bt = METER[meter].beatTicks, t = (beat - 1) * bt;
+  var e = events(ms).filter(function (x) { return x.onset === t && !x.rest; })[0];
+  if (!e) return null;
+  return (e.onset + e.dur) > (t + bt) ? 'llega' : 'se_corta';
+}
+
+/* ---------- 2. Glifos SVG (verificados visualmente antes de entregar) ---------- */
+function glyphBody(fig) {
+  var HX = 9, HY = 30;
+  function head(filled) {
+    return '<ellipse class="' + (filled ? 'gfill' : 'gstroke') + '" cx="' + HX + '" cy="' + HY
+      + '" rx="6.2" ry="4.4" transform="rotate(-22 ' + HX + ' ' + HY + ')" '
+      + (filled ? 'fill="#000"/>' : 'fill="none" stroke="#000" stroke-width="2"/>');
+  }
+  var stem  = '<line class="gstroke" x1="14.8" y1="28.6" x2="14.8" y2="6" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>';
+  var flag1 = '<path class="gfill" d="M14.8 6 C 20.5 9.5, 21.5 14, 18.4 18.5 C 20.2 13.5, 18.6 11, 14.8 9.2 Z" fill="#000"/>';
+  var flag2 = '<path class="gfill" d="M14.8 12 C 20.5 15.5, 21.5 20, 18.4 24.5 C 20.2 19.5, 18.6 17, 14.8 15.2 Z" fill="#000"/>';
+  var dot   = '<circle class="gfill" cx="20.5" cy="27.4" r="1.9" fill="#000"/>';
+  switch (fig) {
+    case 'r':  return head(false);
+    case 'b':  return head(false) + stem;
+    case 'bp': return head(false) + stem + dot;
+    case 'n':  return head(true)  + stem;
+    case 'np': return head(true)  + stem + dot;
+    case 'c':  return head(true)  + stem + flag1;
+    case 'cp': return head(true)  + stem + flag1 + dot;
+    case 's':  return head(true)  + stem + flag1 + flag2;
+    case 'zr': return '<line class="gstroke" x1="4" y1="22" x2="22" y2="22" stroke="#000" stroke-width="1.4"/>'
+                    + '<rect class="gfill" x="9" y="22" width="9" height="5" fill="#000"/>';
+    case 'zb': return '<line class="gstroke" x1="4" y1="27" x2="22" y2="27" stroke="#000" stroke-width="1.4"/>'
+                    + '<rect class="gfill" x="9" y="22" width="9" height="5" fill="#000"/>';
+    case 'zn': return '<path class="gstroke" d="M9.5 12 L15.5 19.5 L10 25.5 L16.5 32" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
+                    + '<path class="gfill" d="M16.5 32 C 12 29.5, 10.5 33.5, 13.5 37.5 C 10 35, 9 30.5, 13 30" fill="#000"/>';
+    case 'zc': return '<path class="gstroke" d="M16 15 L9.5 32.5" stroke="#000" stroke-width="1.9" stroke-linecap="round" fill="none"/>'
+                    + '<circle class="gfill" cx="11.8" cy="17.2" r="2.8" fill="#000"/>'
+                    + '<path class="gfill" d="M11.8 14.6 L16.3 14.2 L16 17 Z" fill="#000"/>';
+    case 'zs': return '<path class="gstroke" d="M17 13 L8.5 33" stroke="#000" stroke-width="1.9" stroke-linecap="round" fill="none"/>'
+                    + '<circle class="gfill" cx="13.4" cy="15.6" r="2.5" fill="#000"/>'
+                    + '<path class="gfill" d="M13.4 13.2 L17.3 12.6 L17 15.2 Z" fill="#000"/>'
+                    + '<circle class="gfill" cx="11.1" cy="23.4" r="2.5" fill="#000"/>'
+                    + '<path class="gfill" d="M11.1 21 L15 20.4 L14.7 23 Z" fill="#000"/>';
+    default:   return '<text x="4" y="32" font-size="14">?</text>';
+  }
+}
+function glyph(fig, h) {
+  h = h || 44;
+  return '<svg viewBox="0 0 26 44" height="' + h + '" width="' + ((26 / 44) * h).toFixed(1)
+    + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + (NAME[fig] || fig) + '">'
+    + glyphBody(fig) + '</svg>';
+}
+function figRow(ms, h) {
+  return ms.map(function (m) {
+    return m.map(function (f) { return glyph(f, h); }).join('');
+  }).join('<span class="bar"></span>');
+}
+/** Tira de pulsos: negro = suena · punteado = silencio · marca alta = ataque. */
+function stripSVG(ms, meter) {
+  var M = METER[meter], evs = events(ms);
+  var total = M.measureTicks * ms.length, W = 420, H = 34, u = W / total;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H
+        + '" xmlns="http://www.w3.org/2000/svg">';
+  evs.forEach(function (e) {
+    var x = e.onset * u, w = e.dur * u;
+    s += '<rect x="' + x.toFixed(1) + '" y="9" width="' + Math.max(2, w - 1.5).toFixed(1)
+       + '" height="15" ' + (e.rest
+          ? 'fill="#fff" stroke="#000" stroke-dasharray="3 2" stroke-width="1"'
+          : 'fill="#000"') + '/>';
+    if (!e.rest) s += '<rect x="' + x.toFixed(1) + '" y="3" width="2.5" height="27" fill="#000"/>';
+  });
+  var b;
+  for (b = 0; b <= total; b += M.beatTicks)
+    s += '<line x1="' + (b * u).toFixed(1) + '" y1="26" x2="' + (b * u).toFixed(1)
+       + '" y2="33" stroke="#999" stroke-width="1"/>';
+  for (b = 0; b <= total; b += M.measureTicks)
+    s += '<line x1="' + Math.min(W - 1, b * u).toFixed(1) + '" y1="0" x2="'
+       + Math.min(W - 1, b * u).toFixed(1) + '" y2="34" stroke="#000" stroke-width="1.5"/>';
+  return s + '</svg>';
+}
+
+/* ---------- 3. Audio (Web Audio API) ---------- */
+var AC = null;
+function ac() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  return AC;
+}
+function tone(t0, dur, freq, gain) {
+  var c = ac(), o = c.createOscillator(), g = c.createGain();
+  o.type = 'triangle'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(gain, t0 + 0.012);
+  g.gain.setValueAtTime(gain, t0 + Math.max(0.03, dur - 0.055));
+  g.gain.linearRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0 + dur + 0.03);
+}
+function click(t0, strong) { tone(t0, 0.045, strong ? 1600 : 1150, strong ? 0.20 : 0.13); }
+
+/**
+ * Cuenta previa de clics + patrón + clic de cierre en el tiempo 1 siguiente.
+ * El clic de cierre delimita los silencios finales sin revelar la segmentación interna.
+ * Devuelve la duración total, en segundos.
+ */
+function playPattern(pat, meter) {
+  var c = ac(); if (c.state === 'suspended') c.resume();
+  var M = METER[meter], ms = parsePat(pat);
+  var spb = 60 / M.bpm, spt = spb / M.beatTicks;
+  var t0 = c.currentTime + 0.12, i;
+  for (i = 0; i < M.countIn; i++) click(t0 + i * spb, i === 0);
+  var start = t0 + M.countIn * spb;
+  events(ms).forEach(function (e) {
+    if (e.rest) return;
+    tone(start + e.onset * spt, Math.max(0.09, e.dur * spt - 0.03), 392, 0.30);
+  });
+  var totalTicks = M.measureTicks * ms.length;
+  click(start + totalTicks * spt, true);
+  return (M.countIn * spb) + (totalTicks * spt) + 0.30;
+}
+
+/* ---------- 4. Banco de estímulos ------------------------------------
+   Verificado en tests/test_mus_dictado_segmentacion.js
+   Familia S : misma duración y MISMO nº de ataques  -> discrimina el CORTE
+   Familia D : misma duración y DISTINTO nº de ataques -> discrimina el CONTEO
+   `origen` = error real del histórico que reproduce el par.
+--------------------------------------------------------------------- */
+var BANK_A = [
+  { kind:'conteo',      meter:'4/4', pat:'n_c_c_n_n',  topic:'segmentacion_conteo' },
+  { kind:'corte_dura',  meter:'4/4', pat:'n_b_n',      beat:2, topic:'segmentacion_corte' },
+  { kind:'conteo',      meter:'4/4', pat:'zn_n_c_c_n', topic:'segmentacion_conteo' },
+  { kind:'corte_suena', meter:'4/4', pat:'n_zn_n_n',   beat:2, topic:'segmentacion_corte' }
+];
+
+var BANK_B = [
+  { fam:'S', meter:'4/4', A:'n_zn_n_n',     B:'b_n_n',   ok:'A',
+    kind:'corte_dura',  beat:1, topic:'segmentacion_par_silencio', origen:'21/07 s1 n3' },
+  { fam:'D', meter:'4/4', A:'n_np_c_n',     B:'n_b_n',   ok:'B',
+    kind:'conteo',              topic:'segmentacion_par_desigual', origen:'31/07 S5 n6' },
+  { fam:'S', meter:'4/4', A:'n_c_c_zn_n',   B:'n_c_c_b', ok:'B',
+    kind:'corte_suena', beat:3, topic:'segmentacion_par_silencio', origen:'21/07 s1 n5' },
+  { fam:'D', meter:'4/4', A:'n_c_c_n_n',    B:'n_s_s_s_s_n_n', ok:'B',
+    kind:'conteo',              topic:'segmentacion_par_desigual', origen:'31/07 S5 n2' },
+  { fam:'S', meter:'4/4', A:'zn_n_b',       B:'zn_n_n_zn', ok:'A',
+    kind:'corte_dura',  beat:3, topic:'segmentacion_par_silencio', origen:'23/07 sil-sost n7' }
+];
+
+var BANK_C = [
+  { meter:'4/4', pat:'n_b_zn',     fam:'S', topic:'segmentacion_transcripcion', origen:'21/07 s1 n8' },
+  { meter:'4/4', pat:'np_c_n_n',   fam:'D', topic:'segmentacion_transcripcion', origen:'31/07 S5 n6' },
+  { meter:'3/8', pat:'c_n|zc_c_c', fam:'D', topic:'segmentacion_transcripcion', origen:'26/07 3-8 n7/n9' },
+  { meter:'3/8', pat:'n_c|np',     fam:'D', topic:'segmentacion_transcripcion', origen:'26/07 3-8 n12' }
+];
+
+var DEMOS = [
+  { title:'Ejemplo 1 · misma duración, mismos golpes, distinto corte',
+    meter:'4/4', A:'n_zn_n_n', B:'b_n_n',
+    lead:'Los dos duran 4 pulsos y los dos tienen 3 golpes. Contar aquí no te sirve.',
+    note:'La diferencia está en el <strong>pulso 2</strong>: en el primero el sonido se corta y hay '
+       + 'silencio; en el segundo el sonido sigue sonando. La pregunta útil aquí es '
+       + '<em>«¿sigue sonando o se ha callado?»</em>.' },
+  { title:'Ejemplo 2 · misma duración, distinto número de golpes',
+    meter:'4/4', A:'n_np_c_n', B:'n_b_n',
+    lead:'Los dos duran 4 pulsos, pero no suenan igual.',
+    note:'El primero tiene <strong>4 golpes</strong> y el segundo <strong>3</strong>. Aquí sí sirve '
+       + 'contar. Fíjate en que la duración total es la misma en los dos: por eso comprobar solo '
+       + 'la duración no basta nunca.' }
+];
+
+/* ---------- 5. Secuencia de ítems ---------- */
+function expectedFor(cfg, pat) {
+  var ms = parsePat(pat);
+  if (cfg.kind === 'conteo')      return String(attacksOf(ms));
+  if (cfg.kind === 'corte_dura')  return sustainsFromBeat(ms, cfg.meter, cfg.beat);
+  if (cfg.kind === 'corte_suena') return soundsAtBeat(ms, cfg.meter, cfg.beat) ? 'suena' : 'silencio';
+  return null;
+}
+function qTextFor(cfg) {
+  if (cfg.kind === 'conteo') return '¿Cuántos golpes has oído?';
+  if (cfg.kind === 'corte_dura') return 'El sonido que empieza en el pulso ' + cfg.beat
+    + ', ¿llega hasta el pulso ' + (cfg.beat + 1) + ' o se corta antes?';
+  if (cfg.kind === 'corte_suena') return 'En el pulso ' + cfg.beat + ', ¿suena algo o hay silencio?';
+  return '';
+}
+function optsFor(cfg, pat) {
+  if (cfg.kind === 'conteo') {
+    var real = attacksOf(parsePat(pat));
+    var lo = Math.max(1, real - 3), out = [], v;
+    for (v = lo; v <= lo + 6; v++) out.push({ v:String(v), label:String(v) });
+    return out;
+  }
+  if (cfg.kind === 'corte_dura')
+    return [{ v:'llega', label:'Llega al pulso siguiente' }, { v:'se_corta', label:'Se corta antes' }];
+  return [{ v:'suena', label:'Suena algo' }, { v:'silencio', label:'Hay silencio' }];
+}
+
+var SEQ = [];
+BANK_A.forEach(function (cfg) {
+  SEQ.push({ type:'q', block:'a_senales', blockLabel:'Bloque A · Las dos señales',
+    meter:cfg.meter, pat:cfg.pat, cfg:cfg, topic:cfg.topic,
+    expected: expectedFor(cfg, cfg.pat), scored:true });
+});
+BANK_B.forEach(function (p, i) {
+  var correctPat = (p.ok === 'A') ? p.A : p.B;
+  var fam = (p.fam === 'S') ? 'silencio' : 'division_desigual';
+  SEQ.push({ type:'q', block:'b_verificacion', blockLabel:'Bloque B · Comprueba y elige',
+    meter:p.meter, pat:correctPat, cfg:p, topic:p.topic, pair:i,
+    expected: expectedFor(p, correctPat), scored:true,
+    conditions:{ familia:fam, paso:'verificacion' } });
+  SEQ.push({ type:'pair', block:'b_eleccion', blockLabel:'Bloque B · Comprueba y elige',
+    meter:p.meter, pat:correctPat, cfg:p, topic:p.topic, pair:i,
+    expected: correctPat, scored:true,
+    conditions:{ familia:fam, paso:'eleccion' } });
+});
+BANK_C.forEach(function (c) {
+  var fam = (c.fam === 'S') ? 'silencio' : 'division_desigual';
+  SEQ.push({ type:'q', block:'c_conteo', blockLabel:'Bloque C · Escríbelo tú',
+    meter:c.meter, pat:c.pat, cfg:{ kind:'conteo', meter:c.meter }, topic:c.topic,
+    expected: String(attacksOf(parsePat(c.pat))), scored:false,
+    conditions:{ familia:fam, paso:'calibracion' } });
+  SEQ.push({ type:'write', block:'c_libre', blockLabel:'Bloque C · Escríbelo tú',
+    meter:c.meter, pat:c.pat, cfg:c, topic:c.topic,
+    expected: c.pat, scored:true,
+    conditions:{ familia:fam, compas:c.meter } });
+});
+
+/* ---------- 6. Estado ---------- */
+var S = { start:new Date(), idx:0, demo:0, items:[], mood:null,
+          lastCount:null, posByPair:{} };
+var cur = null;
+
+function $(id) { return document.getElementById(id); }
+function show(id) {
+  ['scr-intro','scr-demo','scr-item','scr-mood','scr-end'].forEach(function (s) {
+    $(s).classList.toggle('hide', s !== id);
+  });
+}
+
+/* ---------- 7. Reproducción y cronometraje (§3.2, §3.7) ---------- */
+function resetCounters() {
+  cur.listens = 0; cur.listenMs = 0; cur.t0 = null;
+  cur.extraListenMs = 0; cur.reviewing = false; cur.playing = false;
+}
+function doPlay() {
+  if (cur.playing) return;
+  var secs = playPattern(cur.pat, cur.meter);
+  cur.playing = true;
+  $('it-play').disabled = true; $('it-replay').disabled = true;
+  var wasFirst = (cur.t0 === null), tStart = Date.now();
+  if (!cur.reviewing) cur.listens++;
+  setTimeout(function () {
+    cur.playing = false; $('it-play').disabled = false; $('it-replay').disabled = false;
+    var el = Date.now() - tStart;
+    if (!cur.reviewing) {                       // §3.7: el repaso no altera listens/listen_sec
+      cur.listenMs += el;
+      if (wasFirst) { cur.t0 = Date.now(); enableAnswer(); }
+      else { cur.extraListenMs += el; }
+    }
+    updListens();
+  }, secs * 1000);
+}
+function updListens() {
+  $('it-listens').textContent = cur.reviewing ? ''
+    : (cur.listens > 0 ? 'escuchas: ' + cur.listens : 'escúchalo al menos una vez');
+}
+/** §3.2: segundos de razonamiento = desde que la respuesta queda habilitada, menos re-escuchas. */
+function reasoningSec() {
+  if (cur.t0 === null) return 0;
+  return Math.max(0, Math.round((Date.now() - cur.t0 - cur.extraListenMs) / 1000));
+}
+
+/* ---------- 8. Render de ítems ---------- */
+function startItem() {
+  if (S.idx >= SEQ.length) { show('scr-mood'); return; }
+  cur = {};
+  var src = SEQ[S.idx], k;
+  for (k in src) if (Object.prototype.hasOwnProperty.call(src, k)) cur[k] = src[k];
+  resetCounters();
+  cur.answer = null; cur.attempts = 1; cur.compose = null; cur.checked = false;
+
+  show('scr-item');
+  var done = SEQ.slice(0, S.idx).filter(function (x) { return x.scored; }).length;
+  var tot = SEQ.filter(function (x) { return x.scored; }).length;
+  $('it-prog').textContent = 'Pregunta ' + Math.min(done + 1, tot) + ' de ' + tot
+    + '  ·  compás ' + cur.meter;
+  $('it-block').textContent = cur.blockLabel;
+
+  ['it-q','it-compose','it-check','it-fb'].forEach(function (i) { $(i).classList.add('hide'); });
+  $('it-submit').classList.add('hide');
+  $('it-play').disabled = false;
+  updListens();
+  window.scrollTo(0, 0);
+}
+
+function enableAnswer() {
+  if (cur.type === 'write') renderCompose();
+  else if (cur.type === 'pair') renderPair();
+  else renderQ();
+}
+
+function renderQ() {
+  $('it-q').classList.remove('hide');
+  $('it-qtext').textContent = qTextFor(cur.cfg);
+  var box = $('it-opts'); box.innerHTML = '';
+  optsFor(cur.cfg, cur.pat).forEach(function (o) {
+    var b = document.createElement('button');
+    b.textContent = o.label;
+    if (cur.cfg.kind === 'conteo') b.className = 'num';
+    b.onclick = function () {
+      cur.answer = o.v;
+      Array.prototype.forEach.call(box.children, function (c) { c.classList.remove('sel'); });
+      b.classList.add('sel');
+      $('it-submit').classList.remove('hide'); $('it-submit').disabled = false;
+    };
+    box.appendChild(b);
+  });
+}
+
+function renderPair() {
+  $('it-q').classList.remove('hide');
+  $('it-qtext').textContent = '¿Cuál de los dos es el que has oído?';
+  var p = cur.cfg, left = p.A, right = p.B;
+  if (S.posByPair[cur.pair] === undefined)
+    S.posByPair[cur.pair] = (Math.random() < 0.5) ? 0 : 1;
+  if (S.posByPair[cur.pair] === 1) { left = p.B; right = p.A; }
+  cur.posLeft = left;
+  var box = $('it-opts'); box.innerHTML = '';
+  [left, right].forEach(function (pat, i) {
+    var d = document.createElement('div');
+    d.className = 'optcard';
+    d.innerHTML = '<div class="rowfig">' + figRow(parsePat(pat), 40) + '</div>'
+                + '<div class="lbl">opción ' + (i === 0 ? 'A' : 'B') + '</div>';
+    d.onclick = function () {
+      cur.answer = pat;
+      Array.prototype.forEach.call(box.children, function (c) { c.classList.remove('sel'); });
+      d.classList.add('sel');
+      $('it-submit').classList.remove('hide'); $('it-submit').disabled = false;
+    };
+    box.appendChild(d);
+  });
+}
+
+function shortName(f) {
+  var m = { n:'negra', b:'blanca', c:'corchea', s:'semic.', np:'negra ·',
+            zn:'sil. negra', zc:'sil. corch.', zb:'sil. blanca' };
+  return m[f] || NAME[f];
+}
+function renderCompose() {
+  $('it-compose').classList.remove('hide');
+  var M = METER[cur.meter], n = parsePat(cur.pat).length, i;
+  cur.compose = []; for (i = 0; i < n; i++) cur.compose.push([]);
+  cur.activeSlot = 0;
+  var pal = $('it-pal'); pal.innerHTML = '';
+  M.palette.forEach(function (f) {
+    var b = document.createElement('button');
+    b.innerHTML = glyph(f, 32) + '<span class="cap">' + shortName(f) + '</span>';
+    b.onclick = function () { addFig(f); };
+    pal.appendChild(b);
+  });
+  $('it-undo').onclick = function () {
+    var s = cur.compose[cur.activeSlot];
+    if (s.length) s.pop();
+    else if (cur.activeSlot > 0) { cur.activeSlot--; cur.compose[cur.activeSlot].pop(); }
+    drawCompose();
+  };
+  $('it-clear').onclick = function () {
+    cur.compose = cur.compose.map(function () { return []; });
+    cur.activeSlot = 0; drawCompose();
+  };
+  drawCompose();
+}
+function addFig(f) {
+  var M = METER[cur.meter], s = cur.activeSlot;
+  while (s < cur.compose.length &&
+         cur.compose[s].reduce(function (a, x) { return a + DUR[x]; }, 0) + DUR[f] > M.measureTicks) s++;
+  if (s >= cur.compose.length) return;      // no cabe: se ignora la pulsación
+  cur.activeSlot = s;
+  cur.compose[s].push(f);
+  drawCompose();
+}
+function drawCompose() {
+  var M = METER[cur.meter], wrap = $('it-slots');
+  wrap.innerHTML = '';
+  cur.compose.forEach(function (sl, i) {
+    var d = document.createElement('div');
+    d.className = 'slot';
+    d.innerHTML = sl.length
+      ? sl.map(function (f) { return glyph(f, 40); }).join('')
+      : '<span class="ph">Compás ' + (i + 1) + ' — vacío</span>';
+    wrap.appendChild(d);
+  });
+  var totalTicks = M.measureTicks * cur.compose.length;
+  var used = cur.compose.reduce(function (a, s) {
+    return a + s.reduce(function (b, f) { return b + DUR[f]; }, 0); }, 0);
+  var mt = $('it-meter'); mt.innerHTML = '';
+  for (var i = 0; i < totalTicks; i++) {
+    var el = document.createElement('i');
+    el.style.flex = '1';
+    var cls = (i < used) ? 'on' : '';
+    if ((i + 1) % M.beatTicks === 0) cls += ' beat';
+    el.className = cls;
+    mt.appendChild(el);
+  }
+  var full = (used === totalTicks);
+  $('it-meterlbl').textContent = full
+    ? '✓ Completo: ' + (used / M.beatTicks) + ' pulsos'
+    : (used / M.beatTicks) + ' de ' + (totalTicks / M.beatTicks) + ' pulsos';
+  $('it-submit').classList.toggle('hide', !full);
+  $('it-submit').disabled = !full;
+}
+
+/* ---------- 9. Comprobación y autochequeo ---------- */
+$('it-submit').onclick = function () {
+  if (cur.type === 'write' && !cur.checked) { doSelfCheck(); return; }
+  finish();
+};
+
+/**
+ * Autochequeo (propuesta v1.10): la duración siempre cuadra —es la señal que da
+ * falsa confianza—, así que se confronta explícitamente contra el nº de golpes.
+ */
+function doSelfCheck() {
+  cur.checked = true;
+  var M = METER[cur.meter];
+  var written = attacksOf(cur.compose);
+  var said = (S.lastCount === null) ? '?' : String(S.lastCount);
+  var beats = (M.measureTicks * cur.compose.length) / M.beatTicks;
+  var match = (String(written) === said);
+  $('it-compose').classList.add('hide');
+  $('it-submit').classList.add('hide');
+  $('it-check').classList.remove('hide');
+  $('it-checktext').innerHTML =
+    'Lo que has escrito dura <strong>' + beats + ' pulsos ✓</strong> y tiene <strong>'
+    + written + ' golpe' + (written === 1 ? '' : 's') + '</strong>.<br>'
+    + 'Antes contaste <strong>' + said + ' golpe' + (said === '1' ? '' : 's') + '</strong>.<br><br>'
+    + (match
+        ? '✓ Las dos comprobaciones cuadran. Puedes confirmarlo.'
+        : '⚠ <strong>No cuadran.</strong> La duración está bien, pero el número de golpes no coincide '
+        + 'con lo que contaste. Uno de los dos está mal: o el conteo, o cómo lo has repartido.');
+}
+$('it-keep').onclick = function () { $('it-check').classList.add('hide'); finish(); };
+$('it-change').onclick = function () {
+  cur.attempts = 2;   /* propuesta v1.10 §3.2: en dictados con autochequeo,
+                         attempts = nº de composiciones (1 = confirmada a la primera). */
+  cur.checked = false;
+  $('it-check').classList.add('hide');
+  $('it-compose').classList.remove('hide');
+  drawCompose();
+};
+
+function finish() {
+  var answered, correct;
+  if (cur.type === 'write') {
+    answered = joinPat(cur.compose);
+    correct = (answered === cur.expected);
+  } else if (cur.type === 'pair') {
+    answered = cur.answer;
+    correct = (answered === cur.expected);
+  } else {
+    answered = cur.answer;
+    correct = cur.scored ? (answered === cur.expected) : null;
+    if (!cur.scored) S.lastCount = answered;   // conteo previo del bloque C
+  }
+
+  var rec = {
+    n: S.items.length + 1,
+    block: cur.block,
+    topic: cur.topic,
+    expected: cur.expected,
+    answered: answered,
+    correct: correct,
+    attempts: cur.attempts,
+    time_sec: reasoningSec(),
+    listens: cur.listens,
+    listen_sec: Math.round(cur.listenMs / 1000)
+  };
+  if (cur.conditions) {
+    rec.conditions = {};
+    for (var k in cur.conditions)
+      if (Object.prototype.hasOwnProperty.call(cur.conditions, k))
+        rec.conditions[k] = cur.conditions[k];
+  }
+  if (cur.type === 'pair')
+    rec.conditions.posicion_correcta = (cur.posLeft === cur.expected) ? 'A' : 'B';
+
+  S.items.push(rec);
+  renderFeedback(rec);
+}
+
+function renderFeedback(rec) {
+  ['it-q','it-compose','it-check'].forEach(function (i) { $(i).classList.add('hide'); });
+  $('it-submit').classList.add('hide');
+  $('it-fb').classList.remove('hide');
+  cur.reviewing = true; updListens();       // §3.7: re-escucha libre tras corregir
+
+  var box = $('it-fbtext'), vis = $('it-fbvis');
+  vis.innerHTML = '';
+  var okMs = parsePat(cur.pat);
+
+  if (rec.correct === null) {
+    box.className = 'fb';
+    box.innerHTML = 'Anotado: <strong>' + rec.answered + ' golpes</strong>. '
+      + 'Guárdalo en la cabeza: ahora tienes que escribirlo con figuras y los dos números '
+      + 'tendrán que coincidir.';
+  } else if (rec.correct) {
+    box.className = 'fb';
+    box.innerHTML = '✓ <strong>Correcto.</strong> ' + explain(rec);
+  } else {
+    box.className = 'fb bad';
+    box.innerHTML = '✗ <strong>No es eso.</strong> ' + explain(rec);
+  }
+
+  if (cur.type === 'write' || cur.type === 'pair') {
+    vis.innerHTML = '<p class="caplbl">Lo que sonaba</p>'
+      + '<div class="rowfig">' + figRow(okMs, 40) + '</div>'
+      + stripSVG(okMs, cur.meter)
+      + (rec.correct ? ''
+        : '<p class="caplbl">Lo que pusiste</p>'
+        + '<div class="rowfig">' + figRow(parsePat(rec.answered), 40) + '</div>'
+        + stripSVG(parsePat(rec.answered), cur.meter));
+  }
+}
+
+function explain(rec) {
+  var okMs = parsePat(cur.pat), k = cur.cfg && cur.cfg.kind;
+  if (cur.type === 'q' && k === 'conteo')
+    return 'Eran <strong>' + rec.expected + ' golpes</strong>: ' + rec.expected
+      + ' sonidos que empiezan. Los silencios no cuentan como golpe.';
+  if (cur.type === 'q' && k === 'corte_dura')
+    return (rec.expected === 'llega')
+      ? 'El sonido del pulso ' + cur.cfg.beat + ' <strong>seguía sonando</strong> en el pulso '
+        + 'siguiente: era una figura larga.'
+      : 'El sonido del pulso ' + cur.cfg.beat + ' <strong>se cortaba</strong>: después venía '
+        + 'silencio o un golpe nuevo.';
+  if (cur.type === 'q' && k === 'corte_suena')
+    return (rec.expected === 'suena')
+      ? 'En el pulso ' + cur.cfg.beat + ' <strong>sí sonaba</strong> algo.'
+      : 'En el pulso ' + cur.cfg.beat + ' <strong>había silencio</strong>.';
+  if (cur.type === 'pair') {
+    var a = attacksOf(okMs);
+    var other = attacksOf(parsePat(cur.cfg.ok === 'A' ? cur.cfg.B : cur.cfg.A));
+    if (a === other)
+      return 'Los dos duran lo mismo <em>y</em> los dos tienen ' + a + ' golpes. Lo que los separa '
+        + 'es el <strong>corte</strong>: dónde se calla el sonido. Contar aquí no decide nada.';
+    return 'Los dos duran lo mismo, pero el correcto tiene <strong>' + a + ' golpes</strong> y el '
+      + 'otro ' + other + '. Aquí <strong>contar</strong> es lo que decide.';
+  }
+  if (cur.type === 'write') {
+    if (rec.correct) return 'Duración correcta y reparto correcto.';
+    var wr = parsePat(rec.answered);
+    var beats = measTicks(wr).reduce(function (a, b) { return a + b; }, 0) / METER[cur.meter].beatTicks;
+    return 'La duración te cuadraba (' + beats + ' pulsos), pero el reparto no: pusiste '
+      + '<strong>' + attacksOf(wr) + ' golpes</strong> y eran <strong>' + attacksOf(okMs)
+      + '</strong>. Compara las dos tiras de abajo: la altura marca dónde empieza cada sonido.';
+  }
+  return '';
+}
+
+$('it-play').onclick = function () { doPlay(); };
+$('it-replay').onclick = function () { doPlay(); };
+$('it-next').onclick = function () { S.idx++; startItem(); };
+
+/* ---------- 10. Demo ---------- */
+function renderDemo() {
+  var d = DEMOS[S.demo];
+  show('scr-demo');
+  $('demo-prog').textContent = 'Ejemplo ' + (S.demo + 1) + ' de ' + DEMOS.length + ' · no cuenta';
+  $('demo-title').textContent = d.title;
+  $('demo-lead').textContent = d.lead;
+  $('demo-figA').innerHTML = figRow(parsePat(d.A), 44);
+  $('demo-figB').innerHTML = figRow(parsePat(d.B), 44);
+  $('demo-stripA').innerHTML = stripSVG(parsePat(d.A), d.meter);
+  $('demo-stripB').innerHTML = stripSVG(parsePat(d.B), d.meter);
+  $('demo-note').innerHTML = d.note;
+  $('demo-playA').onclick = function () { playPattern(d.A, d.meter); };
+  $('demo-playB').onclick = function () { playPattern(d.B, d.meter); };
+}
+$('demo-next').onclick = function () {
+  S.demo++;
+  if (S.demo < DEMOS.length) renderDemo(); else startItem();
+};
+$('btn-start').onclick = function () { ac(); renderDemo(); };
+
+/* ---------- 11. Mood y cierre ---------- */
+Array.prototype.forEach.call(document.querySelectorAll('[data-mood]'), function (b) {
+  b.onclick = function () { S.mood = parseInt(b.getAttribute('data-mood'), 10); endSession(); };
+});
+$('mood-skip').onclick = function () { S.mood = null; endSession(); };
+
+function buildJSON() {
+  var end = new Date();
+  var scored = S.items.filter(function (i) { return typeof i.correct === 'boolean'; });
+  var correct = scored.filter(function (i) { return i.correct; }).length;
+  var pct = scored.length ? Math.round((correct / scored.length) * 1000) / 10 : 0;
+  var order = ['a_senales','b_verificacion','b_eleccion','c_conteo','c_libre'];
+  var labels = { a_senales:'Las dos señales', b_verificacion:'Comprobación previa',
+    b_eleccion:'Elección del gemelo', c_conteo:'Conteo previo',
+    c_libre:'Transcripción libre' };
+  var blocks = order.map(function (id) {
+    var its = S.items.filter(function (i) {
+      return i.block === id && typeof i.correct === 'boolean'; });
+    return { id:id, label:labels[id],
+      correct: its.filter(function (i) { return i.correct; }).length, total: its.length };
+  }).filter(function (b) { return b.total > 0; });   // §3.2: blocks con total 0 se omiten
+  return {
+    schema: 'andre-music-log/v1',
+    tool: TOOL,
+    category: 'dictado',
+    scoring: 'auto',
+    session: { start: isoLocal(S.start), end: isoLocal(end),
+               duration_sec: Math.round((end - S.start) / 1000) },
+    score: { correct: correct, total: scored.length, pct: pct },
+    blocks: blocks,
+    items: S.items,
+    mood: S.mood
+  };
+}
+
+function endSession() {
+  var j = buildJSON(), d = new Date();
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var stamp = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear()
+    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  var head = TITLE + ' · ' + stamp + '\n'
+    + 'Resultado: ' + j.score.correct + ' de ' + j.score.total + ' (' + j.score.pct + '%)\n'
+    + 'Bloques: ' + j.blocks.map(function (b) {
+        return b.label + ' ' + b.correct + '/' + b.total; }).join(' · ');
+  $('end-log').value = head + '\n---JSON---\n' + JSON.stringify(j, null, 2);
+
+  $('end-summary').innerHTML =
+    '<p style="font-size:1.25rem;margin:0 0 .6rem"><strong>' + j.score.correct + ' de '
+    + j.score.total + '</strong> (' + j.score.pct + '%)</p><ul>'
+    + j.blocks.map(function (b) {
+        return '<li>' + b.label + ': <strong>' + b.correct + '/' + b.total + '</strong></li>';
+      }).join('')
+    + '</ul><p class="sub" style="margin-bottom:0">El bloque de transcripción libre es el que '
+    + 'mide de verdad si comprobaste las dos señales tú solo.</p>';
+
+  try {
+    var h = JSON.parse(localStorage.getItem('andre_music_history') || '[]');
+    h.push(j); localStorage.setItem('andre_music_history', JSON.stringify(h));
+  } catch (e) { /* la sesión sigue siendo copiable a mano */ }
+  try {
+    var c = JSON.parse(localStorage.getItem('andre_music_completed') || '{}');
+    var prev = (c[TOOL] && c[TOOL].times) ? c[TOOL].times : 0;
+    c[TOOL] = { title:TITLE, date:j.session.end, correct:j.score.correct,
+                total:j.score.total, pct:j.score.pct, times:prev + 1 };
+    localStorage.setItem('andre_music_completed', JSON.stringify(c));
+  } catch (e) { /* idem */ }
+
+  show('scr-end');
+}
+
+$('btn-copy').onclick = function () {
+  var ta = $('end-log'), ok = false;
+  try { ta.focus(); ta.select(); ta.setSelectionRange(0, 999999);
+        ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  if (!ok && navigator.clipboard) {
+    navigator.clipboard.writeText(ta.value).then(function () {
+      $('copy-ok').textContent = '✓ copiado';
+    });
+    return;
+  }
+  $('copy-ok').textContent = ok ? '✓ copiado' : 'selecciona el texto y copia a mano';
+};
+
+$('btn-reset').onclick = function () {
+  if (confirm('¿Reiniciar el ejercicio? Se pierde lo que llevas de esta sesión.')) {
+    try { localStorage.removeItem(SELFKEY); } catch (e) {}
+    location.reload();
+  }
+};
+
+/* Superficie para la suite headless (jsdom) */
+if (typeof window !== 'undefined') {
+  window.__SEG__ = { DUR:DUR, METER:METER, parsePat:parsePat, joinPat:joinPat,
+    measTicks:measTicks, attacksOf:attacksOf, events:events, soundsAtBeat:soundsAtBeat,
+    sustainsFromBeat:sustainsFromBeat, BANK_A:BANK_A, BANK_B:BANK_B, BANK_C:BANK_C,
+    DEMOS:DEMOS, SEQ:SEQ, expectedFor:expectedFor, buildJSON:buildJSON, S:S,
+    isoLocal:isoLocal, glyph:glyph, figRow:figRow, stripSVG:stripSVG };
+}
+</script>
+</body>
+</html>
