@@ -229,8 +229,8 @@ ok(j.items.filter(i => i.block === 'b_eleccion')
   'b_eleccion registra posicion_correcta');
 ok(j.items.filter(i => i.conditions)
     .every(i => !i.conditions.familia
-      || ['silencio','division_desigual'].indexOf(i.conditions.familia) >= 0),
-  'conditions.familia con vocabulario cerrado');
+      || ['silencio','division_desigual','hibrida'].indexOf(i.conditions.familia) >= 0),
+  'conditions.familia con vocabulario cerrado (v1.1: + hibrida, ítem C3)');
 ok(j.items.some(i => i.time_sec > 0),
   'time_sec instrumentado: el ítem con respuesta retrasada mide '
   + j.items[SLOW_AT].time_sec + ' s (§3.2)');

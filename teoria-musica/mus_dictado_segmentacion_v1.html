@@ -176,10 +176,17 @@
 </div>
 <script>
 /* =====================================================================
-   mus_dictado_segmentacion_v1
+   mus_dictado_segmentacion_v1 · revisión v1.1 (01/09/2026)
    Conforme a MUSIC_GUIDE.md v1.9 + propuestas v1.10
      (§3.2 tabla de notación rítmica · §3.2 attempts en dictados con autochequeo)
    Clave localStorage propia: andre_mus_dictado_segmentacion_v1
+   v1.1:
+     - session.start se fija al pulsar "Empezar", no al cargar la página
+       (una pestaña abierta horas antes inflaba duration_sec: sesión 01/09).
+     - attempts incrementa en cada "Quiero cambiarlo" (antes quedaba fijo en 2).
+     - Ítem C3 (c_n|zc_c_c) reetiquetado familia "hibrida": contiene silencio
+       Y división desigual — su atribución diagnóstica era ambigua (DEFECT 02/08).
+   El banco de estímulos, el scoring y el autochequeo NO cambian.
    ===================================================================== */
 
 /* ---------- 0. Helpers normativos ---------- */
@@ -380,7 +387,8 @@ var BANK_B = [
 var BANK_C = [
   { meter:'4/4', pat:'n_b_zn',     fam:'S', topic:'segmentacion_transcripcion', origen:'21/07 s1 n8' },
   { meter:'4/4', pat:'np_c_n_n',   fam:'D', topic:'segmentacion_transcripcion', origen:'31/07 S5 n6' },
-  { meter:'3/8', pat:'c_n|zc_c_c', fam:'D', topic:'segmentacion_transcripcion', origen:'26/07 3-8 n7/n9' },
+  { meter:'3/8', pat:'c_n|zc_c_c', fam:'H', topic:'segmentacion_transcripcion', origen:'26/07 3-8 n7/n9' },
+  /* v1.1: fam H = híbrida (silencio + división desigual); antes 'D', atribución ambigua */
   { meter:'3/8', pat:'n_c|np',     fam:'D', topic:'segmentacion_transcripcion', origen:'26/07 3-8 n12' }
 ];
 
@@ -445,7 +453,8 @@ BANK_B.forEach(function (p, i) {
     conditions:{ familia:fam, paso:'eleccion' } });
 });
 BANK_C.forEach(function (c) {
-  var fam = (c.fam === 'S') ? 'silencio' : 'division_desigual';
+  var fam = (c.fam === 'S') ? 'silencio'
+          : (c.fam === 'H') ? 'hibrida' : 'division_desigual';   /* v1.1 */
   SEQ.push({ type:'q', block:'c_conteo', blockLabel:'Bloque C · Escríbelo tú',
     meter:c.meter, pat:c.pat, cfg:{ kind:'conteo', meter:c.meter }, topic:c.topic,
     expected: String(attacksOf(parsePat(c.pat))), scored:false,
@@ -457,8 +466,8 @@ BANK_C.forEach(function (c) {
 });
 
 /* ---------- 6. Estado ---------- */
-var S = { start:new Date(), idx:0, demo:0, items:[], mood:null,
-          lastCount:null, posByPair:{} };
+var S = { start:null, idx:0, demo:0, items:[], mood:null,
+          lastCount:null, posByPair:{} };   /* v1.1: start se fija en "Empezar" */
 var cur = null;
 
 function $(id) { return document.getElementById(id); }
@@ -672,8 +681,9 @@ function doSelfCheck() {
 }
 $('it-keep').onclick = function () { $('it-check').classList.add('hide'); finish(); };
 $('it-change').onclick = function () {
-  cur.attempts = 2;   /* propuesta v1.10 §3.2: en dictados con autochequeo,
-                         attempts = nº de composiciones (1 = confirmada a la primera). */
+  cur.attempts += 1;  /* propuesta v1.10 §3.2: en dictados con autochequeo,
+                         attempts = nº de composiciones (1 = confirmada a la primera).
+                         v1.1: incrementa en cada revisión (antes quedaba fijo en 2). */
   cur.checked = false;
   $('it-check').classList.add('hide');
   $('it-compose').classList.remove('hide');
@@ -811,7 +821,10 @@ $('demo-next').onclick = function () {
   S.demo++;
   if (S.demo < DEMOS.length) renderDemo(); else startItem();
 };
-$('btn-start').onclick = function () { ac(); renderDemo(); };
+$('btn-start').onclick = function () {
+  if (S.start === null) S.start = new Date();   /* v1.1 */
+  ac(); renderDemo();
+};
 
 /* ---------- 11. Mood y cierre ---------- */
 Array.prototype.forEach.call(document.querySelectorAll('[data-mood]'), function (b) {
@@ -839,8 +852,8 @@ function buildJSON() {
     tool: TOOL,
     category: 'dictado',
     scoring: 'auto',
-    session: { start: isoLocal(S.start), end: isoLocal(end),
-               duration_sec: Math.round((end - S.start) / 1000) },
+    session: { start: isoLocal(S.start || end), end: isoLocal(end),
+               duration_sec: Math.round((end - (S.start || end)) / 1000) },
     score: { correct: correct, total: scored.length, pct: pct },
     blocks: blocks,
     items: S.items,

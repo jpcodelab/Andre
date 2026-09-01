@@ -242,8 +242,9 @@ if (arg) {
   ok(j.items.some(i => i.time_sec > 0), 'time_sec instrumentado (no todo 0)');
   ok(j.items.every(i => /^[a-z0-9|_]+$/.test(String(i.answered))),
     'answered en la caja del vocabulario (minúsculas, sin tildes, sin guion)');
-  ok(j.items.filter(i => i.block === 'c_libre').every(i => i.attempts === 1 || i.attempts === 2),
-    'attempts en c_libre ∈ {1,2} (nº de composiciones, v1.10)');
+  ok(j.items.filter(i => i.block === 'c_libre')
+      .every(i => Number.isInteger(i.attempts) && i.attempts >= 1),
+    'attempts en c_libre entero >= 1 (nº de composiciones, v1.10; v1.1 incrementa por revisión)');
   ok(j.items.filter(i => i.block === 'b_eleccion')
       .every(i => i.conditions && i.conditions.posicion_correcta),
     'b_eleccion registra posicion_correcta en conditions');
@@ -275,7 +276,7 @@ if (arg) {
     if (it.length) console.log('  ' + b.padEnd(16) + it.filter(i => i.correct).length + '/' + it.length);
   });
   const fam = f => scored.filter(i => i.conditions && i.conditions.familia === f);
-  ['silencio','division_desigual'].forEach(f => {
+  ['silencio','division_desigual','hibrida'].forEach(f => {
     const it = fam(f);
     if (it.length) console.log('  familia ' + f.padEnd(19)
       + it.filter(i => i.correct).length + '/' + it.length);
